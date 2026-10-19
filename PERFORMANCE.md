@@ -164,3 +164,24 @@ raster continuity. Beach images were also checked locally in Chrome.
 
 Background: [INP phases](https://web.dev/articles/optimize-inp),
 [compositor-friendly animation and layer costs](https://web.dev/articles/animations-guide).
+
+
+## Portable real-world workloads
+
+`session-codec.js` defines a versioned, dependency-free `.ocm.json` format. Import
+validates point/event/marker values and resource bounds, decodes both images
+before replacing the current scene, and rebuilds derived trace/replay caches.
+No uploaded session fixtures or artwork are included in the repository.
+
+The optional 15-second sample uses [requestAnimationFrame](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame)
+intervals and [long-task entries](https://developer.mozilla.org/en-US/docs/Web/API/PerformanceLongTaskTiming).
+It runs only after explicit activation and stops on completion, manual stop,
+import or a hidden tab. The extra RAF loop itself affects idle power, so compare
+active workloads with the same sampling configuration; do not infer battery use
+from it. Long-task support is optional and exported as null when unavailable.
+A sample belongs to the original device; importing does not relabel its results
+as measurements of the new device. The original file retains its diagnostics.
+
+This enables comparison using actual path geometry and artwork; it does not
+recreate original input timing, pauses, thermal state, GPU selection or exact
+presented frames. Those require an on-device trace or system-level measurement.

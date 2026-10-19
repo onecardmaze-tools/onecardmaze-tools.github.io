@@ -22,7 +22,7 @@ module.exports=function harness(canvasModule,options={}) {
   function element(id){if(!elements.has(id))elements.set(id,make(id));return elements.get(id);}
   const document={hidden:false,getElementById:element,createElement:tag=>canvasModule&&tag==='canvas'?canvasModule.createCanvas(1,1):make(tag),body:element('body'),querySelector:element,
     addEventListener:(name,fn)=>{listeners['document:'+name]=fn;}};
-  const sandbox={console,ReplayCore:require('../replay-core.js'),TraceRenderer:require('../trace-renderer.js'),document,
+  const sandbox={console,navigator:{userAgent:'Test browser',hardwareConcurrency:8},SessionCodec:require('../session-codec.js'),ReplayCore:require('../replay-core.js'),TraceRenderer:require('../trace-renderer.js'),document,
     innerWidth:options.width||1200,innerHeight:options.height||900,devicePixelRatio:options.dpr||1,matchMedia:q=>({matches:q==='(pointer:fine)'?!!options.finePointer:q==='(pointer:coarse)'?!options.finePointer:false}),
     addEventListener:(name,fn)=>{listeners[name]=fn;},requestAnimationFrame:fn=>{const id=++serial;frames.set(id,fn);return id;},
     cancelAnimationFrame:id=>frames.delete(id),performance:{now:()=>clock},setTimeout:noop,clearTimeout:noop,

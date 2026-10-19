@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>One Card Maze Helper · Infinite Walker</title>
-<meta name="app-version" content="2026-10-19-turn-cache" />
+<meta name="app-version" content="2026-10-19-session" />
 <meta name="description" content="Free, open-source One Card Maze helper. Upload both sides of your maze card, explore connected edges, track your path, and replay your walk in your browser." />
 <link rel="canonical" href="https://onecardmaze-tools.github.io/" />
 <meta property="og:title" content="One Card Maze Helper · Infinite Walker" />
@@ -187,6 +187,7 @@
     </div>
     <div class="tools">
       <button id="btnUpload">Images</button>
+      <button id="btnSession" aria-expanded="false" aria-controls="sessionPanel">Recording</button>
       <button id="btnTrail" class="on">Trail</button>
       <button id="btnMarkers" aria-expanded="false" aria-controls="markerPanel">Markers</button>
       <button id="btnSpinL" title="Rotate the card left (Q)">⟲</button>
@@ -269,6 +270,7 @@
     </div>
     <div class="row">
       <button id="btnDemo">Load demo card</button>
+      <button id="btnImportWelcome">Import recording</button>
       <button id="btnForget">Forget saved images</button>
     </div>
     <div class="startwrap"><button id="btnStart" class="primary" disabled>Start walking</button></div>
@@ -306,6 +308,18 @@
 
 <div id="toast"></div>
 
+<section id="sessionPanel" hidden role="dialog" aria-label="Recording" style="position:fixed;right:14px;top:80px;z-index:20;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;width:min(380px,calc(100vw - 28px));max-height:75vh;overflow:auto">
+  <div style="display:flex;justify-content:space-between;align-items:center"><strong>Recording</strong><button id="btnSessionClose" aria-label="Close recording">×</button></div>
+  <p>One file with both card images, your complete route, spins, markers and current view. Keep it as a backup or share it for testing.</p>
+  <button id="btnExportSession">Export recording</button>
+  <button id="btnImportSession">Import recording</button>
+  <input id="fileSession" type="file" accept=".json,.ocm.json,application/json" hidden />
+  <p class="fine">Import replaces the current session. Export first if you want to keep it. Files stay on your device until you choose to share them.</p>
+  <hr style="border:0;border-top:1px solid var(--line)">
+  <button id="btnMeasure">Measure performance · 15s</button>
+  <p id="measureStatus" role="status" aria-live="polite">Optional: play or rotate normally during the sample. Results are included in your next export. This measures frame timing and long tasks, not CPU/GPU power.</p>
+</section>
+<script src="session-codec.js?v=1"></script>
 <script src="replay-core.js?v=4"></script>
 <script src="trace-renderer.js?v=3"></script>
 <script>
@@ -1739,7 +1753,7 @@ function suspendFrames() {
   if(rafId!==null)cancelAnimationFrame(rafId);
   rafId=null;lastT=0;S.keys=Object.create(null);S.undoHeld=false;
 }
-document.addEventListener('visibilitychange',()=>{if(document.hidden)suspendFrames();else invalidate();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){suspendFrames();if(measurement)finishMeasurement('tab hidden');}else invalidate();});
 window.addEventListener('pagehide',suspendFrames);
 window.addEventListener('pageshow',invalidate);
 
@@ -1947,6 +1961,121 @@ $("btnStart").addEventListener("click", () => {
   if (!S.started) setHint("<b>Click anywhere</b> on the card to drop your walker and begin.");
 });
 
+/* User-triggered portable recordings. Artwork is copied from the active atlas,
+   including demo/imported maps, rather than racing pending IndexedDB writes. */
+let sessionBusy=false, lastMeasurement=null, measurement=null;
+function environmentSnapshot(){
+  return {appVersion:document.querySelector('meta[name="app-version"]').content,
+    userAgent:navigator.userAgent,viewport:{width:view.w,height:view.h},
+    devicePixelRatio:window.devicePixelRatio||1,canvasPixelRatio:dpr,
+    logicalProcessors:navigator.hardwareConcurrency||null,deviceMemoryGiB:navigator.deviceMemory||null,
+    traceSurface:traceLayout()?{width:traceCanvas.width,height:traceCanvas.height}:null};
+}
+function captureSession(){
+  if(!S.ready)throw new Error('Load a card before exporting');
+  const image=document.createElement('canvas');image.width=S.W;image.height=S.H;
+  const g=image.getContext('2d');g.drawImage(artCv,0,0,S.W,S.H,0,0,S.W,S.H);
+  const front=image.toDataURL('image/png');g.clearRect(0,0,S.W,S.H);
+  g.drawImage(artCv,0,S.H,S.W,S.H,0,0,S.W,S.H);
+  const recording={format:'onecardmaze-session',version:1,createdAt:new Date().toISOString(),
+    art:{width:S.W,height:S.H,front,back:image.toDataURL('image/png')},
+    state:{trail:S.trail.map(p=>({...p})),spins:S.spins.map(p=>({...p})),rotQ0:S.rotQ0,
+      cursor:S.cursor,rotation:S.rotTarget,zoom:S.zoom,cam:{...S.cam},
+      walker:{x:S.walker.x,y:S.walker.y},started:S.started,review:S.review,
+      follow:S.follow,trailOn:S.trailOn,replaySpeed:S.replaySpeed,markers:S.markers.map(m=>({...m}))},
+    diagnostics:{environment:environmentSnapshot(),measurement:lastMeasurement}};
+  SessionCodec.validate(recording);
+  return recording;
+}
+function restoreSessionState(state){
+  S.keys=Object.create(null);S.undoHeld=false;S.scrubDrag=false;S.play=0;S.phase=null;
+  S.manualPivot=null;S.eventDone=new Set();S.reviewDone=false;S.reviewEvent=null;
+  S.trail=state.trail.map(p=>({...p}));S.spins=state.spins.map(p=>({...p}));S.rotQ0=state.rotQ0;
+  S.cursor=state.cursor;S.rot=S.rotTarget=state.rotation;S.zoom=state.zoom;
+  S.minZoom=Math.min(S.minZoom,S.zoom);S.maxZoom=Math.max(S.maxZoom,S.zoom);
+  S.cam={...state.cam};S.camGoal={...state.cam};S.follow=state.follow;
+  S.walker={...state.walker,tx:null,ty:null};S.started=state.started;
+  S.review=state.review;S.reviewDir=1;S.trailOn=state.trailOn;S.replaySpeed=state.replaySpeed;
+  S.travelled=walkedTo(Math.max(0,S.trail.length-1));S.recordBreak=true;
+  setAnchor(Math.floor(S.walker.x/S.W),Math.floor(S.walker.y/S.H));
+  restoreMarkers(state.markers);setMarkerMode(false);invalidateReplay();refreshTrace();
+  $('btnTrail').classList.toggle('on',S.trailOn);
+  loader.classList.add('hidden');updateHUD();invalidate();
+}
+async function importSessionFile(file){
+  if(!file)return;
+  if(file.size>96000000)throw new Error('Recording is too large (96 MB maximum)');
+  const data=SessionCodec.validate(JSON.parse(await file.text()));
+  const [front,back]=await Promise.all([loadImage(data.art.front),loadImage(data.art.back)]);
+  // Decode everything before touching the current walk. Declared sizes must match.
+  if(front.naturalWidth!==data.art.width||front.naturalHeight!==data.art.height||back.naturalWidth!==data.art.width||back.naturalHeight!==data.art.height)throw new Error('Recording image dimensions do not match');
+  if(measurement)finishMeasurement('import interrupted sample');
+  applyImages(front,back);restoreSessionState(data.state);
+  pending={front:{img:front,blob:null},back:{img:back,blob:null}};
+  markDrop('front',data.art.front);markDrop('back',data.art.back);
+  // Keep imported sessions self-contained; do not mix their markers with the
+  // previously saved card. A page reload still restores that saved card.
+  S.persistMarkers=false;lastMeasurement=null;
+  $('measureStatus').textContent='Recording imported. Performance samples will describe this device; previous-device diagnostics remain in the original file.';
+  setHint('Recording restored. Replay it, or continue walking from the playhead.');
+  return data;
+}
+function sessionButtons(busy){
+  sessionBusy=busy;$('btnExportSession').disabled=busy;$('btnImportSession').disabled=busy;
+}
+$('btnSession').addEventListener('click',()=>{
+  const panel=$('sessionPanel');panel.hidden=!panel.hidden;$('btnSession').setAttribute('aria-expanded',String(!panel.hidden));
+});
+$('btnSessionClose').addEventListener('click',()=>{$('sessionPanel').hidden=true;$('btnSession').setAttribute('aria-expanded','false');});
+$('btnExportSession').addEventListener('click',()=>{
+  if(sessionBusy)return;sessionButtons(true);
+  try{
+    if(measurement)finishMeasurement('exported early');
+    const recording=captureSession(),blob=new Blob([JSON.stringify(recording)],{type:'application/json'});
+    if(blob.size>96000000)throw new Error('Recording is too large (96 MB maximum)');
+    const url=URL.createObjectURL(blob),link=document.createElement('a');
+    link.href=url;link.download='onecardmaze-'+recording.createdAt.replace(/[:.]/g,'-')+'.ocm.json';
+    link.click();setTimeout(()=>URL.revokeObjectURL(url),60000);
+    toast('Recording exported — includes your card images');
+  }catch(e){toast(e.message||'Could not export recording');}finally{sessionButtons(false);}
+});
+for(const id of ['btnImportSession','btnImportWelcome'])$(id).addEventListener('click',()=>{if(!sessionBusy)$('fileSession').click();});
+$('fileSession').addEventListener('change',async e=>{
+  if(sessionBusy)return;sessionButtons(true);
+  try{await importSessionFile(e.target.files[0]);toast('Recording restored');}
+  catch(e){toast(e instanceof SyntaxError?'This is not a valid recording file':e.message||'Could not import recording');}
+  finally{e.target.value='';sessionButtons(false);}
+});
+function finishMeasurement(reason){
+  const m=measurement;if(!m)return;measurement=null;
+  cancelAnimationFrame(m.raf);clearTimeout(m.timer);
+  if(m.observer){m.tasks.push(...m.observer.takeRecords().map(e=>e.duration));m.observer.disconnect();}
+  lastMeasurement={startedAt:m.startedAt,durationMs:Math.round(performance.now()-m.start),
+    endReason:reason,environment:m.environment,rafIntervals:SessionCodec.summarize(m.intervals),intervalsMs:m.intervals.map(v=>Math.round(v*100)/100),
+    longTasks:m.observer?{count:m.tasks.length,totalMs:Math.round(m.tasks.reduce((a,b)=>a+b,0)),maxMs:Math.round(Math.max(0,...m.tasks))}:null,
+    routeAtStart:m.routeAtStart,routeAtEnd:{vertices:S.trail.length,spins:S.spins.length},
+    notes:'Foreground requestAnimationFrame intervals, not confirmed presented frames or GPU/CPU power. Sampling itself schedules RAF for 15 seconds. No key contents recorded.'};
+  const stats=lastMeasurement.rafIntervals;
+  $('measureStatus').textContent=stats?'Sample saved ('+reason+'). Frame intervals: median '+stats.medianMs+' ms, p95 '+stats.p95Ms+' ms, worst '+stats.maxMs+' ms. Export includes these results.':'Sample ended before frames could be measured.';
+  $('btnMeasure').textContent='Measure performance · 15s';
+}
+$('btnMeasure').addEventListener('click',()=>{
+  if(measurement){finishMeasurement('stopped');return;}
+  if(!S.ready){toast('Load a card first');return;}
+  const m={start:performance.now(),startedAt:new Date().toISOString(),environment:environmentSnapshot(),routeAtStart:{vertices:S.trail.length,spins:S.spins.length},intervals:[],tasks:[],last:null,observer:null};
+  try{if(typeof PerformanceObserver!=='undefined'&&PerformanceObserver.supportedEntryTypes.includes('longtask')){
+    m.observer=new PerformanceObserver(list=>{m.tasks.push(...list.getEntries().map(e=>e.duration));});m.observer.observe({type:'longtask'});
+  }}catch{m.observer=null;}
+  measurement=m;
+  const frame=t=>{if(measurement!==m)return;if(m.last!==null&&m.intervals.length<10000)m.intervals.push(t-m.last);m.last=t;m.raf=requestAnimationFrame(frame);};
+  m.raf=requestAnimationFrame(frame);m.timer=setTimeout(()=>finishMeasurement('completed'),15000);
+  $('btnMeasure').textContent='Stop sample';
+  $('measureStatus').textContent='Sampling for 15 seconds. Walk, replay or rotate normally, then export. Keep this tab visible.';
+  $('sessionPanel').hidden=true;$('btnSession').setAttribute('aria-expanded','false');toast('15-second sample started — play normally');
+});
+
+
+
 $("btnUpload").addEventListener("click", () => loader.classList.remove("hidden"));
 $("btnHelp").addEventListener("click", toggleHelp);
 $("btnHelpClose").addEventListener("click", toggleHelp);
@@ -2033,7 +2162,7 @@ updateHUD();
 
 /* expose for headless probes */
 window.OCM = { S, CFG, gl, render, update, applyImages, w2s, s2w, resize,
-  artCv, uploadArt, fitView, camTarget, traceLayout,
+  artCv, uploadArt, fitView, camTarget, traceLayout, captureSession, restoreSessionState, importSessionFile,
   camGoal: () => S.camGoal, trailAt, walkedTo, setCursor, play, undoOnce, commitWalk,
   refreshTrace, clearWalk, syncTimeline, recordPosition, addMarker, restoreMarkers, markerCopies, replayModel, advanceReplay, cardLight, cardCenter, spin, startNow, tap, seekEvent, orientationAt };
 

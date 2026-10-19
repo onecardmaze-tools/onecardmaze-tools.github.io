@@ -37,6 +37,32 @@ your uploaded card and restored on reload. Loading a different card clears its
 on-screen markers; loading the demo does not overwrite the saved uploaded card
 and its markers. Demo markers last for the current session.
 
+## Export, import and share a recording
+
+Open **Recording → Export recording** to download one `.ocm.json` file containing
+both faces as lossless PNGs of the active card, the complete route, spin events,
+markers, playhead, zoom and camera. The back face uses the same dimensions as the
+front, as displayed in the app. No remote artwork URL is needed to restore it.
+Exporting during review preserves the entire future route. Animation/movement
+pauses when a file is imported; replay or continue walking from that playhead.
+Import is available from the initial image loader as well as **Recording**.
+
+Import replaces the current on-screen session, so export it first to keep it.
+Imported sessions last until reload and do not overwrite the previous IndexedDB
+card or its markers. Save changes with another export. Files are local downloads;
+sharing one also shares the embedded card images and optional diagnostic summary.
+Nothing is automatically uploaded or committed to this public repository.
+
+For a real-device sample, choose **Measure performance · 15s**, then walk, replay
+or use Q/E as usual with the tab visible. The next export includes that device's
+viewport, pixel ratio, browser version, frame-interval summary and long-task
+summary when supported. A hidden tab ends sampling. Sampling has no ongoing RAF
+or observer after it ends. These are foreground RAF timings, not a confirmed
+presented-FPS counter, a formal INP score, or CPU/GPU/battery readings. Original
+key timings and pauses are not recorded; route replay follows the selected replay
+speed. Use a Chrome performance trace / native instrumentation for those deeper
+measurements on the affected machine.
+
 ## Review a route
 
 After walking, the transport bar provides:
