@@ -119,3 +119,48 @@ or power instrumentation. That evidence should decide whether an optional batter
 mode (lower artwork resolution or refresh cadence), off-thread preparation, or
 more expensive transition caching is worthwhile. Defaulting to lower fidelity
 without that evidence would make the tradeoff hard to assess.
+
+
+## 2026-10-19: Mac Chrome Q/E rotation correction
+
+The previous pass missed rotating-view workloads: changing the artwork camera
+key also invalidated the entire historical trace every animation frame. Spin
+events additionally changed the geometry version even though no points changed.
+
+Desktop now retains a world-space trace bitmap and places it with a CSS transform.
+Camera rotation/panning no longer repaint that bitmap. Route geometry has its own
+version, separate from the replay event timeline. Small coarse-pointer viewports
+(<900 CSS pixels) retain the previous drawing path. Desktop WebGL uses the browser's
+default power preference; small touch viewports retain the low-power hint. These
+are hints, and actual GPU selection was not measured.
+
+The cache is bounded at 16 million pixels (about 61 MiB of RGBA pixels, excluding
+browser/GPU overhead), with the previous viewport renderer as fallback. At the
+1200×800 test viewport, the retained surface was 2143×3000: about 24.5 MiB, versus
+14.6 MiB for the old viewport bitmap. This trades extra desktop memory for fewer
+repeated paints; no artwork resolution or animation cadence was reduced.
+
+Actual Mac Chrome, a synthetic 100-vertex route, and a trusted Q key produced:
+
+| Measurement | Before | After |
+|---|---:|---:|
+| Historical trace paints during one spin | 32 | 0 |
+| Keydown event duration | 120 ms | 56 ms |
+| Keyup event duration | 168 ms | 128 ms |
+| Observed long tasks during test | 0 | 2 (worst 54 ms) |
+
+Raw results: [before](benchmarks/chrome-turn-key-before.json),
+[after](benchmarks/chrome-turn-key-after.json). These are individual Event Timing
+entries, **not a formal INP comparison with the user's 656 ms screenshot**. Most
+latency was presentation delay. Frame pacing varied across runs and occasional
+long frames remain; this does not establish stable 60 FPS or phone battery savings.
+
+The reproducible developer fixture is `tests/interaction-benchmark.html`; select
+100 vertices, prepare the keyboard test, press Q in the focused app, and read final
+stats after animation settles. It generates synthetic artwork without saving or
+uploading user images. Automated checks cover first-key cache retention, matrix
+alignment, bounded allocation/fallback, small touch viewports, replay and actual
+raster continuity. Beach images were also checked locally in Chrome.
+
+Background: [INP phases](https://web.dev/articles/optimize-inp),
+[compositor-friendly animation and layer costs](https://web.dev/articles/animations-guide).

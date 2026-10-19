@@ -1,0 +1,74 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Chrome walking and input benchmark</title>
+<style>body{font:14px system-ui;background:#101722;color:#edf5fc;margin:12px}button,select{padding:7px;margin:3px}pre{white-space:pre-wrap;display:inline-block;vertical-align:top;width:49%;height:160px;overflow:auto}iframe{width:1200px;height:800px;max-width:100%;border:1px solid #456}</style>
+<h1>Walking and real keyboard input</h1><p>Synthetic artwork. Fixed historical route plus moving endpoint. Input-event durations below are observed events, not a formal page INP.</p>
+<label>Historical vertices <select id="vertices"><option>1</option><option selected>10</option><option>100</option><option>1000</option></select></label>
+<button id="rotate">Run quarter-turn frames</button><button id="walk">Run deterministic walking frames</button><button id="replay">Run replay frames</button><button id="prepare">Prepare real keyboard test</button><button id="snapshot">Read final input stats</button>
+<pre id="result">Ready</pre><pre id="interactions">No observed input</pre><iframe id="app" src="../index.html?benchmark=1&amp;test=chrome-turn-v4" title="App under test"></iframe>
+<script>
+'use strict';
+const frame=document.getElementById('app'),output=document.getElementById('result'),inputOutput=document.getElementById('interactions');
+const observers=[];let restoreProbe=null,readInput=null;
+document.getElementById('snapshot').onclick=()=>{if(readInput)readInput();};
+function setup(){
+  if(restoreProbe){restoreProbe();restoreProbe=null;}
+  const win=frame.contentWindow,app=win.OCM;if(!app)throw Error('Wait for the app to load');
+  const cv=frame.contentDocument.createElement('canvas');cv.width=750;cv.height=1050;
+  const g=cv.getContext('2d');g.fillStyle='#85d5f5';g.fillRect(0,0,750,1050);g.strokeStyle='#111';g.lineWidth=6;g.strokeRect(3,3,744,1044);
+  app.applyImages(cv,cv);frame.contentDocument.getElementById('loader').classList.add('hidden');
+  const n=Number(document.getElementById('vertices').value),S=app.S;
+  S.started=true;S.trail=Array.from({length:n},(_,k)=>({x:50+(k*67)%640,y:50+(k*109)%940,r:Math.floor(k/25)%4}));
+  S.spins=[];S.replayVersion++;S.cursor=n-1;S.review=false;S.play=0;S.rot=S.rotTarget=0;S.rotQ0=0;
+  const p=S.trail[n-1];S.walker={x:p.x,y:p.y,tx:null,ty:null};S.recordBreak=true;
+  app.refreshTrace();for(let k=0;k<240;k++)app.update(.05);
+  return {win,app,S,n};
+}
+function stats(a){a.sort((a,b)=>a-b);return {medianMs:+a[Math.floor(a.length*.5)].toFixed(2),p95Ms:+a[Math.floor(a.length*.95)].toFixed(2),maxMs:+a[a.length-1].toFixed(2)}}
+async function run(mode){
+  output.textContent='Running…';
+  try{
+    const {win,app,S,n}=setup(),raf=win.requestAnimationFrame;
+    win.requestAnimationFrame=()=>0;
+    if(mode==='replay'){S.review=true;S.reviewDir=1;S.cursor=Math.max(0,n*.65-1);}
+    const durations=[],intervals=[];let previous=null;
+    try{
+      for(let k=0;k<60;k++){
+        const t=await new Promise(requestAnimationFrame);if(k>=10&&previous!==null)intervals.push(t-previous);previous=t;
+        const start=performance.now();
+        if(mode==='rotate'){S.rot=k/59*Math.PI/2;S.rotTarget=S.rot;}
+        else if(mode==='walk'){
+          // Short legs in the same card keep the comparison independent of
+          // keyboard-repeat settings and identical across versions/machines.
+          S.keys={};S.recordBreak=k===0;
+          app.recordPosition(340+k*.7,520);S.walker.x=340+k*.7;S.walker.y=520;
+        }else S.cursor=Math.max(0,n*.65-1)+k*.001;
+        app.render();if(k>=10)durations.push(performance.now()-start);
+      }
+    }finally{win.requestAnimationFrame=raf;}
+    output.textContent=JSON.stringify({mode,vertices:n,viewport:[frame.clientWidth,frame.clientHeight],dpr:devicePixelRatio,frames:50,traceCachePixels:app.traceLayout&&app.traceLayout()?[app.traceLayout().pixelW,app.traceLayout().pixelH]:null,render:stats(durations),frameIntervals:stats(intervals)},null,2);
+  }catch(e){output.textContent='Error: '+e.message;}
+}
+document.getElementById('rotate').onclick=()=>run('rotate');document.getElementById('walk').onclick=()=>run('walk');document.getElementById('replay').onclick=()=>run('replay');
+document.getElementById('prepare').onclick=()=>{
+  try{
+    const {win,n}=setup();for(const o of observers)o.disconnect();observers.length=0;
+    const start=win.performance.now(),events=[];let longTasks=0,worstLongTask=0;
+    const renderer=win.TraceRenderer,originalPaint=renderer.paint,paints={calls:0,ms:0};
+    renderer.paint=function(...args){const t=win.performance.now();try{return originalPaint.apply(this,args);}finally{paints.calls++;paints.ms+=win.performance.now()-t;}};
+    const reset=e=>{if(!e.repeat){paints.calls=0;paints.ms=0;}};win.addEventListener('keydown',reset);
+    restoreProbe=()=>{renderer.paint=originalPaint;win.removeEventListener('keydown',reset);};
+    const show=()=>{inputOutput.textContent=JSON.stringify({events:events.slice(-16),historyPaintCalls:paints.calls,historyPaintMs:+paints.ms.toFixed(1),longTasks,worstLongTaskMs:+worstLongTask.toFixed(1)},null,2);};readInput=show;
+    if(win.PerformanceObserver.supportedEntryTypes.includes('event')){
+      const o=new win.PerformanceObserver(list=>{
+        for(const e of list.getEntries())if(e.startTime>=start&&e.interactionId)events.push({type:e.name,target:e.target&&e.target.tagName,durationMs:e.duration,inputDelayMs:+(e.processingStart-e.startTime).toFixed(1),processingMs:+(e.processingEnd-e.processingStart).toFixed(1),presentationDelayMs:+Math.max(0,e.duration-(e.processingEnd-e.startTime)).toFixed(1)});
+        show();
+      });o.observe({type:'event',buffered:true,durationThreshold:16});observers.push(o);
+    }
+    if(win.PerformanceObserver.supportedEntryTypes.includes('longtask')){
+      const o=new win.PerformanceObserver(list=>{for(const e of list.getEntries())if(e.startTime>=start){longTasks++;worstLongTask=Math.max(worstLongTask,e.duration);}show();});
+      o.observe({type:'longtask',buffered:true});observers.push(o);
+    }
+    inputOutput.textContent='Ready. Click the map, then use WASD / Q / E.';output.textContent=JSON.stringify({ready:'Keyboard fixture',vertices:n,routeGeometryVersion:win.OCM.S.traceVersion,retainedSurface:typeof win.OCM.traceLayout==='function'?win.OCM.traceLayout():'not in this version',viewport:[win.innerWidth,win.innerHeight]},null,2);
+    win.document.body.tabIndex=-1;win.document.body.focus();
+  }catch(e){output.textContent='Error: '+e.message;}
+};
+</script></html>

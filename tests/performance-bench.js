@@ -14,7 +14,7 @@ for(const n of [100,1000]) {
   S.review=false;app.render();const draws=counts.glDraws;
   const stable=timing(()=>app.render());
   result[n]={stable,artDrawsFor35OverlayRenders:counts.glDraws-draws};
-  result[n].edit=timing(k=>{S.trail[n-1].x+=k%2?1:-1;S.replayVersion++;app.render();},15);
+  result[n].edit=timing(k=>{S.trail[n-1].x+=k%2?1:-1;S.replayVersion++;if(Number.isFinite(S.traceVersion))S.traceVersion++;app.render();},15);
   S.review=true;S.reviewDir=1;S.cursor=Math.floor(n*.65)+.1;
   result[n].replay=timing(k=>{S.cursor=Math.floor(n*.65)+.1+(k%30)*.002;app.render();});
 }

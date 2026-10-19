@@ -1,0 +1,32 @@
+{
+  "events": [
+    {
+      "type": "keydown",
+      "target": "BODY",
+      "durationMs": 120,
+      "inputDelayMs": 0.6,
+      "processingMs": 1.6,
+      "presentationDelayMs": 117.8
+    },
+    {
+      "type": "keypress",
+      "target": "BODY",
+      "durationMs": 120,
+      "inputDelayMs": 2.2,
+      "processingMs": 0.7,
+      "presentationDelayMs": 117.1
+    },
+    {
+      "type": "keyup",
+      "target": "BODY",
+      "durationMs": 168,
+      "inputDelayMs": 3.5,
+      "processingMs": 0.1,
+      "presentationDelayMs": 164.4
+    }
+  ],
+  "historyPaintCalls": 32,
+  "historyPaintMs": 0.5,
+  "longTasks": 0,
+  "worstLongTaskMs": 0
+}

@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>One Card Maze Helper · Infinite Walker</title>
+<meta name="app-version" content="2026-10-19-turn-cache" />
 <meta name="description" content="Free, open-source One Card Maze helper. Upload both sides of your maze card, explore connected edges, track your path, and replay your walk in your browser." />
 <link rel="canonical" href="https://onecardmaze-tools.github.io/" />
 <meta property="og:title" content="One Card Maze Helper · Infinite Walker" />
@@ -380,7 +381,7 @@ const S = {
   markers: [], placingMarker: false, selectedMarker: null, nextMarkerId: 1,
   recordBreak: true,
   review: false, reviewDir: 1, reviewDone: false, reviewEvent: null,
-  replayModel: null, replayVersion: 0, modelVersion: -1, eventDone: new Set(),
+  replayModel: null, replayVersion: 0, traceVersion: 0, modelVersion: -1, eventDone: new Set(),
   phase: null, // event arrival -> action -> settle, kept separate from the recorded route
   play: 0,                         // 0 idle, +1 replaying forwards, -1 backwards
   replaySpeed: CFG.replaySpeed,    // multiplier on the replay rate; see CFG.replaySpeeds
@@ -405,7 +406,7 @@ const $ = (id) => document.getElementById(id);
 const c = $("stage");
 const glOpts = { alpha: false, antialias: false, depth: false, stencil: false,
                  premultipliedAlpha: false, preserveDrawingBuffer: false,
-                 powerPreference: "low-power" };
+                 powerPreference: window.matchMedia('(pointer:coarse)').matches && window.innerWidth<900 ? "low-power" : "default" };
 let gl = null, isGL2 = false;
 try {
   gl = c.getContext("webgl2", glOpts);
@@ -773,9 +774,40 @@ function setAnchor(i, j) {
 const replayCanvas = $("replayLayer"), replayCtx = replayCanvas.getContext("2d");
 const traceCanvas=$("traceLayer"),traceCtx=traceCanvas.getContext("2d");
 let staticTraceKey="";
+const coarsePointer=window.matchMedia('(pointer:coarse)').matches;
+// A retained world-space surface avoids re-rasterising line joins on every
+// camera rotation. Bound allocation explicitly; small touch screens keep their current path.
+const TRACE_PIXEL_BUDGET=16000000;
+let traceSurface=null;
+function traceLayout() {
+  if((coarsePointer&&view.w<900)||!S.ready)return null;
+  const tiles=[...S.cards.values()].filter(t=>t.amt>.01);if(!tiles.length)return null;
+  const x=Math.min(...tiles.map(t=>t.i))*S.W,y=Math.min(...tiles.map(t=>t.j))*S.H;
+  const width=(Math.max(...tiles.map(t=>t.i))+1)*S.W-x,height=(Math.max(...tiles.map(t=>t.j))+1)*S.H-y;
+  const cssW=width*S.zoom,cssH=height*S.zoom,pixelW=Math.ceil(cssW*dpr),pixelH=Math.ceil(cssH*dpr);
+  if(pixelW*pixelH>TRACE_PIXEL_BUDGET)return null;
+  return {x,y,width,height,cssW:pixelW/dpr,cssH:pixelH/dpr,pixelW,pixelH,
+    light:tiles.map(t=>[t.i,t.j,Math.max(.5,t.bright===undefined?cardLight(t.i,t.j):t.bright).toFixed(2)].join(',')).join(';')};
+}
+function placeTraceSurface(layout) {
+  const style=traceCanvas.style;
+  if(layout) {
+    if(traceCanvas.width!==layout.pixelW)traceCanvas.width=layout.pixelW;
+    if(traceCanvas.height!==layout.pixelH)traceCanvas.height=layout.pixelH;
+    style.inset='auto';style.left='0';style.top='0';style.width=layout.cssW+'px';style.height=layout.cssH+'px';
+    style.transformOrigin='0 0';style.willChange='transform';
+    const p=w2s(layout.x,layout.y),cs=Math.cos(S.rot),sn=Math.sin(S.rot);
+    const matrix='matrix('+[cs,sn,-sn,cs,p.x,p.y].join(',')+')';
+    if(style.transform!==matrix)style.transform=matrix;
+  } else if(traceSurface) {
+    traceCanvas.width=c.width;traceCanvas.height=c.height;
+    style.inset='0';style.width='100%';style.height='100%';style.transform='none';style.willChange='auto';
+  }
+  traceSurface=layout;
+}
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 let progressCache = null, menuVersion = -1, menuSignature = null, hudPending = true;
-function invalidateReplay() { S.replayVersion++; progressCache = null; }
+function invalidateReplay(routeChanged=true) { S.replayVersion++;if(routeChanged)S.traceVersion++;progressCache = null; }
 function resetProgress() { progressCache = null; }
 function replayModel() {
   if (S.modelVersion !== S.replayVersion) {
@@ -964,9 +996,9 @@ const stampSprites=new Map();
 function stampKey(p) {return p.face+':'+p.r+':'+p.x.toFixed(6)+':'+p.y.toFixed(6);}
 function traceScene() {
   const tiles=[...S.cards.values()].filter(t=>t.amt>.01);
-  const key=S.replayVersion+':'+tiles.map(t=>t.i+','+t.j).join(';');
+  const key=S.traceVersion+':'+tiles.map(t=>t.i+','+t.j).join(';');
   if(!traceCache||traceCache.key!==key) {
-    if(!geometryCache||geometryCache.version!==S.replayVersion||geometryCache.W!==S.W||geometryCache.H!==S.H) {
+    if(!geometryCache||geometryCache.version!==S.traceVersion||geometryCache.W!==S.W||geometryCache.H!==S.H) {
       const unit=Math.min(S.W,S.H),end=Math.max(0,S.trail.length-2);
       if(!prefixCache||prefixCache.trail!==S.trail||prefixCache.end!==end||prefixCache.vertex!==S.trail[end]||prefixCache.W!==S.W||prefixCache.H!==S.H) {
         const pieces=TraceRenderer.compile(S.trail,S.W,S.H,0,end);
@@ -984,7 +1016,7 @@ function traceScene() {
         (prefixCache.stampBits.get(stampKey(p))||TraceRenderer.statesAt(prefixCache.pieces,p.face,p,unit*.004))|
         TraceRenderer.statesAt(tail,p.face,p,unit*.004)|(1<<p.r)}));
       const travel=TraceRenderer.withoutStampOverlap(TraceRenderer.travelMarks(pieces,unit*.18),stamps,unit*.045);
-      geometryCache={version:S.replayVersion,W:S.W,H:S.H,pieces,stamps,travel,tail,prefix:prefixCache};
+      geometryCache={version:S.traceVersion,W:S.W,H:S.H,pieces,stamps,travel,tail,prefix:prefixCache};
     }
     const {pieces,stamps,travel,tail,prefix}=geometryCache;
     const tileKey=tiles.map(t=>t.i+','+t.j).join(';');
@@ -1058,12 +1090,15 @@ function routeRange(g, from, to) {
 }
 function drawStaticTrace() {
   const bound=S.review?(S.reviewDir>0?Math.floor(S.cursor):Math.ceil(S.cursor)):-1;
-  const key=[lastArtKey,S.replayVersion,S.trailOn,S.review,S.reviewDir,bound,traceCanvas.width,traceCanvas.height].join(':');
+  const layout=traceLayout();placeTraceSurface(layout);
+  const placement=layout?[layout.x,layout.y,layout.width,layout.height,S.zoom,dpr,S.anchor.i,S.anchor.j,layout.light].join(','):lastArtKey;
+  const key=[layout?'world':'screen',placement,S.traceVersion,S.trailOn,S.review,S.reviewDir,bound,traceCanvas.width,traceCanvas.height].join(':');
   if(key===staticTraceKey)return;
   staticTraceKey=key;
   const g=traceCtx;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,traceCanvas.width,traceCanvas.height);
   if(!S.ready)return;
-  g.scale(dpr,dpr);g.save();worldTransform(g);
+  g.scale(dpr,dpr);g.save();
+  if(layout){g.scale(S.zoom,S.zoom);g.translate(-layout.x,-layout.y);}else worldTransform(g);
   const a=S.anchor;
   g.strokeStyle='rgba(79,209,197,.55)';g.lineWidth=1/S.zoom;
   g.strokeRect(a.i*S.W+1/S.zoom,a.j*S.H+1/S.zoom,S.W-2/S.zoom,S.H-2/S.zoom);
@@ -1246,6 +1281,7 @@ function undoOnce() {
 }
 /* Invalidate retained geometry; route vertices are the sole source of truth. */
 function refreshTrace() {
+  S.traceVersion++;staticTraceKey="";
   traceCache=null;geometryCache=null;prefixCache=null; resetProgress(); syncTimeline();
 }
 /* Walking again makes the rewound future real: drop it. */
@@ -1641,7 +1677,7 @@ function spin(dir) {
   } else if ((last ? last.q : S.rotQ0) !== q) {
     S.spins.push({ i: n, q: q });
   }
-  invalidateReplay();
+  invalidateReplay(false);
   syncTimeline();
   invalidate();
 }
@@ -1997,7 +2033,7 @@ updateHUD();
 
 /* expose for headless probes */
 window.OCM = { S, CFG, gl, render, update, applyImages, w2s, s2w, resize,
-  artCv, uploadArt, fitView, camTarget,
+  artCv, uploadArt, fitView, camTarget, traceLayout,
   camGoal: () => S.camGoal, trailAt, walkedTo, setCursor, play, undoOnce, commitWalk,
   refreshTrace, clearWalk, syncTimeline, recordPosition, addMarker, restoreMarkers, markerCopies, replayModel, advanceReplay, cardLight, cardCenter, spin, startNow, tap, seekEvent, orientationAt };
 

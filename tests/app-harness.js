@@ -2,7 +2,7 @@
    native Canvas2D uses the actual draw pipeline; WebGL calls remain counted. */
 'use strict';
 const fs=require('fs'),vm=require('vm'),path=require('path');
-module.exports=function harness(canvasModule) {
+module.exports=function harness(canvasModule,options={}) {
   const noop=()=>{},elements=new Map(),listeners={},frames=new Map();
   let serial=0,clock=0;const counts={glDraws:0,rafCalls:0,domWrites:0,staticClears:0};
   const gl=new Proxy({getShaderParameter:()=>true,getProgramParameter:()=>true,
@@ -23,7 +23,7 @@ module.exports=function harness(canvasModule) {
   const document={hidden:false,getElementById:element,createElement:tag=>canvasModule&&tag==='canvas'?canvasModule.createCanvas(1,1):make(tag),body:element('body'),querySelector:element,
     addEventListener:(name,fn)=>{listeners['document:'+name]=fn;}};
   const sandbox={console,ReplayCore:require('../replay-core.js'),TraceRenderer:require('../trace-renderer.js'),document,
-    innerWidth:1200,innerHeight:900,devicePixelRatio:1,matchMedia:()=>({matches:false}),
+    innerWidth:options.width||1200,innerHeight:options.height||900,devicePixelRatio:options.dpr||1,matchMedia:q=>({matches:q==='(pointer:fine)'?!!options.finePointer:q==='(pointer:coarse)'?!options.finePointer:false}),
     addEventListener:(name,fn)=>{listeners[name]=fn;},requestAnimationFrame:fn=>{const id=++serial;frames.set(id,fn);return id;},
     cancelAnimationFrame:id=>frames.delete(id),performance:{now:()=>clock},setTimeout:noop,clearTimeout:noop,
     URLSearchParams,URL,location:{search:''},Float32Array,Uint8ClampedArray,
