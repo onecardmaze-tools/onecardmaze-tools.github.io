@@ -110,10 +110,46 @@
   #help .panel{width:min(520px,100%)}
   #help ul{margin:12px 0 0;padding-left:18px;color:var(--muted);font-size:13px;line-height:1.9}
   #help b{color:var(--ink)}
+
+  #replayLayer{position:fixed;inset:0;pointer-events:none}
+  [hidden]{display:none!important}
+  #replayReadout{pointer-events:auto;align-self:center;width:min(620px,100%);box-sizing:border-box;
+    border:1px solid rgba(79,209,197,.4);border-radius:16px;padding:13px 18px;
+    background:rgba(8,16,26,.95);box-shadow:0 8px 30px #0005;}
+  .replay-heading,.replay-main{display:flex;justify-content:space-between;gap:12px;align-items:center}
+  .replay-heading{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);margin-bottom:7px}
+  #replayPosition{color:var(--muted);font-variant-numeric:tabular-nums;letter-spacing:0}
+  #replayEvent{font-size:18px;font-weight:650} #replayFace{font-size:12px;white-space:nowrap;color:#e1e9f3}
+  #replayDetail{font-size:12px;line-height:1.5;color:#b4c4d7;margin:6px 0 10px}
+  .replay-key{display:flex;flex-wrap:wrap;gap:5px 15px;color:var(--muted);font-size:10px}
+  #btnReplayAgain{margin-top:10px;padding:6px 12px;color:var(--teal)}
+  .timeline-track{position:relative;flex:1;min-width:70px;display:flex;align-items:center}
+  .timeline-track input{width:100%}
+  #eventTicks{position:absolute;left:8px;right:8px;top:-2px;height:4px;pointer-events:none}
+  #eventTicks i{position:absolute;width:3px;height:4px;background:#ffcb6b;border-radius:1px}
+  #eventTicks i.spin{background:var(--teal)}
+  #eventSelect{color:var(--ink);background:#111b29;border:1px solid var(--line);border-radius:8px;
+    font:inherit;font-size:11px;max-width:125px;padding:6px}
+  body.reviewing .hint,body.reviewing .brand p{display:none}
+  .player button.on{background:#173d40;color:#a5fff1}
+  .status .legend{white-space:nowrap}
+  button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+  @media(max-width:700px){
+    #hud{padding:9px}.topbar{gap:7px}.brand{padding:8px;max-width:40%}.brand p{display:none}
+    .tools{gap:4px}.tools button{padding:7px 8px;font-size:12px}.brand h1{font-size:12px}
+    .player{flex-wrap:wrap;gap:4px}.player button{padding:7px;font-size:11px}
+    .timeline-track{order:2;flex-basis:60%}.player .pcount{display:none}#eventSelect{margin-left:auto;max-width:100px}
+    .status{gap:10px;padding:8px;font-size:11px}.status .k{font-size:8px}.status .legend i{margin-right:3px}
+    .hint{display:none}#replayReadout{padding:10px 12px}#replayEvent{font-size:15px}
+    .replay-main{align-items:flex-start}#replayFace{font-size:10px}.replay-key{font-size:9px;gap:4px 10px}
+    #replayDetail{font-size:11px;margin-bottom:7px}.footer{gap:7px}
+  }
+  @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 </style>
 </head>
 <body>
-<canvas id="stage"></canvas>
+<canvas id="stage" aria-label="Maze map"></canvas>
+<canvas id="replayLayer" aria-hidden="true"></canvas>
 
 <div id="hud">
   <div class="topbar">
@@ -124,6 +160,7 @@
     <div class="tools">
       <button id="btnUpload">Images</button>
       <button id="btnTrail" class="on">Trail</button>
+      <button id="btnDoor" title="Pause at a spin, then mark the next door on the map" aria-pressed="false">Mark door</button>
       <button id="btnSpinL" title="Rotate the card left (Q)">⟲</button>
       <button id="btnSpinR" title="Rotate the card right (E)">⟳</button>
       <button id="btnReset">Reset</button>
@@ -134,19 +171,29 @@
     </div>
   </div>
   <div class="footer">
+    <section id="replayReadout" hidden aria-label="Replay status">
+      <div class="replay-heading"><span id="replayDirection">Route review</span><span id="replayPosition"></span></div>
+      <div class="replay-main"><strong id="replayEvent" aria-live="polite">Ready to review</strong><span id="replayFace"></span></div>
+      <p id="replayDetail"></p>
+      <div class="replay-key"><span>Faint: full route</span><span>Colour: reviewed in this direction</span><span>White: current visit</span></div>
+      <button id="btnReplayAgain" hidden>Replay again</button>
+    </section>
     <div class="player" id="player" hidden>
       <button id="btnUndo" title="Undo — step back along the walk (Z)">↶</button>
-      <button id="btnBack" title="Replay backwards to the start (Shift+Space)">◀</button>
-      <button id="btnFwd" title="Replay forwards from the start (Space)">▶</button>
+      <button id="btnBack" aria-label="Reverse replay" title="Reverse replay (Shift+Space)">◀ Reverse</button>
+      <button id="btnFwd" aria-label="Forward replay" title="Forward replay (Space)">▶ Forward</button>
       <button id="btnSpeed" title="Replay speed (0.1× / 0.2× / 0.5× / 1× / 2× / 4×)">0.2×</button>
-      <input id="scrub" type="range" min="0" max="0" step="0.01" value="0" aria-label="Walk position" />
+      <button id="btnPrevEvent" aria-label="Previous event" title="Previous flip or spin">|‹</button>
+      <button id="btnNextEvent" aria-label="Next event" title="Next flip or spin">›|</button>
+      <div class="timeline-track"><div id="eventTicks" aria-hidden="true"></div><input id="scrub" type="range" min="0" max="0" step="0.01" value="0" aria-label="Recorded route position" /></div>
+      <select id="eventSelect" aria-label="Jump to route event"><option value="">Events</option></select>
       <span class="pcount" id="pcount">0</span>
     </div>
     <div class="bottom">
       <div class="status" id="status">
         <div><span class="k">Side</span><span class="v side">—</span></div>
         <div><span class="k">Up</span><span class="v ori">↑</span></div>
-        <div><span class="k">Trail ⇢ up</span><span class="v legend"><i class="tc0">↑</i><i class="tc1">→</i><i class="tc2">↓</i><i class="tc3">←</i></span></div>
+        <div><span class="k">Colour = card up</span><span class="v legend" title="Trail colour records the card’s up direction when drawn; it does not indicate face or replay progress."><i class="tc0">↑</i><i class="tc1">→</i><i class="tc2">↓</i><i class="tc3">←</i></span></div>
         <div><span class="k">Zoom</span><span class="v zoom">—</span></div>
         <div><span class="k">Walked</span><span class="v dist">0</span></div>
       </div>
@@ -200,7 +247,7 @@
       <li><b>Zoom</b> — mouse wheel / pinch, or the <b>+ / −</b> buttons.</li>
       <li><b>Pan</b> — drag anywhere to look around; moving again brings your card back to the middle.</li>
       <li><b>Trail</b> — toggles the path you've walked. It's a <b>hollow ribbon</b> whose colour records the card orientation it was laid at, with little <b>arrows</b> inside pointing to the card's "up" back then. It's marked on the <b>card</b>, so it shows on every copy of a face — walk off and come back and it's still there. Where a crossing <b>tumbled you 180°</b> a <b>⟲ badge</b> is stamped beside the trail; a plain seam with no badge means you came out the same way up.</li>
-      <li><b>Undo &amp; replay</b> — once you've walked a little a <b>transport bar</b> appears at the bottom. <b>↶</b> steps back (hold it, or <span class="keycap">Z</span>, to wind smoothly), <b>◀</b> / <b>▶</b> replay your whole walk backwards or forwards (<span class="keycap">Space</span> / <span class="keycap">Shift</span>+<span class="keycap">Space</span>), the speed button cycles how fast that playback runs (<b>0.1×</b> / <b>0.2×</b> / 0.5× / 1× / 2× / 4× — it starts slow, at 0.2×), and the <b>slider</b> scrubs anywhere along it. The replay <b>turns the card too</b>, so you see the spins you made — and spins you made without walking collapse to the shortest single turn (three to the left replay as one to the right). Winding back is a <b>preview</b>: the trace hides itself and the marker walks back along your route, and the moment you <b>walk again</b> the part you wound past is dropped.</li>
+      <li><b>Undo &amp; replay</b> — once you've walked a little a <b>transport bar</b> appears at the bottom. <b>↶</b> steps back (hold it, or <span class="keycap">Z</span>, to wind smoothly), <b>◀</b> / <b>▶</b> replay your whole walk backwards or forwards (<span class="keycap">Space</span> / <span class="keycap">Shift</span>+<span class="keycap">Space</span>), the speed button cycles how fast that playback runs (<b>0.1×</b> / <b>0.2×</b> / 0.5× / 1× / 2× / 4× — it starts slow, at 0.2×), and the <b>slider</b> scrubs anywhere along it. <b>|‹ / ›|</b> jump between flips and spins. The event menu jumps directly to a numbered event. Flip and spin events pause before and after the transition; the current face and up direction appear in the replay panel. The replay <b>turns the card too</b>, so you see the spins you made — and spins you made without walking collapse to the shortest single turn (three to the left replay as one to the right). Trail colours record the card’s up direction when drawn: gold ↑, blue →, red ↓, violet ←. They do not mean front/back or playback progress. To highlight a relevant door, pause at a spin using the event menu, click <b>Mark door</b>, then click that door on the map. Door arrows must point up to unlock in the physical game; this free-walk helper does not detect doors or verify a solution. Winding back is a <b>preview</b>: the complete route stays faintly visible and a white segment highlights the current visit, and the moment you <b>walk again</b> the part you wound past is dropped.</li>
       <li><b>Reset</b> — <span class="keycap">R</span> clears the walker and lets you pick a new start.</li>
     </ul>
     <div class="row"><button class="primary" id="btnHelpClose" style="flex:1;padding:12px">Got it</button></div>
@@ -216,6 +263,7 @@
 
 <div id="toast"></div>
 
+<script src="replay-core.js"></script>
 <script>
 (function () {
 "use strict";
@@ -239,17 +287,18 @@
    the card and shows on every copy of a face. A third atlas -- the
    same layout but one texel per world pixel -- records, per stroke,
    the index of the point that laid it (the first one to reach each
-   texel), so the walk can be replayed, rewound and scrubbed -- trace
-   and card rotation together -- by moving a single uniform rather
-   than redrawing anything.
+   texel), for the live trail. In review, that atlas stays visible as a faint
+   full-route reference. A separate two-face Path2D layer tracks
+   direction-aware progress and the current visit. ReplayCore supplies
+   seam geometry and a distance-based event timeline.
    ============================================================ */
 
 const CFG = {
   seamFrac:       0.012,  // faint fold line at a shared edge, fraction of the shorter side
   seamDark:       0.18,   // how dark that fold line gets (0..1)
   revealFrac:     0.95,   // how far away a face starts to brighten up
-  edgeFadeFrac:   0.11,   // soft outer edge of a card against the dark, fraction of the shorter side
-  nbDimMin:       0.80,   // how much "the other side" is pushed back away from the seam
+  edgeFadeFrac:   0.045,   // soft outer edge of a card against the dark, fraction of the shorter side
+  nbDimMin:       0.88,   // how much "the other side" is pushed back away from the seam
   fitArmFrac:     0.30,   // how much of a neighbour the default Fit shows beyond the card
   anchorMarginFrac:0.05,  // how far inside the next card before the view re-centres on it
   keepInFrac:     0.11,   // how far from a screen edge the walker is kept when zoomed right in
@@ -269,10 +318,15 @@ const CFG = {
   trailEdgeFrac:  0.40,   // the trace's fade ramp, as a fraction of the card's own
   turnBadgeFrac:  2.40,   // diameter of the "turned 180°" badge, multiples of the ribbon width
   clickMoveEps:   0.02,
-  replaySecs:     6,      // a full replay runs the whole walk back in about this long
+  spinArrive:     0.35,
+  spinDuration:   0.55,
+  spinSettle:     0.45,
+  flipArrive:     0.22,
+  flipDuration:   0.45,
+  flipSettle:     0.35,
+  replayWalkFrac: 1.2,   // card heights/second at 1×; independent of sampling density
   replaySpeeds:   [0.1, 0.2, 0.5, 1, 2, 4],  // the speeds the transport cycles through
   replaySpeed:    0.2,    // ...and the one it starts on (slow enough to follow the route)
-  replayMinRate:  60,     // ...but never slower than this, in recorded points per second
   rewindRate:     95,     // points per second while undo is held (≈2× the walk speed)
   undoPoints:     20,     // one undo step: 20 points ≈ a fifth of a card
 };
@@ -297,6 +351,10 @@ const S = {
   spins: [],                       // { i, q } -- a turn recorded when the walk had i points
   rotQ0: 0,                        // the card's orientation when the recorded walk began
   cursor: 0,                       // playhead along the recorded walk, in points
+  doorNotes: [], markingDoor: false,
+  review: false, reviewDir: 1, reviewDone: false, reviewEvent: null,
+  replayModel: null, replayVersion: 0, modelVersion: -1, eventDone: new Set(),
+  phase: null, // event arrival -> action -> settle, kept separate from the recorded route
   play: 0,                         // 0 idle, +1 replaying forwards, -1 backwards
   replaySpeed: CFG.replaySpeed,    // multiplier on the replay rate; see CFG.replaySpeeds
   undoHeld: false, scrubDrag: false,
@@ -360,6 +418,7 @@ uniform float uCAmt[NCARD];      // 0..1: a card leaving the set fades away
 uniform float uSeamDark;
 uniform float uTrailOn;
 uniform float uTrailEdge;   // the trace's own, shorter edge fade
+uniform float uReview;
 uniform vec2  uInkProg;     // playhead, as an (hi, lo) byte pair over the recorded points
 uniform vec2  uMark, uDest;
 uniform float uMarkOn, uDestOn;
@@ -421,6 +480,9 @@ void tileLayer(vec2 idx, vec4 outer, vec4 seam, float vis, float bright, float s
     vec2 mk = texture2D(uInk, uv).rg * 255.0;
     float show = mk.x < uInkProg.x - 0.5 ? 1.0
                : (mk.x > uInkProg.x + 0.5 ? 0.0 : step(mk.y, uInkProg.y + 0.5));
+    // Review never erases the full route. Exact, direction-aware progress is drawn
+    // separately, so overlapping visits are not inferred from the first-touch mask.
+    if (uReview > 0.5) { show = 0.28; t.rgb = mix(vec3(dot(t.rgb, vec3(.3,.59,.11))), t.rgb, .5); }
     tA = clamp(t.a * edgeMask(local, outer * uTrailEdge, uCard) * show, 0.0, 1.0);
     art = mix(art, t.rgb, tA);
   }
@@ -469,7 +531,7 @@ void main() {
 
 const UNIFORMS = ["uView","uBg","uCam","uZoom","uRot","uCard","uStep",
   "uCIdx","uCOut","uCSeam","uCBright","uCAmt","uSeamDark","uTrailOn","uTrailEdge",
-  "uInkProg","uMark","uDest","uMarkOn","uDestOn","uArt","uTrail","uInk"];
+  "uReview","uInkProg","uMark","uDest","uMarkOn","uDestOn","uArt","uTrail","uInk"];
 
 let prog = null, quadBuf = null, aPos = -1;
 const U = {};
@@ -1070,7 +1132,11 @@ function camTarget() {
   const cr = Math.cos(S.rot), sr = Math.sin(S.rot);
   const gx = S.walker.x - tx, gy = S.walker.y - ty;
   const dx = S.zoom * (cr * gx - sr * gy), dy = S.zoom * (sr * gx + cr * gy);
-  const nx = clamp(dx, -hx, hx), ny = clamp(dy, -hy, hy);
+  // The review readout occupies the lower part of the viewport. Keep the walker
+  // in a calm, visible band above it rather than following it under the controls.
+  const upper = S.review ? Math.max(-hy, -view.h * .34) : -hy;
+  const lower = S.review ? Math.min(hy, view.h * .10) : hy;
+  const nx = clamp(dx, -hx, hx), ny = clamp(dy, upper, lower);
   if (nx !== dx || ny !== dy) {
     tx = S.walker.x - (cr * nx + sr * ny) / S.zoom;
     ty = S.walker.y - (-sr * nx + cr * ny) / S.zoom;
@@ -1095,53 +1161,313 @@ function setAnchor(i, j) {
 /* ============================================================
    THE WALK AS A TIMELINE — undo, replay, scrub
 
-   The trace is not redrawn for any of this. Every stroke already carries the index
-   of the point that laid it in the mask texture (the first stroke to reach each
-   texel, so a strand is never knocked out by a later one crossing it), and showing
-   the walk "up to here" is one uniform (uInkProg): replaying, rewinding and
-   scrubbing are all free.
-
-   The card's turns come back too: every spin between two recorded points is kept as
-   a turn event (S.spins), collapsed to the shortest way round, and the playhead is
-   followed across them in either direction — so replaying turns the card just as
-   walking did, and a scrub out and back leaves it exactly where it was.
-
-   Everything here is a *preview* — the recorded walk is untouched — until you walk
-   again, which drops the rewound future and redraws the trace to match
-   (commitWalk).
+   Points and spins are immutable during review. Flip events are derived from
+   exact grid intersections; spins are recorded at the current route position.
+   The state machine pauses at each event and keeps presentation state separate
+   from the recording. Only explicit walking/spinning from a preview branches it.
    ============================================================ */
+/* ============================================================
+   EVENT REVIEW — presentation never edits the recorded points.
+   ============================================================ */
+const replayCanvas = $("replayLayer"), replayCtx = replayCanvas.getContext("2d");
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+let progressCache = null, menuVersion = -1;
+function invalidateReplay() { S.replayVersion++; progressCache = null; }
+function resetProgress() { progressCache = null; }
+function replayModel() {
+  if (S.modelVersion !== S.replayVersion) {
+    S.replayModel = ReplayCore.build(S.trail, S.spins, S.W, S.H, S.rotQ0);
+    S.modelVersion = S.replayVersion;
+  }
+  return S.replayModel;
+}
+function cancelPhase() {
+  if (S.phase) { alignRotation(orientationAt(S.cursor)); S.phase = null; }
+}
+function exitReview() {
+  cancelPhase(); S.play = 0; S.review = false; S.reviewDone = false; S.reviewEvent = null;
+  resetProgress(); dirty = true;
+}
+function eventName(e, dir) {
+  if (e.type === "spin") {
+    const turns = e.delta * dir;
+    return "Spin " + Math.abs(turns * 90) + "° " + (turns < 0 ? "counterclockwise" : "clockwise");
+  }
+  return e.fromFace === e.toFace ? "Double fold · same face" : "Flip · " +
+    ((dir > 0 ? e.fromFace : e.toFace) ? "back → front" : "front → back");
+}
+function doorAfter(event) {
+  if (!event || event.type !== "spin") return null;
+  const nextSpin = replayModel().events.find(e => e.type === "spin" && e.at > event.at);
+  return S.doorNotes.find(note => note.at >= event.at - 1e-6 && (!nextSpin || note.at < nextSpin.at));
+}
+function setReplayTitle(text) {
+  const el = $("replayEvent");
+  if (el.textContent !== text) el.textContent = text;
+}
+function syncReviewHUD() {
+  const show = S.review && S.trail.length > 1;
+  $("replayReadout").hidden = !show;
+  document.body.classList.toggle("reviewing", show);
+  if (S.trail.length > 1 && menuVersion !== S.replayVersion) {
+    const events = replayModel().events, select = $("eventSelect"), ticks = $("eventTicks");
+    select.replaceChildren(new Option("Jump to event", "")); ticks.replaceChildren();
+    for (const e of events) {
+      select.add(new Option((e.id + 1) + ". " + eventName(e, 1), String(e.id)));
+      const tick = document.createElement("i"); tick.className = e.type;
+      tick.style.left = (e.at / Math.max(1, S.trail.length - 1) * 100) + "%"; ticks.appendChild(tick);
+    }
+    $("btnPrevEvent").disabled = !events.some(e => e.at < S.cursor - 1e-5);
+    $("btnNextEvent").disabled = !events.some(e => e.at > S.cursor + 1e-5);
+    select.disabled = !events.length;
+    menuVersion = S.replayVersion;
+  }
+  if (S.trail.length > 1) {
+    const events = replayModel().events;
+    $("btnPrevEvent").disabled = !events.some(e => e.at < S.cursor - 1e-5);
+    $("btnNextEvent").disabled = !events.some(e => e.at > S.cursor + 1e-5);
+  }
+  backBtn.setAttribute("aria-pressed", String(S.play < 0));
+  fwdBtn.setAttribute("aria-pressed", String(S.play > 0));
+  backBtn.textContent = S.play < 0 ? "Ⅱ Reverse" : "◀ Reverse";
+  fwdBtn.textContent = S.play > 0 ? "Ⅱ Forward" : "▶ Forward";
+  if (!show) return;
+  $("replayDirection").textContent = (S.reviewDir < 0 ? "Reverse replay" : "Forward replay") +
+    (S.reviewDone ? " · complete" : S.play ? " · playing" : " · paused");
+  $("replayFace").textContent = currentFace() + " · Card up " + ORI_ARROWS[oriIndex()];
+  const model = replayModel(), total = model.distances[model.distances.length - 1] || 0;
+  const at = ReplayCore.distanceAt(model, S.cursor);
+  const reviewed = S.reviewDir > 0 ? at : total - at;
+  $("replayPosition").textContent = Math.round(total ? reviewed / total * 100 : 0) + "% reviewed";
+  const phase = S.phase;
+  if (S.reviewDone) {
+    setReplayTitle("Replay complete");
+    $("replayDetail").textContent = (S.reviewDir < 0 ? "Returned to the recorded start. " : "Reached the recorded end. ") +
+      "The full route is preserved. This is a route review, not a verified win.";
+  } else if (phase) {
+    const e = phase.event, spin = e.type === "spin";
+    const pre = spin ? CFG.spinArrive : CFG.flipArrive;
+    const act = spin ? CFG.spinDuration : CFG.flipDuration;
+    const step = phase.elapsed < pre ? "Arrive" : phase.elapsed < pre + act ? "Transition" : "Settle";
+    setReplayTitle((e.id + 1) + ". " + eventName(e, S.reviewDir));
+    $("replayDetail").textContent = step + " · " + (spin ?
+      (step === "Arrive" ? "Hold at the recorded turn." : step === "Transition" ? "Turning around the walker; walking is paused." :
+       (doorAfter(e) ? "The marked next door is highlighted. Check its arrow points ↑; this helper does not validate it." :
+       "Check the next white route segment. Door arrows must point ↑ to unlock; pause here and use Mark door to highlight yours.")) :
+      "Paired rings mark the connected exit and entry. " + (step === "Settle" ? "Let the new face settle before walking." : "Walking pauses while the view crosses the fold."));
+  } else if (S.reviewEvent && !S.play) {
+    setReplayTitle((S.reviewEvent.id + 1) + ". " + eventName(S.reviewEvent, S.reviewDir));
+    $("replayDetail").textContent = "Event position · Play in either direction to review the transition. The recorded route is unchanged.";
+  } else {
+    setReplayTitle(S.play ? "Walking the recorded route" : "Route preview");
+    $("replayDetail").textContent = S.reviewDir < 0 ?
+      "Reviewing from end to start. The coloured progress grows backwards; the faint full route stays in place." :
+      "Reviewing in recording order. The white segment identifies this visit, including repeated corridors.";
+  }
+  $("btnReplayAgain").hidden = !S.reviewDone;
+}
+function seekEvent(id) {
+  const e = replayModel().events[id]; if (!e) return;
+  S.play = 0; setCursor(e.at); S.reviewEvent = e;
+  $("eventSelect").value = String(id); syncTimeline();
+}
+function jumpEvent(dir) {
+  const events = replayModel().events;
+  const e = dir > 0 ? events.find(e => e.at > S.cursor + 1e-5) :
+    events.slice().reverse().find(e => e.at < S.cursor - 1e-5);
+  if (e) seekEvent(e.id);
+}
+function startEvent(event) {
+  const dir = S.play;
+  S.eventDone.add(event.id); S.cursor = event.at; S.reviewEvent = event;
+  placeWalker(S.cursor);
+  let fromTile, toTile;
+  if (event.type === "flip") {
+    fromTile = dir > 0 ? event.from : event.to; toTile = dir > 0 ? event.to : event.from;
+  }
+  const targetQ = event.type === "spin" ? (dir > 0 ? event.toQ : event.fromQ) : rotIndex();
+  const delta = event.type === "spin" ? event.delta * dir * Math.PI / 2 : 0;
+  if (event.type === "spin") {
+    // Restore the incoming orientation exactly; event playback owns this rotation.
+    alignRotation(dir > 0 ? event.fromQ : event.toQ); S.rot = S.rotTarget;
+  }
+  S.phase = { event, elapsed: 0, fromRot: S.rot, toRot: S.rot + delta,
+    targetQ, pivot: w2s(S.walker.x, S.walker.y), fromTile, toTile,
+    fromCam: { x: S.cam.x, y: S.cam.y } };
+}
+function lockReplayPivot() {
+  const p = S.phase;
+  if (!p || p.event.type !== "spin" || p.elapsed >= CFG.spinArrive + CFG.spinDuration) return false;
+  const dx = (p.pivot.x - view.w / 2) / S.zoom, dy = (p.pivot.y - view.h / 2) / S.zoom;
+  const cr = Math.cos(S.rot), sr = Math.sin(S.rot);
+  S.cam.x = S.walker.x - (cr * dx + sr * dy);
+  S.cam.y = S.walker.y - (-sr * dx + cr * dy);
+  return true;
+}
+function advanceReplay(dt) {
+  const model = replayModel(), end = S.trail.length - 1, dir = S.play;
+  if (S.phase) {
+    const p = S.phase, spin = p.event.type === "spin";
+    const pre = spin ? CFG.spinArrive : CFG.flipArrive;
+    const action = spin ? CFG.spinDuration : CFG.flipDuration;
+    const settle = spin ? CFG.spinSettle : CFG.flipSettle;
+    // Event timings are reading time, independent of walking speed.
+    p.elapsed += dt;
+    const f = clamp((p.elapsed - pre) / action, 0, 1), ease = f * f * (3 - 2 * f);
+    if (spin) {
+      S.rot = reducedMotion ? (f >= 1 ? p.toRot : p.fromRot) : p.fromRot + (p.toRot - p.fromRot) * ease;
+      S.rotTarget = p.toRot;
+    } else {
+      const source = trailAt(p.event.at - dir * 0.08), dest = trailAt(p.event.at + dir * 0.08);
+      S.walker.x = source.x + (dest.x - source.x) * ease;
+      S.walker.y = source.y + (dest.y - source.y) * ease;
+      const tile = f === 0 ? p.fromTile : p.toTile;
+      S.anchor = { i: tile.i, j: tile.j };
+    }
+    if (p.elapsed >= pre + action + settle) {
+      if (spin) S.rot = S.rotTarget = p.toRot;
+      S.phase = null;
+    }
+    dirty = true; return;
+  }
+  const next = ReplayCore.advance(model, S.cursor, dir * S.H * CFG.replayWalkFrac * S.replaySpeed * dt);
+  const ordered = dir > 0 ? model.events : model.events.slice().reverse();
+  const event = ordered.find(e => !S.eventDone.has(e.id) &&
+    (dir > 0 ? e.at >= S.cursor - 1e-6 && e.at <= next + 1e-6 : e.at <= S.cursor + 1e-6 && e.at >= next - 1e-6));
+  if (event) { startEvent(event); return; }
+  S.cursor = next; placeWalker(S.cursor);
+  if (dir > 0 ? next >= end - 1e-6 : next <= 1e-6) {
+    S.cursor = dir > 0 ? end : 0; S.play = 0; S.reviewDone = true; S.reviewEvent = null;
+  }
+}
+
+/* Two-face Path2D progress, independent of the first-touch ink atlas. Incremental
+   in either direction; arbitrary seeks rebuild it. The white current visit is
+   drawn only at the actual world location to disambiguate the nine copies. */
+function progressPaths() {
+  const n = S.trail.length - 1, dir = S.reviewDir, bound = dir > 0 ? Math.floor(S.cursor) : Math.ceil(S.cursor);
+  if (!progressCache || progressCache.dir !== dir || progressCache.version !== S.replayVersion ||
+      (dir > 0 ? bound < progressCache.bound : bound > progressCache.bound)) {
+    progressCache = { dir, version: S.replayVersion, bound: dir > 0 ? 0 : n,
+      paths: Array.from({ length: 2 }, () => Array.from({ length: 4 }, () => new Path2D())),
+      casing: [new Path2D(), new Path2D()] };
+  }
+  const cache = progressCache;
+  const add = i => {
+    if (i < 0 || i >= n) return;
+    const a = S.trail[i], b = S.trail[i + 1];
+    for (const piece of ReplayCore.pieces(a, b, S.W, S.H)) {
+      for (const path of [cache.paths[piece.face][b.r], cache.casing[piece.face]]) {
+        path.moveTo(piece.a.x, piece.a.y); path.lineTo(piece.b.x, piece.b.y);
+      }
+    }
+  };
+  if (dir > 0) for (let i = cache.bound; i < bound; i++) add(i);
+  else for (let i = cache.bound - 1; i >= bound; i--) add(i);
+  cache.bound = bound; return cache;
+}
+function worldTransform(g) {
+  g.translate(view.w / 2, view.h / 2); g.rotate(S.rot); g.scale(S.zoom, S.zoom); g.translate(-S.cam.x, -S.cam.y);
+}
+function routeRange(g, from, to) {
+  const a = Math.min(from, to), b = Math.max(from, to), first = trailAt(a);
+  if (!first) return;
+  g.beginPath(); g.moveTo(first.x, first.y);
+  for (let i = Math.floor(a) + 1; i <= Math.floor(b) && i < S.trail.length; i++) g.lineTo(S.trail[i].x, S.trail[i].y);
+  const last = trailAt(b); g.lineTo(last.x, last.y);
+}
+function drawReplayLayer() {
+  const g = replayCtx;
+  g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, replayCanvas.width, replayCanvas.height);
+  if (!S.ready || !S.started) return;
+  g.scale(dpr, dpr); g.save(); worldTransform(g);
+  // A restrained border distinguishes the current card without dimming its neighbours.
+  const a = S.anchor, width = Math.min(S.W, S.H) * CFG.trailWidthFrac;
+  g.strokeStyle = "rgba(79,209,197,.55)"; g.lineWidth = 1 / S.zoom;
+  g.strokeRect(a.i * S.W + 1 / S.zoom, a.j * S.H + 1 / S.zoom, S.W - 2 / S.zoom, S.H - 2 / S.zoom);
+  if (S.review && S.trailOn && S.trail.length > 1) {
+    const cache = progressPaths();
+    for (const tile of S.cards.values()) {
+      if (tile.amt < .01) continue;
+      g.save(); g.globalAlpha = tile.amt * .82;
+      g.translate(tile.i * S.W, tile.j * S.H);
+      if (ReplayCore.mod(tile.j, 2)) { g.translate(S.W, S.H); g.rotate(Math.PI); }
+      g.beginPath(); g.rect(0, 0, S.W, S.H); g.clip();
+      const face = faceIdx(tile.i, tile.j);
+      g.lineCap = "round"; g.lineJoin = "round";
+      g.lineWidth = width * .64; g.strokeStyle = "#06101b"; g.stroke(cache.casing[face]);
+      g.lineWidth = width * .30;
+      cache.paths[face].forEach((path, r) => { g.strokeStyle = TRAIL_COLORS[r]; g.stroke(path); });
+      g.restore();
+    }
+    const length = S.H * .12, model = replayModel();
+    const tail = ReplayCore.advance(model, S.cursor, -S.reviewDir * length);
+    routeRange(g, tail, S.cursor);
+    g.lineCap = "round"; g.lineJoin = "round";
+    g.lineWidth = Math.max(width * .65, 5 / S.zoom); g.strokeStyle = "#07111f"; g.stroke();
+    g.lineWidth = Math.max(width * .22, 2.2 / S.zoom); g.strokeStyle = "#fffbee"; g.stroke();
+    if (S.phase && S.phase.event.type === "spin" && S.phase.elapsed >= CFG.spinArrive + CFG.spinDuration) {
+      // Preview only the next route leg. This is not a claim that a door is unlocked.
+      const next = ReplayCore.advance(model, S.cursor, S.reviewDir * S.H * .18);
+      routeRange(g, S.cursor, next); g.setLineDash([4 / S.zoom, 5 / S.zoom]);
+      g.lineWidth = 2 / S.zoom; g.strokeStyle = "#fff9"; g.stroke(); g.setLineDash([]);
+    }
+  }
+  g.restore();
+  if (S.review && S.phase) {
+    const e = S.phase.event;
+    const markers = [];
+    if (e.type === "flip") {
+      for (const tile of [S.phase.fromTile, S.phase.toTile]) {
+        const l = ReplayCore.canonical(e.p, tile.i, tile.j, S.W, S.H);
+        // The two circles straddle the shared edge, on their respective faces.
+        const cx = clamp(l.x, S.W * .035, S.W * .965), cy = clamp(l.y, S.H * .035, S.H * .965);
+        const odd = ReplayCore.mod(tile.j, 2);
+        markers.push(w2s(tile.i * S.W + (odd ? S.W - cx : cx), tile.j * S.H + (odd ? S.H - cy : cy)));
+      }
+    } else markers.push(w2s(S.walker.x, S.walker.y));
+    g.lineWidth = 2; g.font = "600 11px system-ui"; g.textAlign = "center"; g.textBaseline = "middle";
+    markers.forEach(p => {
+      g.beginPath(); g.arc(p.x, p.y, 20, 0, Math.PI * 2); g.strokeStyle = "#06111d"; g.lineWidth = 5; g.stroke();
+      g.strokeStyle = "#ffcb6b"; g.lineWidth = 2; g.stroke();
+      g.fillStyle = "#081321"; g.fillRect(p.x + 12, p.y - 30, 22, 18);
+      g.fillStyle = "#ffdf94"; g.fillText(String(e.id + 1), p.x + 23, p.y - 21);
+    });
+  }
+  if (S.review && S.phase && S.phase.event.type === "spin" && S.phase.elapsed >= CFG.spinArrive + CFG.spinDuration) {
+    const note = doorAfter(S.phase.event);
+    if (note) {
+      const p = w2s(note.x, note.y);
+      g.beginPath(); g.arc(p.x, p.y, 18, 0, Math.PI * 2);
+      g.strokeStyle = "#091322"; g.lineWidth = 5; g.stroke();
+      g.strokeStyle = "#ffdf94"; g.lineWidth = 2; g.stroke();
+      g.font = "600 11px system-ui"; g.textAlign = "center";
+      g.fillStyle = "#081321"; g.fillRect(p.x - 78, p.y - 42, 156, 20);
+      g.fillStyle = "#ffdf94"; g.fillText("Marked door · check ↑", p.x, p.y - 28);
+    }
+  }
+  // Retain a precise centre above route emphasis and event rings.
+  const mark = w2s(S.walker.x, S.walker.y);
+  g.beginPath(); g.arc(mark.x, mark.y, 5, 0, Math.PI * 2); g.fillStyle = "#edfffc"; g.fill();
+  g.strokeStyle = "#103f43"; g.lineWidth = 1.5; g.stroke();
+}
+
 const scrubEl = $("scrub"), playerEl = $("player"), countEl = $("pcount");
 const undoBtn = $("btnUndo"), backBtn = $("btnBack"), fwdBtn = $("btnFwd");
 const speedBtn = $("btnSpeed");
 
-/* The turn recorded at event k, as the shortest single step from the one before it. */
-function spinDelta(k) {
-  const p = k > 0 ? S.spins[k - 1].q : S.rotQ0;
-  const d = (((S.spins[k].q - p) % 4) + 4) % 4;         // quarter turns, forwards
-  return (d === 3 ? -1 : d) * Math.PI / 2;              // ...but never more than a half
+function orientationAt(t, before) {
+  let q = S.rotQ0;
+  for (const spin of S.spins) if (spin.i < t || (!before && spin.i === t)) q = spin.q;
+  return q;
 }
-/* Follow the playhead across the recorded spins: going forward applies a turn, going
-   back undoes it — in either direction, so a scrub there and back leaves the card
-   exactly where it was. */
-function applySpins(c0, c1) {
-  if (c0 === c1) return;
-  for (let k = 0; k < S.spins.length; k++) {
-    const i = S.spins[k].i;
-    if (c0 < i && i <= c1) S.rotTarget += spinDelta(k);
-    else if (c1 < i && i <= c0) S.rotTarget -= spinDelta(k);
-  }
-  dirty = true;
+function alignRotation(q) {
+  S.rotTarget += ReplayCore.turn(rotIndex(), q) * Math.PI / 2;
 }
+function applySpins(c0, c1) { alignRotation(orientationAt(c1)); dirty = true; }
 
 /* The walk's position after `t` points, interpolating the last partial segment. */
-function trailAt(t) {
-  const n = S.trail.length;
-  if (!n) return null;
-  if (t <= 0) return { x: S.trail[0].x, y: S.trail[0].y };
-  if (t >= n - 1) { const p = S.trail[n - 1]; return { x: p.x, y: p.y }; }
-  const i = Math.floor(t), f = t - i, a = S.trail[i], b = S.trail[i + 1];
-  return { x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f };
-}
+function trailAt(t) { return ReplayCore.point(S.trail, t); }
 /* How far along the trail `t` points is, in world px — for the Walked readout. */
 function walkedTo(t) {
   const n = S.trail.length;
@@ -1163,20 +1489,25 @@ function placeWalker(t) {
   S.follow = true;
 }
 function syncTimeline() {
-  const n = S.trail.length;
-  if (playerEl.hidden !== (n < 2)) playerEl.hidden = n < 2;
+  const n = Math.max(0, S.trail.length - 1);
+  if (playerEl.hidden !== (n < 1)) playerEl.hidden = n < 1;
   if (scrubEl.max !== String(n)) scrubEl.max = String(n);
   if (!S.scrubDrag) scrubEl.value = String(S.cursor);
   scrubEl.style.setProperty("--p", (n ? S.cursor / n : 0).toFixed(4));
   undoBtn.disabled = S.cursor <= 0;
-  countEl.textContent = Math.round(S.cursor) + " / " + n;
+  const pct = n ? Math.round(clamp(S.cursor / n, 0, 1) * 100) : 0;
+  countEl.textContent = pct + "%";
+  scrubEl.setAttribute("aria-valuetext", pct + "% of recorded route");
   speedBtn.textContent = S.replaySpeed + "×";
   backBtn.classList.toggle("on", S.play < 0);
   fwdBtn.classList.toggle("on", S.play > 0);
+  syncReviewHUD();
   dirty = true;
 }
 function setCursor(t, place) {
-  const to = clamp(t, 0, S.trail.length);
+  cancelPhase();
+  S.review = true; S.reviewDone = false; S.reviewEvent = null;
+  const to = clamp(t, 0, Math.max(0, S.trail.length - 1));
   applySpins(S.cursor, to);                 // the card turns with the playhead
   S.cursor = to;
   if (place !== false) placeWalker(S.cursor);
@@ -1186,10 +1517,24 @@ function setCursor(t, place) {
 function play(dir) {
   if (!S.started || S.trail.length < 2) return;
   if (S.play === dir) { S.play = 0; syncTimeline(); return; }
-  if (dir > 0 && S.cursor >= S.trail.length - 1e-3) setCursor(0, false);
-  else if (dir < 0 && S.cursor <= 1e-3) setCursor(S.trail.length, false);
-  S.play = dir; S.follow = true;
-  placeWalker(S.cursor);
+  if (S.phase && dir === S.reviewDir) { S.play = dir; syncTimeline(); return; }
+  cancelPhase();
+  S.markingDoor = false; $("btnDoor").classList.remove("on"); $("btnDoor").setAttribute("aria-pressed", "false");
+  const end = S.trail.length - 1;
+  S.review = true; S.reviewDir = dir; S.reviewDone = false; S.reviewEvent = null;
+  if (dir > 0 && S.cursor >= end - 1e-6) S.cursor = 0;
+  else if (dir < 0 && S.cursor <= 1e-6) S.cursor = end;
+  S.cursor = clamp(S.cursor, 0, end);
+  alignRotation(orientationAt(S.cursor, dir > 0)); S.rot = S.rotTarget;
+  S.eventDone = new Set();
+  // Starting within the route reviews only events ahead of this position.
+  for (const e of replayModel().events) {
+    if (dir > 0 ? e.at < S.cursor - 1e-6 : e.at > S.cursor + 1e-6) S.eventDone.add(e.id);
+  }
+  S.play = dir; S.follow = true; S.undoHeld = false;
+  placeWalker(S.cursor); resetProgress();
+  S.anchor = { i: Math.floor(S.walker.x / S.W), j: Math.floor(S.walker.y / S.H) };
+  S.cam = camTarget();
   syncTimeline();
 }
 /* Cycle the playback speed: 0.1× / 0.2× / 0.5× / 1× / 2× / 4×. */
@@ -1216,17 +1561,24 @@ function rebuildInk() {
 /* Walking again makes the rewound future real: drop it. */
 function commitWalk() {
   const n = Math.floor(S.cursor);
-  if (n >= S.trail.length) return;
-  S.trail.length = n;
+  if (n >= S.trail.length - 1) { exitReview(); return; }
+  const endpoint = trailAt(S.cursor);
+  S.doorNotes = S.doorNotes.filter(note => note.at <= S.cursor);
+  S.trail.length = n + 1;
+  if (S.cursor > n + 1e-6) S.trail.push({ x: endpoint.x, y: endpoint.y, r: oriIndex() });
   for (let k = S.spins.length - 1; k >= 0; k--) if (S.spins[k].i > n) S.spins.pop();
-  S.travelled = walkedTo(n);
-  S.cursor = n;
+  S.travelled = walkedTo(S.trail.length - 1);
+  S.cursor = Math.max(0, S.trail.length - 1);
+  exitReview(); invalidateReplay();
   rebuildInk();
 }
 /* Wipe the walk itself: the trace, the timeline, and the counters. */
 function clearWalk() {
   S.trail = []; S.travelled = 0; S.cursor = 0; S.play = 0; S.undoHeld = false;
   S.trailBase = 0;
+  S.doorNotes = []; S.markingDoor = false;
+  $("btnDoor").classList.remove("on"); $("btnDoor").setAttribute("aria-pressed", "false");
+  exitReview(); invalidateReplay();
   // the card's orientation is where the walk starts from; the replayed turns are relative
   S.spins = []; S.rotQ0 = rotIndex();
   Ink.reset();
@@ -1241,10 +1593,10 @@ let dirty = true;
 
 function update(dt) {
   if (!S.ready) { animating = false; return; }
-  if (Math.abs(S.rotTarget - S.rot) > 1e-4) {
+  if (!(S.phase && S.phase.event.type === "spin") && Math.abs(S.rotTarget - S.rot) > 1e-4) {
     S.rot += (S.rotTarget - S.rot) * (1 - Math.exp(-CFG.rotLerp * dt));
     if (Math.abs(S.rotTarget - S.rot) < 1e-4) S.rot = S.rotTarget;
-  } else S.rot = S.rotTarget;
+  } else if (!(S.phase && S.phase.event.type === "spin")) S.rot = S.rotTarget;
 
   const speed = S.H * CFG.speedFrac;
   const w = S.walker;
@@ -1260,19 +1612,13 @@ function update(dt) {
 
     // A movement input stops any playback; walking again commits a rewound preview.
     if (dx || dy || w.tx != null) {
-      if (S.play) S.play = 0;
-      if (S.cursor < S.trail.length) commitWalk();
+      if (S.review && S.cursor < S.trail.length - 1) commitWalk();
+      exitReview();
     }
 
     let walked = false;
     if (S.play) {
-      // ---- replaying the walk: the playhead moves, the trace and the card follow --
-      const n = S.trail.length, c0 = S.cursor;
-      const rate = Math.max(n / CFG.replaySecs, CFG.replayMinRate) * S.replaySpeed;
-      S.cursor = clamp(c0 + S.play * rate * dt, 0, n);
-      applySpins(c0, S.cursor);
-      placeWalker(S.cursor);
-      if ((S.play > 0 && S.cursor >= n) || (S.play < 0 && S.cursor <= 0)) { S.play = 0; placeWalker(S.cursor); }
+      advanceReplay(dt);
       syncTimeline();
       moving = true;
     } else if (S.undoHeld && S.cursor > 0) {
@@ -1280,7 +1626,8 @@ function update(dt) {
       // The speed control is for watching the walk back; holding undo is a scrub, and
       // stays at its own brisk rate whatever the replay is set to.
       const c0 = S.cursor;
-      S.cursor = clamp(c0 - CFG.rewindRate * dt, 0, S.trail.length);
+      cancelPhase(); S.review = true; S.reviewDone = false;
+      S.cursor = clamp(c0 - CFG.rewindRate * dt, 0, Math.max(0, S.trail.length - 1));
       applySpins(c0, S.cursor);
       placeWalker(S.cursor);
       syncTimeline();
@@ -1314,11 +1661,18 @@ function update(dt) {
           // mask index room forces a rebuild, which is invisible: the ink it drops has
           // already scrolled out of the history.)
           S.trail.splice(0, CFG.trailDrop);
+          S.doorNotes = S.doorNotes.filter(note => note.at >= CFG.trailDrop);
+          for (const note of S.doorNotes) note.at -= CFG.trailDrop;
           S.trailBase += CFG.trailDrop;
-          for (let k = 0; k < S.spins.length; k++) S.spins[k].i -= CFG.trailDrop;
+          let q0 = S.rotQ0;
+          for (const sp of S.spins) if (sp.i < CFG.trailDrop) q0 = sp.q;
+          S.rotQ0 = q0;
+          S.spins = S.spins.filter(sp => sp.i >= CFG.trailDrop);
+          for (const sp of S.spins) sp.i -= CFG.trailDrop;
           if (S.trailBase + S.trail.length > CFG.inkMax) rebuildInk();
         }
-        S.cursor = S.trail.length;
+        S.cursor = S.trail.length - 1;
+        invalidateReplay();
         syncTimeline();
       }
     }
@@ -1331,6 +1685,10 @@ function update(dt) {
   // the view twitching on a seam.
   {
     const m = Math.min(S.W, S.H) * CFG.anchorMarginFrac;
+    if (S.phase && S.phase.event.type === "flip") {
+      const target = S.phase.elapsed < CFG.flipArrive ? S.phase.fromTile : S.phase.toTile;
+      S.anchor = { i: target.i, j: target.j };
+    }
     const a = S.anchor;
     const ax = S.started ? w.x : S.cam.x, ay = S.started ? w.y : S.cam.y;
     if (ax > (a.i + 1) * S.W + m) a.i = Math.floor((ax - m) / S.W);
@@ -1368,7 +1726,7 @@ function update(dt) {
   }
 
   S.camGoal = camTarget();
-  if (S.follow) {
+  if (S.follow && !lockReplayPivot()) {
     const t = S.camGoal;
     const f = 1 - Math.exp(-CFG.camLerp * dt);
     S.cam.x += (t.x - S.cam.x) * f;
@@ -1376,7 +1734,7 @@ function update(dt) {
   }
 
   animating = moving ||
-    Math.abs(S.rotTarget - S.rot) > 1e-4 ||
+    (!S.phase && Math.abs(S.rotTarget - S.rot) > 1e-4) ||
     S.cardFading ||
     (S.follow && (Math.abs(S.cam.x - S.camGoal.x) > 0.05 || Math.abs(S.cam.y - S.camGoal.y) > 0.05));
 }
@@ -1453,6 +1811,7 @@ function render() {
   gl.uniform1fv(U.uCBright, cardBright);
   gl.uniform1fv(U.uCAmt, cardAmt);
   gl.uniform1f(U.uSeamDark, CFG.seamDark);
+  gl.uniform1f(U.uReview, S.review ? 1 : 0);
   gl.uniform1f(U.uTrailOn, S.trailOn ? 1 : 0);
   gl.uniform1f(U.uTrailEdge, CFG.trailEdgeFrac);
   // The playhead, as an (hi, lo) BYTE pair over the points -- the same units the mask
@@ -1469,6 +1828,7 @@ function render() {
   gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, markTex); gl.uniform1i(U.uInk, 2);
 
   gl.drawArrays(gl.TRIANGLES, 0, 6);
+  drawReplayLayer();
 }
 
 /* ============================================================
@@ -1478,13 +1838,13 @@ function spin(dir) {
   if (!S.ready) return;
   // A turn takes over from a replay, and (like walking) commits a rewound preview, so
   // the recorded turns always describe the walk that is actually there.
-  if (S.play) S.play = 0;
-  if (S.started && S.cursor < S.trail.length) commitWalk();
+  if (S.started && S.review && S.cursor < S.trail.length - 1) commitWalk();
+  exitReview();
   S.rotTarget += dir * Math.PI / 2;
   // Remember the turn so the replay can play it back. Spins with no walking in between
   // collapse into one, and the replay always takes the shortest way round: three turns
   // to the left are replayed as one to the right.
-  const n = S.trail.length, q = rotIndex();
+  const n = Math.max(0, S.trail.length - 1), q = rotIndex();
   const last = S.spins[S.spins.length - 1];
   if (last && last.i === n) {
     last.q = q;
@@ -1493,6 +1853,8 @@ function spin(dir) {
   } else if ((last ? last.q : S.rotQ0) !== q) {
     S.spins.push({ i: n, q: q });
   }
+  invalidateReplay();
+  syncTimeline();
   dirty = true;
 }
 function rotIndex() { const k = Math.round(S.rotTarget / (Math.PI / 2)) % 4; return k < 0 ? k + 4 : k; }
@@ -1523,6 +1885,7 @@ function updateHUD() {
   // rewound a little? Walked reads the distance up to the playhead
   const d = (S.cursor < S.trail.length) ? walkedTo(S.cursor) : S.travelled;
   elDist.textContent = d < 1000 ? Math.round(d) + "px" : (d / S.H).toFixed(1) + "×H";
+  syncReviewHUD();
 }
 
 /* ============================================================
@@ -1551,6 +1914,14 @@ let panning = false, downMoved = 0, downT = 0, lastDist = 0;
 function tap(wpt) {
   if (!S.ready) return;
   dirty = true;
+  if (S.markingDoor && S.started) {
+    S.doorNotes = S.doorNotes.filter(note => Math.abs(note.at - S.cursor) > 1e-6);
+    S.doorNotes.push({ x: wpt.x, y: wpt.y, at: S.cursor });
+    S.doorNotes.sort((a, b) => a.at - b.at);
+    S.markingDoor = false; $("btnDoor").classList.remove("on"); $("btnDoor").setAttribute("aria-pressed", "false");
+    toast("Door marked for this turn. It will be highlighted after the spin; check its ↑ arrow.");
+    return;
+  }
   if (!S.started) {
     S.started = true;
     S.walker.x = wpt.x; S.walker.y = wpt.y; S.walker.tx = null; S.walker.ty = null;
@@ -1558,6 +1929,9 @@ function tap(wpt) {
     setAnchor(Math.floor(wpt.x / S.W), Math.floor(wpt.y / S.H));
     S.cam.x = (S.anchor.i + 0.5) * S.W; S.cam.y = (S.anchor.j + 0.5) * S.H;
     S.follow = true; clearWalk();
+    S.trail.push({ x: wpt.x, y: wpt.y, r: oriIndex() });
+    if (S.trailOn) Ink.add(wpt.x, wpt.y, oriIndex());
+    invalidateReplay();
     setHint("<b>Walking.</b> WASD / arrows, or click a spot to walk there. The other side opens up above, below, left and right; the corners show this side turned 180°. Undo &amp; replay appear at the bottom once you've walked a little.");
   } else { S.walker.tx = wpt.x; S.walker.ty = wpt.y; S.follow = true; }
 }
@@ -1611,6 +1985,10 @@ c.addEventListener("wheel", (e) => {
 
 window.addEventListener("keydown", (e) => {
   const k = e.key.toLowerCase();
+  // Focused timeline/menu controls own their keys; reviewing must not accidentally walk.
+  const tag = e.target && e.target.tagName;
+  if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA" ||
+      (tag === "BUTTON" && (k === " " || k === "enter" || k.startsWith("arrow")))) return;
   if (k.startsWith("arrow") || k === " ") e.preventDefault();
   if (e.metaKey || e.ctrlKey) { if (k === "z") undoOnce(); return; }
   S.keys[k] = true;
@@ -1713,7 +2091,10 @@ function startNow() {
   S.started = true;
   setAnchor(0, 0);
   S.walker.x = S.W / 2; S.walker.y = S.H / 2; S.walker.tx = null; S.walker.ty = null;
-  S.follow = true; clearWalk(); dirty = true;
+  S.follow = true; clearWalk();
+  S.trail.push({ x: S.walker.x, y: S.walker.y, r: oriIndex() });
+  if (S.trailOn) Ink.add(S.walker.x, S.walker.y, oriIndex());
+  invalidateReplay(); dirty = true;
   setHint("<b>Walking.</b> WASD / arrows, or click a spot to walk there. The other side opens up above, below, left and right; the corners show this side turned 180°. Undo &amp; replay appear at the bottom once you've walked a little.");
 }
 
@@ -1758,6 +2139,15 @@ function doReset() {
 
 $("btnZoomIn").addEventListener("click", () => zoomAt(view.w / 2, view.h / 2, 1.25));
 $("btnZoomOut").addEventListener("click", () => zoomAt(view.w / 2, view.h / 2, 0.8));
+$("btnDoor").addEventListener("click", () => {
+  if (!S.started || S.trail.length < 2) { toast("Record a route first, then pause at a spin to mark its next door."); return; }
+  S.play = 0;
+  S.markingDoor = !S.markingDoor;
+  $("btnDoor").classList.toggle("on", S.markingDoor);
+  $("btnDoor").setAttribute("aria-pressed", String(S.markingDoor));
+  toast(S.markingDoor ? "Click the next door on the map. This adds a note, not a movement." : "Door marking cancelled");
+  syncTimeline();
+});
 $("btnSpinL").addEventListener("click", () => spin(-1));
 $("btnSpinR").addEventListener("click", () => spin(1));
 $("btnFit").addEventListener("click", () => { fitView(); S.follow = true; });
@@ -1774,10 +2164,17 @@ undoBtn.addEventListener("pointerdown", (e) => {
 backBtn.addEventListener("click", () => play(-1));
 fwdBtn.addEventListener("click", () => play(1));
 speedBtn.addEventListener("click", cycleSpeed);
-scrubEl.addEventListener("pointerdown", () => { S.scrubDrag = true; S.play = 0; });
+scrubEl.addEventListener("pointerdown", () => { S.scrubDrag = true; S.play = 0; cancelPhase(); });
 scrubEl.addEventListener("input", () => { S.play = 0; setCursor(parseFloat(scrubEl.value)); });
 scrubEl.addEventListener("change", () => { S.scrubDrag = false; setCursor(parseFloat(scrubEl.value)); });
 window.addEventListener("pointerup", () => { S.scrubDrag = false; undoUp(); });
+$("btnPrevEvent").addEventListener("click", () => jumpEvent(-1));
+$("btnNextEvent").addEventListener("click", () => jumpEvent(1));
+$("eventSelect").addEventListener("change", e => {
+  if (e.target.value !== "") seekEvent(Number(e.target.value));
+});
+$("btnReplayAgain").addEventListener("click", () => { S.cursor = S.reviewDir > 0 ? S.trail.length - 1 : 0; play(S.reviewDir); });
+window.addEventListener("blur", () => { S.keys = Object.create(null); S.undoHeld = false; });
 syncTimeline();
 
 /* ============================================================
@@ -1789,6 +2186,7 @@ function resize() {
   c.width = Math.max(1, Math.floor(view.w * dpr));
   c.height = Math.max(1, Math.floor(view.h * dpr));
   c.style.width = view.w + "px"; c.style.height = view.h + "px";
+  replayCanvas.width = c.width; replayCanvas.height = c.height;
   gl.viewport(0, 0, c.width, c.height);
   if (S.ready) clampZoom();
   dirty = true;
@@ -1804,7 +2202,7 @@ updateHUD();
 window.OCM = { S, CFG, gl, render, update, Ink, applyImages, w2s, s2w, resize,
   trailCv, artCv, markCv, uploadArt, uploadTrail, uploadMark, fitView, camTarget,
   camGoal: () => S.camGoal, trailAt, walkedTo, setCursor, play, undoOnce, commitWalk,
-  rebuildInk, clearWalk, syncTimeline };
+  rebuildInk, clearWalk, syncTimeline, replayModel, advanceReplay, spin, startNow, tap, seekEvent, orientationAt };
 
 (async () => {
   if (new URLSearchParams(location.search).has("demo")) { loadDemo(true); return; }
