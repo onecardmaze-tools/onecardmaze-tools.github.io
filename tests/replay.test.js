@@ -51,7 +51,7 @@ function element(id) {
   elements.set(id,e); return e;
 }
 const listeners = {};
-const sandbox = { console, ReplayCore:core, document:{getElementById:element,createElement:element,
+const sandbox = { console, ReplayCore:core, TraceRenderer:require('../trace-renderer.js'), document:{getElementById:element,createElement:element,
   body:element('body'),querySelector:s=>element(s)},
   innerWidth:1200,innerHeight:900,devicePixelRatio:1,matchMedia:()=>({matches:false}),addEventListener:(name,fn)=>{listeners[name]=fn;},
   requestAnimationFrame:noop,performance:{now:()=>0},setTimeout:noop,clearTimeout:noop,
@@ -69,7 +69,7 @@ function fixture() {
   app.clearWalk(); S.ready=true; S.started=true; S.rot=S.rotTarget=0; S.rotQ0=0;
   S.trail=[p(50,50),p(90,50),p(110,50),p(140,65),p(150,90,1),p(150,110,1),p(165,155,1)];
   S.spins=[{i:3,q:1},{i:6,q:3}]; S.cursor=6; S.replayVersion++; S.replaySpeed=4;
-  app.rebuildInk(); app.setCursor(6); S.rot=S.rotTarget;
+  app.refreshTrace(); app.setCursor(6); S.rot=S.rotTarget;
 }
 function finish(dir) {
   const seen=[]; let prev=null;

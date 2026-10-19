@@ -36,7 +36,7 @@
       const i = Math.floor((a.x + (b.x - a.x) * mid) / W);
       const j = Math.floor((a.y + (b.y - a.y) * mid) / H);
       const lerp = t => ({ x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t });
-      result.push({ face: face(i, j), a: canonical(lerp(ts[k - 1]), i, j, W, H),
+      result.push({ i, j, t0: ts[k-1], t1: ts[k], face: face(i, j), a: canonical(lerp(ts[k - 1]), i, j, W, H),
         b: canonical(lerp(ts[k]), i, j, W, H) });
     }
     return result;

@@ -67,9 +67,19 @@ percentages therefore move in opposite directions.
   casing for contrast. It appears only at the actual walker location, making it
   distinct from the repeated neighbouring copies.
 
-Trail **colour records card-up direction when drawn**: gold ↑, blue →, red ↓,
-violet ←. It does not encode the face, visit number, or replay progress. The
-orientation legend is always available in the status bar.
+Trail **colour and upright angle labels record card-up direction when drawn**:
+gold 0° ↑, blue 90° →, red 180° ↓, violet 270° ←. These are historical
+orientations, not walking directions. Labels combine multiple angles when their
+anchor was visited in several orientations. They are spaced along the route,
+remain readable at every zoom, and yield to player markers. The status legend
+explains the mapping.
+
+The renderer retains exact polylines, splits them at mathematically exact sheet
+boundaries, and stitches physical sheet symmetries into complete paths. Canvas2D
+supplies native round joins and caps. Every dark casing is drawn before any
+coloured stroke; there is no hollow-channel eraser, incremental raster atlas, or
+render-only route sampling. Screen-pixel widths keep traces restrained at high
+zoom. See [the design and research notes](TRACE-DESIGN.md).
 
 ### Flip and spin events
 
