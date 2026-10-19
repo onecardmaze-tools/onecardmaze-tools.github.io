@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>One Card Maze Helper · Infinite Walker</title>
-<meta name="app-version" content="2026-10-19-session" />
+<meta name="app-version" content="2026-10-19-large-view" />
 <meta name="description" content="Free, open-source One Card Maze helper. Upload both sides of your maze card, explore connected edges, track your path, and replay your walk in your browser." />
 <link rel="canonical" href="https://onecardmaze-tools.github.io/" />
 <meta property="og:title" content="One Card Maze Helper · Infinite Walker" />
@@ -798,9 +798,17 @@ function traceLayout() {
   const tiles=[...S.cards.values()].filter(t=>t.amt>.01);if(!tiles.length)return null;
   const x=Math.min(...tiles.map(t=>t.i))*S.W,y=Math.min(...tiles.map(t=>t.j))*S.H;
   const width=(Math.max(...tiles.map(t=>t.i))+1)*S.W-x,height=(Math.max(...tiles.map(t=>t.j))+1)*S.H-y;
-  const cssW=width*S.zoom,cssH=height*S.zoom,pixelW=Math.ceil(cssW*dpr),pixelH=Math.ceil(cssH*dpr);
-  if(pixelW*pixelH>TRACE_PIXEL_BUDGET)return null;
-  return {x,y,width,height,cssW:pixelW/dpr,cssH:pixelH/dpr,pixelW,pixelH,
+  const cssW=width*S.zoom,cssH=height*S.zoom;
+  // Budget raster density, not cache eligibility. A Retina desktop can exceed
+  // the cap at normal Fit zoom; falling back there repaints every spin frame.
+  // Round down only on the bounded path so allocation never exceeds the cap.
+  let rasterRatio=dpr,pixelW=Math.ceil(cssW*dpr),pixelH=Math.ceil(cssH*dpr);
+  if(pixelW*pixelH>TRACE_PIXEL_BUDGET||pixelW>8192||pixelH>8192){
+    rasterRatio=Math.min(dpr,Math.sqrt(TRACE_PIXEL_BUDGET/(cssW*cssH)),8192/cssW,8192/cssH);
+    if(rasterRatio<1)return null; // Extreme zoom: avoid sub-CSS-pixel strokes.
+    pixelW=Math.floor(cssW*rasterRatio);pixelH=Math.floor(cssH*rasterRatio);
+  }
+  return {x,y,width,height,rasterRatio,cssW:pixelW/rasterRatio,cssH:pixelH/rasterRatio,pixelW,pixelH,
     light:tiles.map(t=>[t.i,t.j,Math.max(.5,t.bright===undefined?cardLight(t.i,t.j):t.bright).toFixed(2)].join(',')).join(';')};
 }
 function placeTraceSurface(layout) {
@@ -1111,7 +1119,7 @@ function drawStaticTrace() {
   staticTraceKey=key;
   const g=traceCtx;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,traceCanvas.width,traceCanvas.height);
   if(!S.ready)return;
-  g.scale(dpr,dpr);g.save();
+  g.scale(layout?layout.rasterRatio:dpr,layout?layout.rasterRatio:dpr);g.save();
   if(layout){g.scale(S.zoom,S.zoom);g.translate(-layout.x,-layout.y);}else worldTransform(g);
   const a=S.anchor;
   g.strokeStyle='rgba(79,209,197,.55)';g.lineWidth=1/S.zoom;
@@ -1965,11 +1973,13 @@ $("btnStart").addEventListener("click", () => {
    including demo/imported maps, rather than racing pending IndexedDB writes. */
 let sessionBusy=false, lastMeasurement=null, measurement=null;
 function environmentSnapshot(){
+  const layout=traceLayout();
   return {appVersion:document.querySelector('meta[name="app-version"]').content,
     userAgent:navigator.userAgent,viewport:{width:view.w,height:view.h},
     devicePixelRatio:window.devicePixelRatio||1,canvasPixelRatio:dpr,
     logicalProcessors:navigator.hardwareConcurrency||null,deviceMemoryGiB:navigator.deviceMemory||null,
-    traceSurface:traceLayout()?{width:traceCanvas.width,height:traceCanvas.height}:null};
+    traceSurface:layout?{mode:"world",width:layout.pixelW,height:layout.pixelH,rasterRatio:layout.rasterRatio}:
+      {mode:"viewport",width:c.width,height:c.height,reason:coarsePointer&&view.w<900?"small-touch-screen":"outside-retained-raster-budget"}};
 }
 function captureSession(){
   if(!S.ready)throw new Error('Load a card before exporting');

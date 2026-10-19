@@ -73,3 +73,20 @@ console.log('PASS: desktop rotation/pan compositor reuse, bounded cache allocati
 const phone=harness(null,{width:390,height:844,dpr:3});for(let k=0;k<400;k++)phone.tick();
 phone.app.render();assert.equal(phone.app.traceLayout(),null,'iPhone-sized touch viewport retains the existing rendering path');
 assert.equal(phone.elements.get('traceLayer').width,780,'Touch backing still uses the established DPR 2 cap');
+
+// Regression: the real user's 1504×1492 Retina viewport / 88.8% zoom exceeded
+// the previous 16M cache gate even on a short route. Preserve caching by budgeting
+// only static-ink raster density, leaving artwork and arrow sprites unchanged.
+const large=harness(null,{width:1504,height:1492,dpr:2,finePointer:true}),L=large.S;
+large.app.tap({x:467,y:1869});for(let k=0;k<400;k++)large.tick();
+L.zoom=.888095238095238;L.trail=[{x:375,y:525,r:0},{x:800,y:525,r:0},{x:467,y:1869,r:1}];
+L.cursor=2;L.replayVersion++;large.app.refreshTrace();large.app.render();
+const bounded=large.app.traceLayout();assert(bounded,'Normal Retina desktop must not fall back');
+assert(bounded.rasterRatio>=1&&bounded.rasterRatio<2);assert(bounded.pixelW*bounded.pixelH<=16000000);
+const ink=large.elements.get('traceLayer');nearSurface(parseFloat(ink.style.width)/ink.width,1/bounded.rasterRatio);
+const paints=large.counts.staticClears;
+for(let k=0;k<60;k++){L.rot=k*Math.PI/120;L.rotTarget=L.rot;large.app.render();}
+assert.equal(large.counts.staticClears,paints,'Large-view rotation retains ink across all 60 frames');
+assert.equal(large.elements.get('stage').width,3008,'Artwork retains full DPR 2');
+assert.equal(large.elements.get('replayLayer').width,3008,'Arrow and marker layer retains full DPR 2');
+console.log('PASS: real-size Retina viewport retains bounded ink with full-resolution artwork and glyphs');

@@ -1,0 +1,32 @@
+{
+  "appVersion": "2026-10-19-session",
+  "noArtwork": true,
+  "viewport": [
+    1504,
+    1492
+  ],
+  "devicePixelRatio": 2.200000047683716,
+  "vertices": 48,
+  "spins": 5,
+  "surface": null,
+  "measuredFrames": 60,
+  "historyClears": 60,
+  "historyPaints": 120,
+  "artDraws": 60,
+  "render": {
+    "samples": 60,
+    "medianMs": 2.1,
+    "p95Ms": 35.3,
+    "maxMs": 44.2,
+    "over34ms": 5,
+    "over50ms": 0
+  },
+  "rafIntervals": {
+    "samples": 60,
+    "medianMs": 134.2,
+    "p95Ms": 183.3,
+    "maxMs": 216.5,
+    "over34ms": 60,
+    "over50ms": 60
+  }
+}

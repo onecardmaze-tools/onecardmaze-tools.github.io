@@ -1,0 +1,36 @@
+<!doctype html><meta charset="utf-8"><title>Real recording rotation benchmark</title>
+<style>body{font:14px system-ui;background:#101722;color:#edf5fc}button,input{margin:4px;padding:6px}pre{height:210px;overflow:auto;white-space:pre-wrap}iframe{border:0;display:block;width:1504px;height:1492px}</style>
+<h1>Real recording · rotation workload</h1>
+<p>Choose a local .ocm.json. No upload. Uses its saved viewport, zoom, artwork and route. Timing is RAF cadence / synchronous render duration, not GPU time or confirmed presented FPS.</p>
+<input type="file" id="file" accept=".json"><button id="run">Measure rotation</button><button id="noArt">Measure without artwork draw (diagnosis only)</button><pre id="result">Choose a recording.</pre>
+<iframe id="app" src="../index.html?recording-bench=large-view-v1" title="Recording under test"></iframe>
+<script>
+const frame=document.getElementById('app'),out=document.getElementById('result');let recording=null;
+document.getElementById('file').onchange=async e=>{
+ try{const f=e.target.files[0],raw=JSON.parse(await f.text()),v=raw.diagnostics&&raw.diagnostics.environment&&raw.diagnostics.environment.viewport;
+ if(v&&v.width>0&&v.width<=4096&&v.height>0&&v.height<=4096){frame.style.width=v.width+'px';frame.style.height=v.height+'px';}
+ recording=await frame.contentWindow.OCM.importSessionFile(f);out.textContent='Loaded '+recording.state.trail.length+' vertices; ready.';
+ }catch(e){out.textContent='Error: '+e.message;}
+};
+async function run(noArtwork){
+ if(!recording){out.textContent='Choose a recording first.';return;}
+ const win=frame.contentWindow,app=win.OCM,S=app.S;
+ app.restoreSessionState(recording.state);for(let k=0;k<240;k++)app.update(.05);app.render();
+ const ctx=frame.contentDocument.getElementById('traceLayer').getContext('2d'),clear=ctx.clearRect,paint=win.TraceRenderer.paint,draw=app.gl.drawArrays,raf=win.requestAnimationFrame;
+ let clears=0,paints=0,artDraws=0;const render=[],intervals=[];let last=null;
+ ctx.clearRect=function(...a){clears++;return clear.apply(this,a);};
+ win.TraceRenderer.paint=function(...a){paints++;return paint.apply(this,a);};
+ app.gl.drawArrays=function(...a){artDraws++;if(!noArtwork)return draw.apply(this,a);};
+ win.requestAnimationFrame=()=>0;out.textContent='Running…';
+ try{
+ for(let k=0;k<70;k++){
+  const t=await new Promise(requestAnimationFrame);if(k===10){clears=0;paints=0;artDraws=0;}
+  if(k>=10&&last!==null)intervals.push(t-last);last=t;
+  S.rot=recording.state.rotation+k/69*Math.PI/2;S.rotTarget=S.rot;
+  const begin=performance.now();app.render();if(k>=10)render.push(performance.now()-begin);
+ }
+ const layout=app.traceLayout();out.textContent=JSON.stringify({appVersion:frame.contentDocument.querySelector('meta[name="app-version"]').content,noArtwork,viewport:[win.innerWidth,win.innerHeight],devicePixelRatio:win.devicePixelRatio,vertices:S.trail.length,spins:S.spins.length,surface:layout?{width:layout.pixelW,height:layout.pixelH,rasterRatio:layout.rasterRatio||2}:null,measuredFrames:60,historyClears:clears,historyPaints:paints,artDraws,render:win.SessionCodec.summarize(render),rafIntervals:win.SessionCodec.summarize(intervals)},null,2);
+ }finally{ctx.clearRect=clear;win.TraceRenderer.paint=paint;app.gl.drawArrays=draw;win.requestAnimationFrame=raf;app.resize();}
+}
+document.getElementById('run').onclick=()=>run(false);document.getElementById('noArt').onclick=()=>run(true);
+</script>

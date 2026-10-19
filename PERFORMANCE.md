@@ -185,3 +185,64 @@ as measurements of the new device. The original file retains its diagnostics.
 This enables comparison using actual path geometry and artwork; it does not
 recreate original input timing, pauses, thermal state, GPU selection or exact
 presented frames. Those require an on-device trace or system-level measurement.
+
+
+## 2026-10-19: actual 48-vertex recording / large Retina viewport
+
+The supplied recording has 48 vertices, five spins, two markers and 750×1050
+artwork. Its saved environment is 1504×1492 CSS pixels at DPR 2, zoom
+0.888095238095238, `traceSurface: null`, and `measurement: null`. No original
+frame-rate sample was supplied. The private images and route are not in Git.
+
+At that zoom the 3×3 world trace surface needs 22,360,018 pixels at DPR 2.
+The previous hard 16M-pixel eligibility gate therefore disabled retained ink at
+this ordinary zoom. A production-path regression reproduced 59 ink repaints in
+60 rotation poses (the first pose reused the unchanged angle); in Chrome's 60
+measured changing poses it cleared history 60 times and painted paths 120 times.
+The earlier 1200×800 scenario missed this gate, so its improvement did not extend
+to the user's actual viewport.
+
+The corrected gate budgets raster density instead: this case retains a
+3380×4732 surface at ratio 1.691819, below 16M pixels. Only static ink and its
+focus outline use this ratio. Artwork, orientation arrows, chevrons and markers
+keep their existing full DPR. Pixels still map uniformly to world coordinates;
+real-raster tests cover four rotations and the new ratio. Cache dimensions also
+stay below 8192 per edge. Extreme zoom below one raster pixel per CSS pixel still
+uses the viewport fallback, and small touch screens retain their prior path.
+This does not increase the 16M maximum allocation. Compared with the formerly
+used 3008×2984 fallback, it adds about 26.8 MiB of static RGBA pixels to avoid
+repeated paints; browser/GPU overhead is additional.
+
+Actual Chrome with the imported private artwork and route, an iframe matching the
+saved 1504×1492 viewport, browser DPR 2.2 (app backing capped at 2), 10 warm-up
+frames and 60 measured frames per quarter-turn workload:
+
+| Metric | Before | After, first | After, repeat |
+|---|---:|---:|---:|
+| History clears | 60 | 0 | 0 |
+| History paint calls | 120 | 0 | 0 |
+| RAF interval median | 166.1 ms | 33.3 ms | 33.2 ms |
+| RAF interval p95 | 199.3 ms | 167 ms | 83 ms |
+| RAF interval maximum | 217.3 ms | 399.6 ms | 116.8 ms |
+
+Raw [before](benchmarks/real-route-before.json),
+[after first](benchmarks/real-route-after-first.json),
+[after repeat](benchmarks/real-route-after-repeat.json). This is a reproducible
+local workload, not the user's original frame-rate recording or confirmed
+presented FPS. Large spikes remain; this does not demonstrate stable 60 FPS.
+
+As a diagnostic ablation only, omitting WebGL artwork draws kept the before
+median at 134.2 ms and the corrected-cache median at 33 ms. Raw
+[before ablation](benchmarks/real-route-no-art-before.json),
+[after ablation](benchmarks/real-route-no-art-after.json). This points to costs
+beyond just the background shader; large Canvas2D/compositor surfaces are a next
+investigation, not a measured GPU-power diagnosis. The production app continues
+to render the artwork. No CPU/GPU wattage, driver selection or thermal readings
+were collected. The next device sample should include continuous rotation/walk
+and be paired with a Chrome performance trace when available.
+
+Reproduce through `tests/recording-benchmark.html`: choose a local recording,
+then Measure rotation. Its fixture restores artwork/route/view from the file,
+uses the saved viewport dimensions and never uploads the recording. Exported
+environment diagnostics now state world/viewport cache mode and raster ratio
+explicitly instead of an unexplained null.
