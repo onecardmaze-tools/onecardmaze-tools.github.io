@@ -174,7 +174,7 @@
   <div class="topbar">
     <div class="brand">
       <h1>One Card Maze · <b>Infinite Walker</b></h1>
-      <p>The card you're on sits in the middle — the other side above, below, left and right, and the same side turned 180&deg; in the corners.</p>
+      <p>Your card stays bright. Neighbours stay quiet and brighten as you approach their shared edge.</p>
     </div>
     <div class="tools">
       <button id="btnUpload">Images</button>
@@ -327,15 +327,19 @@
 const CFG = {
   seamFrac:       0.012,  // faint fold line at a shared edge, fraction of the shorter side
   seamDark:       0.18,   // how dark that fold line gets (0..1)
-  revealFrac:     0.95,   // how far away a face starts to brighten up
+  revealFrac:     0.32,   // how far away a face starts to brighten up
   edgeFadeFrac:   0.045,   // soft outer edge of a card against the dark, fraction of the shorter side
-  nbDimMin:       0.88,   // how much "the other side" is pushed back away from the seam
+  nbDimMin:       0.38,   // quiet orthogonal neighbours
+  cornerDim:      0.24,   // second-fold copies are a further level back
+  nearBright:     0.78,   // approaching a shared edge reveals the destination
+  cornerNear:     0.54,
+  lightLerp:      6,
   fitArmFrac:     0.30,   // how much of a neighbour the default Fit shows beyond the card
   anchorMarginFrac:0.05,  // how far inside the next card before the view re-centres on it
   keepInFrac:     0.11,   // how far from a screen edge the walker is kept when zoomed right in
   cardFade:       8,      // how fast a card fades in/out of the set of cards on screen
   speedFrac:      0.55,   // walker speed, card-heights per second
-  camLerp:        8,      // how fast the view eases onto the centred card
+  camLerp:        4,      // how fast the view eases onto the centred card
   rotLerp:        14,     // how fast the card settles after a 90° spin
   // Straight motion retains only its endpoints; render samples are not stored.
   trailWidthFrac: 0.022,  // ribbon width, fraction of the card's shorter side
@@ -346,10 +350,10 @@ const CFG = {
   trailEdgeFrac:  0.40,   // the trace's fade ramp, as a fraction of the card's own
   turnBadgeFrac:  2.40,   // diameter of the "turned 180°" badge, multiples of the ribbon width
   spinArrive:     0.35,
-  spinDuration:   0.55,
-  spinSettle:     0.45,
-  flipArrive:     0.22,
-  flipDuration:   0.45,
+  spinDuration:   0.70,
+  spinSettle:     0.35,
+  flipArrive:     0.26,
+  flipDuration:   1.35,
   flipSettle:     0.35,
   replayWalkFrac: 1.2,   // card heights/second at 1×; independent of sampling density
   replaySpeeds:   [0.1, 0.2, 0.5, 1, 2, 4],  // the speeds the transport cycles through
@@ -369,7 +373,7 @@ const S = {
   W: 0, H: 0, ready: false,
   zoom: 1, minZoom: .02, maxZoom: 40,
   cam: { x: 0, y: 0 }, camGoal: { x: 0, y: 0 }, follow: true,
-  rot: 0, rotTarget: 0,
+  rot: 0, rotTarget: 0, manualPivot: null,
   started: false,
   walker: { x: 0, y: 0, tx: null, ty: null },
   trail: [], trailOn: true, travelled: 0,
@@ -386,7 +390,7 @@ const S = {
   undoHeld: false, scrubDrag: false,
   anchor: { i: 0, j: 0 },          // the card the view is centred on
   cards: new Map(),                // tile key -> { i, j, amt, target }: cards on screen
-  cardFading: false,
+  cardFading: false, lightChanging: false,
   keys: Object.create(null),
 };
 const view = { w: 0, h: 0 };
@@ -708,6 +712,7 @@ function applyImages(front, back) {
 
 function fitView() {
   if (!S.ready) return;
+  S.manualPivot=null;
   // fit the card plus a slice of each neighbour, so the other side is visible
   // above, below, left and right at the default zoom
   const grow = 1 + CFG.fitArmFrac * 2;
@@ -1066,6 +1071,7 @@ function s2w(px, py) {
 }
 function zoomAt(px, py, factor) {
   if (!S.ready) return;
+  S.manualPivot=null;
   // while the card is centred, zoom about the middle so it stays centred
   if (S.follow) { px = view.w / 2; py = view.h / 2; }
   const before = s2w(px, py);
@@ -1080,7 +1086,9 @@ function zoomAt(px, py, factor) {
 function camTarget() {
   const a = S.anchor;
   let tx = (a.i + 0.5) * S.W, ty = (a.j + 0.5) * S.H;
-  if (!S.started) return { x: tx, y: ty };
+  // Review frames the card, not the walker. Rotating a card must not trigger
+  // a second camera move just because its walker ends up nearer the HUD.
+  if (!S.started || S.review) return { x: tx, y: ty };
   // keep the walker clear of the screen edges (and of the HUD along the top and bottom)
   const pad = Math.max(40, Math.min(view.w, view.h) * CFG.keepInFrac);
   const hx = view.w * 0.5 - pad, hy = view.h * 0.5 - pad;
@@ -1088,11 +1096,7 @@ function camTarget() {
   const cr = Math.cos(S.rot), sr = Math.sin(S.rot);
   const gx = S.walker.x - tx, gy = S.walker.y - ty;
   const dx = S.zoom * (cr * gx - sr * gy), dy = S.zoom * (sr * gx + cr * gy);
-  // The review readout occupies the lower part of the viewport. Keep the walker
-  // in a calm, visible band above it rather than following it under the controls.
-  const upper = S.review ? Math.max(-hy, -view.h * .34) : -hy;
-  const lower = S.review ? Math.min(hy, view.h * .10) : hy;
-  const nx = clamp(dx, -hx, hx), ny = clamp(dy, upper, lower);
+  const nx = clamp(dx, -hx, hx), ny = clamp(dy, -hy, hy);
   if (nx !== dx || ny !== dy) {
     tx = S.walker.x - (cr * nx + sr * ny) / S.zoom;
     ty = S.walker.y - (-sr * nx + cr * ny) / S.zoom;
@@ -1100,12 +1104,27 @@ function camTarget() {
   return { x: tx, y: ty };
 }
 
-/* How far "over there" a neighbour reads: dimmed, but brightening as you near
-   the seam it shares with you. Continuous in the walker's position, so nothing
-   jumps when the middle card changes. */
-function armBright(dd) {
-  const reveal = 1 - smoothstep(0, Math.min(S.W, S.H) * CFG.revealFrac, dd);
-  return CFG.nbDimMin + (1 - CFG.nbDimMin) * reveal;
+/* Three levels of emphasis: current card, adjacent possibilities, and diagonal
+   copies. Only a nearby connection brightens, and it never equals the current card. */
+function cardLight(i,j) {
+  const di=i-S.anchor.i,dj=j-S.anchor.j;
+  if(!di && !dj)return 1;
+  const corner=!!(di && dj) || Math.abs(di)+Math.abs(dj)>1;
+  const base=corner?CFG.cornerDim:CFG.nbDimMin;
+  if(!S.started)return base;
+  const x=S.walker.x,y=S.walker.y;
+  const dx=Math.max(i*S.W-x,0,x-(i+1)*S.W);
+  const dy=Math.max(j*S.H-y,0,y-(j+1)*S.H);
+  const near=1-smoothstep(0,Math.min(S.W,S.H)*CFG.revealFrac,Math.hypot(dx,dy));
+  return base+((corner?CFG.cornerNear:CFG.nearBright)-base)*near;
+}
+function cardCenter() { return {x:(S.anchor.i+.5)*S.W,y:(S.anchor.j+.5)*S.H}; }
+function smoother(t) { t=clamp(t,0,1);return t*t*t*(t*(t*6-15)+10); }
+function lockCardPivot(p) {
+  const dx=(p.screen.x-view.w/2)/S.zoom,dy=(p.screen.y-view.h/2)/S.zoom;
+  const cr=Math.cos(S.rot),sr=Math.sin(S.rot);
+  S.cam.x=p.world.x-(cr*dx+sr*dy);
+  S.cam.y=p.world.y-(-sr*dx+cr*dy);
 }
 
 /* Hand the middle of the screen to a card, dropping the set that was there. */
@@ -1202,7 +1221,7 @@ function syncReviewHUD() {
     const step = phase.elapsed < pre ? "Arrive" : phase.elapsed < pre + act ? "Transition" : "Settle";
     setReplayTitle((e.id + 1) + ". " + eventName(e, S.reviewDir));
     $("replayDetail").textContent = step + " · " + (spin ?
-      (step === "Arrive" ? "Hold at the recorded turn." : step === "Transition" ? "Turning around the walker; walking is paused." :
+      (step === "Arrive" ? "Hold at the recorded turn." : step === "Transition" ? "Turning around the card centre; walking is paused." :
        "The turn is complete. The dashed white segment previews the next part of the recorded route.") :
       "Paired rings mark the connected exit and entry. " + (step === "Settle" ? "Let the new face settle before walking." : "Walking pauses while the view crosses the fold."));
   } else if (S.reviewEvent && !S.play) {
@@ -1241,18 +1260,30 @@ function startEvent(event) {
     // Restore the incoming orientation exactly; event playback owns this rotation.
     alignRotation(dir > 0 ? event.fromQ : event.toQ); S.rot = S.rotTarget;
   }
+  const center=cardCenter();
   S.phase = { event, elapsed: 0, fromRot: S.rot, toRot: S.rot + delta,
-    targetQ, pivot: w2s(S.walker.x, S.walker.y), fromTile, toTile,
-    fromCam: { x: S.cam.x, y: S.cam.y } };
+    targetQ, pivot: {world:center,screen:w2s(center.x,center.y)}, fromTile, toTile,
+    fromCam: { x: S.cam.x, y: S.cam.y },
+    toCam: toTile?{x:(toTile.i+.5)*S.W,y:(toTile.j+.5)*S.H}:null };
+
 }
-function lockReplayPivot() {
-  const p = S.phase;
-  if (!p || p.event.type !== "spin" || p.elapsed >= CFG.spinArrive + CFG.spinDuration) return false;
-  const dx = (p.pivot.x - view.w / 2) / S.zoom, dy = (p.pivot.y - view.h / 2) / S.zoom;
-  const cr = Math.cos(S.rot), sr = Math.sin(S.rot);
-  S.cam.x = S.walker.x - (cr * dx + sr * dy);
-  S.cam.y = S.walker.y - (-sr * dx + cr * dy);
-  return true;
+function lockCamera() {
+  const p=S.phase;
+  if(p && p.event.type==="spin") { lockCardPivot(p.pivot);return true; }
+  if(p && p.event.type==="flip") {
+    // One complete camera move, with zero velocity at both ends. It stays frozen
+    // when playback is paused and finishes before the next walking segment.
+    const f=smoother((p.elapsed-CFG.flipArrive)/CFG.flipDuration);
+    S.cam.x=p.fromCam.x+(p.toCam.x-p.fromCam.x)*f;
+    S.cam.y=p.fromCam.y+(p.toCam.y-p.fromCam.y)*f;
+    return true;
+  }
+  if(S.manualPivot) {
+    lockCardPivot(S.manualPivot);
+    if(Math.abs(S.rotTarget-S.rot)<1e-4) {S.manualPivot=null;S.follow=false;}
+    return true;
+  }
+  return false;
 }
 function advanceReplay(dt) {
   const model = replayModel(), end = S.trail.length - 1, dir = S.play;
@@ -1277,6 +1308,7 @@ function advanceReplay(dt) {
     }
     if (p.elapsed >= pre + action + settle) {
       if (spin) S.rot = S.rotTarget = p.toRot;
+      else S.cam={x:p.toCam.x,y:p.toCam.y};
       S.phase = null;
     }
     dirty = true; return;
@@ -1344,7 +1376,7 @@ function drawReplayLayer() {
       S.reviewDir>0?trailAt(S.cursor):S.trail[index+1],S.W,S.H) : [];
     for (const tile of S.cards.values()) {
       if (tile.amt < .01) continue;
-      g.save(); g.globalAlpha = tile.amt * .82;
+      g.save(); g.globalAlpha = tile.amt * .82 * (.35+.65*(tile.bright===undefined?cardLight(tile.i,tile.j):tile.bright));
       g.translate(tile.i * S.W, tile.j * S.H);
       if (ReplayCore.mod(tile.j, 2)) { g.translate(S.W, S.H); g.rotate(Math.PI); }
       g.beginPath(); g.rect(0, 0, S.W, S.H); g.clip();
@@ -1473,6 +1505,7 @@ function play(dir) {
   cancelPhase();
   setMarkerMode(false);
   const end = S.trail.length - 1;
+  S.manualPivot=null;
   S.review = true; S.reviewDir = dir; S.reviewDone = false; S.reviewEvent = null;
   if (dir > 0 && S.cursor >= end - 1e-6) S.cursor = 0;
   else if (dir < 0 && S.cursor <= 1e-6) S.cursor = end;
@@ -1528,7 +1561,7 @@ function commitWalk() {
 /* Wipe the walk itself: the trace, the timeline, and the counters. */
 function clearWalk() {
   S.trail = []; S.travelled = 0; S.cursor = 0; S.play = 0; S.undoHeld = false;
-  S.recordBreak = true;
+  S.recordBreak = true; S.manualPivot=null;
   exitReview(); invalidateReplay();
   // the card's orientation is where the walk starts from; the replayed turns are relative
   S.spins = []; S.rotQ0 = rotIndex();
@@ -1699,7 +1732,7 @@ function update(dt) {
     // A movement input stops any playback; walking again commits a rewound preview.
     if (dx || dy || w.tx != null) {
       if (S.review && S.cursor < S.trail.length - 1) commitWalk();
-      exitReview();
+      exitReview(); S.manualPivot=null;
     }
 
     let walked = false;
@@ -1769,21 +1802,26 @@ function update(dt) {
     for (let n = -1; n <= 1; n++) for (let m = -1; m <= 1; m++) {
       const i = a.i + n, j = a.j + m, key = i + "," + j;
       let c = live.get(key);
-      if (!c) live.set(key, c = { i: i, j: j, amt: 0 });
+      if (!c) live.set(key, c = { i: i, j: j, amt: 0, bright:cardLight(i,j) });
       c.target = 1;
     }
     const ka = 1 - Math.exp(-CFG.cardFade * dt);
-    let fading = false;
+    let fading = false,lighting=false;
     for (const [key, c] of live) {
       c.amt += (c.target - c.amt) * ka;
+      const light=cardLight(c.i,c.j);
+      if(c.bright===undefined)c.bright=light;
+      c.bright+=(light-c.bright)*(1-Math.exp(-CFG.lightLerp*dt));
+      if(Math.abs(c.bright-light)>.002)lighting=true;
       if (Math.abs(c.amt - c.target) > 0.004) fading = true;
       if (c.amt < 0.004 && !c.target) live.delete(key);
     }
-    S.cardFading = fading;
+    S.cardFading = fading; S.lightChanging=lighting;
   }
 
   S.camGoal = camTarget();
-  if (S.follow && !lockReplayPivot()) {
+  const cameraLocked=lockCamera();
+  if (S.follow && !cameraLocked) {
     const t = S.camGoal;
     const f = 1 - Math.exp(-CFG.camLerp * dt);
     S.cam.x += (t.x - S.cam.x) * f;
@@ -1792,7 +1830,7 @@ function update(dt) {
 
   animating = moving ||
     (!S.phase && Math.abs(S.rotTarget - S.rot) > 1e-4) ||
-    S.cardFading ||
+    S.cardFading || S.lightChanging ||
     (S.follow && (Math.abs(S.cam.x - S.camGoal.x) > 0.05 || Math.abs(S.cam.y - S.camGoal.y) > 0.05));
 }
 
@@ -1823,7 +1861,6 @@ function render() {
   // rides every shared edge. Both are scaled by how present the neighbour is,
   // so when a card fades out of the set its neighbour's edge softens with it
   // instead of snapping.
-  const px = S.started ? S.walker.x : S.cam.x, py = S.started ? S.walker.y : S.cam.y;
   const F = Math.min(S.W, S.H) * CFG.edgeFadeFrac;    // soft outer edge, world px
   const SW = Math.min(S.W, S.H) * CFG.seamFrac;       // faint fold line, world px
   let k = 0;
@@ -1831,8 +1868,6 @@ function render() {
     if (k >= NCARD) break;
     if (cm.amt < 0.004) continue;
     const i = cm.i, j = cm.j;
-    const dx = Math.max(i * S.W - px, 0, px - (i + 1) * S.W);
-    const dy = Math.max(j * S.H - py, 0, py - (j + 1) * S.H);
     const nb = (di, dj) => { const o = S.cards.get((i + di) + "," + (j + dj)); return o ? o.amt : 0; };
     const nL = nb(-1, 0), nR = nb(1, 0), nT = nb(0, -1), nB = nb(0, 1);
     cardIdx[k * 2] = i; cardIdx[k * 2 + 1] = j;
@@ -1840,7 +1875,7 @@ function render() {
     cardOut[k * 4 + DIR_IDX.R] = F * (1 - nR); cardSeam[k * 4 + DIR_IDX.R] = SW * nR;
     cardOut[k * 4 + DIR_IDX.T] = F * (1 - nT); cardSeam[k * 4 + DIR_IDX.T] = SW * nT;
     cardOut[k * 4 + DIR_IDX.B] = F * (1 - nB); cardSeam[k * 4 + DIR_IDX.B] = SW * nB;
-    cardBright[k] = armBright(Math.hypot(dx, dy));
+    cardBright[k] = cm.bright===undefined?cardLight(i,j):cm.bright;
     cardAmt[k] = cm.amt;
     k++;
   }
@@ -1892,6 +1927,7 @@ function spin(dir) {
   if (S.started && S.review && S.cursor < S.trail.length - 1) commitWalk();
   exitReview();
   S.recordBreak = true;
+  if(!S.manualPivot) {const center=cardCenter();S.manualPivot={world:center,screen:w2s(center.x,center.y)};}
   S.rotTarget += dir * Math.PI / 2;
   // Remember the turn so the replay can play it back. Spins with no walking in between
   // collapse into one, and the replay always takes the shortest way round: three turns
@@ -1998,7 +2034,7 @@ c.addEventListener("pointermove", (e) => {
     const dx = nx - p.x, dy = ny - p.y;
     downMoved += Math.hypot(dx, dy);
     if (downMoved > 6 && S.ready) {
-      panning = true; S.follow = false;
+      panning = true; S.follow = false; S.manualPivot=null;
       const cs = Math.cos(-S.rot), sn = Math.sin(-S.rot);
       S.cam.x -= (dx * cs - dy * sn) / S.zoom;
       S.cam.y -= (dx * sn + dy * cs) / S.zoom;
@@ -2246,7 +2282,7 @@ updateHUD();
 window.OCM = { S, CFG, gl, render, update, Ink, applyImages, w2s, s2w, resize,
   trailCv, artCv, uploadArt, uploadTrail, fitView, camTarget,
   camGoal: () => S.camGoal, trailAt, walkedTo, setCursor, play, undoOnce, commitWalk,
-  rebuildInk, clearWalk, syncTimeline, recordPosition, addMarker, restoreMarkers, markerCopies, replayModel, advanceReplay, spin, startNow, tap, seekEvent, orientationAt };
+  rebuildInk, clearWalk, syncTimeline, recordPosition, addMarker, restoreMarkers, markerCopies, replayModel, advanceReplay, cardLight, cardCenter, spin, startNow, tap, seekEvent, orientationAt };
 
 (async () => {
   if (new URLSearchParams(location.search).has("demo")) { loadDemo(true); return; }

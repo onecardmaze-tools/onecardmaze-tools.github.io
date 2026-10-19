@@ -67,7 +67,7 @@ const S=app.S;
 app.applyImages({width:100,height:100},{width:100,height:100});
 function fixture() {
   app.clearWalk(); S.ready=true; S.started=true; S.rot=S.rotTarget=0; S.rotQ0=0;
-  S.trail=[p(50,50),p(90,50),p(110,50),p(150,50),p(150,90,1),p(150,110,1),p(150,150,1)];
+  S.trail=[p(50,50),p(90,50),p(110,50),p(140,65),p(150,90,1),p(150,110,1),p(165,155,1)];
   S.spins=[{i:3,q:1},{i:6,q:3}]; S.cursor=6; S.replayVersion++; S.replaySpeed=4;
   app.rebuildInk(); app.setCursor(6); S.rot=S.rotTarget;
 }
@@ -89,19 +89,64 @@ assert.equal(JSON.stringify({trail:S.trail,spins:S.spins}),original);
 for(const pos of [5.5,1.2,6,0,3,0,6]) app.setCursor(pos);
 near(app.orientationAt(S.cursor),3);
 assert.equal(JSON.stringify({trail:S.trail,spins:S.spins}),original,'Scrubbing preserves recording');
-// Every spin holds position and keeps its screen pivot stationary through the turn.
+// Replay spins keep the card centre stationary through arrival, turn, and settle.
 fixture(); app.play(1);
-let pivot=null,checked=0;
+let pivot=null,checked=0,playerArc=0;
 for(let k=0;k<1000 && S.play;k++) {
   app.update(.01);
-  if(S.phase && S.phase.event.type==='spin' && S.phase.elapsed < 0.9) {
-    const pos=app.w2s(S.walker.x,S.walker.y);
-    if(!pivot) pivot={id:S.phase.event.id,x:pos.x,y:pos.y};
-    if(pivot.id!==S.phase.event.id) pivot={id:S.phase.event.id,x:pos.x,y:pos.y};
-    near(pos.x,pivot.x,'Spin x pivot stable');near(pos.y,pivot.y,'Spin y pivot stable');checked++;
+  if(S.phase && S.phase.event.type==='spin') {
+    const centre=app.cardCenter(),pos=app.w2s(centre.x,centre.y),player=app.w2s(S.walker.x,S.walker.y);
+    if(!pivot) pivot={id:S.phase.event.id,x:pos.x,y:pos.y,player};
+    if(pivot.id!==S.phase.event.id) pivot={id:S.phase.event.id,x:pos.x,y:pos.y,player};
+    near(pos.x,pivot.x,'Card x pivot stable');near(pos.y,pivot.y,'Card y pivot stable');
+    playerArc=Math.max(playerArc,Math.hypot(player.x-pivot.player.x,player.y-pivot.player.y));checked++;
   }
 }
-assert(checked>20);
+assert(checked>20);assert(playerArc>5,"Off-centre player travels with the rotating card");
+// Completing a spin does not trigger a second recenter move.
+fixture();app.play(1);let lastSpin=null;
+for(let k=0;k<1500;k++) {
+ app.update(.01);
+ if(S.phase&&S.phase.event.type==='spin')lastSpin=S.phase;
+ else if(lastSpin){app.play(1);break;}
+}
+assert(lastSpin);const settled={x:S.cam.x,y:S.cam.y};
+for(let k=0;k<100;k++)app.update(.01);
+near(S.cam.x,settled.x,'No horizontal recenter after spin');near(S.cam.y,settled.y,'No vertical recenter after spin');
+// Manual turns use the physical card centre even in a panned view and leave it there.
+fixture();app.clearWalk();S.started=true;S.anchor={i:0,j:0};S.cam={x:20,y:40};S.follow=false;
+S.walker={x:70,y:20,tx:null,ty:null};S.trail=[p(70,20)];S.rot=S.rotTarget=0;S.rotQ0=0;
+const centerBefore=app.w2s(50,50);app.spin(1);
+for(let k=0;k<120;k++){app.update(.01);const at=app.w2s(50,50);near(at.x,centerBefore.x);near(at.y,centerBefore.y);}
+assert(!S.manualPivot);assert(!S.follow);
+// Flip camera moves are slower than the former exponential jump and finish exactly.
+fixture();app.play(1);let flip=null,lastCamera=null,maxFraction=0;
+for(let k=0;k<1500;k++) {
+ app.update(.01);
+ if(S.phase&&S.phase.event.type==='flip') {
+  flip=S.phase;
+  if(lastCamera){const total=Math.hypot(flip.toCam.x-flip.fromCam.x,flip.toCam.y-flip.fromCam.y);
+   maxFraction=Math.max(maxFraction,Math.hypot(S.cam.x-lastCamera.x,S.cam.y-lastCamera.y)/(total||1));}
+  lastCamera={x:S.cam.x,y:S.cam.y};
+ } else if(flip)break;
+}
+assert(flip);assert(maxFraction<.02,'No large camera jump in a 10ms frame');
+near(S.cam.x,flip.toCam.x);near(S.cam.y,flip.toCam.y);
+// Pausing a flip freezes the camera as well as the walker and event clock.
+fixture();app.play(1);
+for(let k=0;k<1500;k++){app.update(.01);if(S.phase&&S.phase.event.type==='flip'&&S.phase.elapsed>.65)break;}
+assert(S.phase);const held=S.phase,holdCam={x:S.cam.x,y:S.cam.y},holdTime=S.phase.elapsed;
+app.play(1);for(let k=0;k<30;k++)app.update(.01);
+assert.strictEqual(S.phase,held);near(S.phase.elapsed,holdTime);near(S.cam.x,holdCam.x);near(S.cam.y,holdCam.y);
+app.play(1);app.update(.02);assert(S.phase.elapsed>holdTime);
+// Focus hierarchy: current > approaching side > ordinary sides > corners.
+fixture();app.clearWalk();S.anchor={i:0,j:0};S.started=true;S.walker={x:50,y:50,tx:null,ty:null};
+near(app.cardLight(0,0),1);near(app.cardLight(1,0),app.CFG.nbDimMin);near(app.cardLight(1,1),app.CFG.cornerDim);
+S.walker.x=99;const right=app.cardLight(1,0);
+assert(right>.75&&right<1);near(app.cardLight(-1,0),app.CFG.nbDimMin);
+assert(app.cardLight(1,1)<app.cardLight(1,0));
+S.anchor={i:-2,j:-3};S.walker={x:-101,y:-250,tx:null,ty:null};
+near(app.cardLight(-2,-3),1);assert(app.cardLight(-1,-3)>.75);
 // Pausing mid-spin freezes the phase; same-direction resume continues that phase.
 fixture();app.play(1);
 for(let k=0;k<1000;k++){app.update(.01);if(S.phase && S.phase.event.type==='spin' && S.phase.elapsed>.45)break;}
@@ -165,4 +210,4 @@ for(const angle of [0,Math.PI/2,Math.PI,Math.PI*1.5]) {
  S.rot=angle;const copies=app.markerCopies(S.markers[0]);assert.equal(copies.length,5);
  for(const copy of copies){const w=app.s2w(copy.x,copy.y),l=core.canonical(w,copy.i,copy.j,750,1050);near(l.x/750,.31);near(l.y/1050,.76);}
 }
-console.log('PASS: compact recording, exact folds, replay in both directions, immutable seeking, stable spin pivot, free markers on all copies, Beach aspect ratio');
+console.log('PASS: compact recording, exact folds, replay in both directions, immutable seeking, stable card-centred spins, smooth flip camera, focus hierarchy, free markers on all copies, Beach aspect ratio');

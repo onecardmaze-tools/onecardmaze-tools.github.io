@@ -24,7 +24,12 @@ shows the opposite face. Crossing a horizontal edge also turns the sheet through
 180°; diagonal copies show the same face turned through 180°. These are repeated
 views of **one two-sided card**, not nine independent maps. Route marks use the
 same folding transform as the artwork on every copy. A fine teal outline locates
-the current card without hiding the neighbouring connections.
+the current card without hiding the neighbouring connections. The current face
+stays fully lit; the four side neighbours are dimmed to 38% and the diagonal
+copies to 24%. Approaching a shared edge gradually reveals the corresponding
+side neighbour (up to 78%); corners brighten more quietly (up to 54%). These
+changes ease in and out, including when focus passes to the next card. Markers
+retain their high-contrast appearance on every copy.
 
 Uploaded images are saved only in your browser's IndexedDB and are never uploaded.
 The route lasts for the current page session. Markers are saved locally alongside
@@ -74,13 +79,17 @@ arrival, transition, and settling:
 
 | Event | Arrival | Transition | Settle |
 | --- | --- | --- | --- |
-| Spin | 0.35 s | 0.55 s | 0.45 s |
-| Flip | 0.22 s | 0.45 s | 0.35 s |
+| Spin | 0.35 s | 0.70 s | 0.35 s |
+| Flip | 0.26 s | 1.35 s | 0.35 s |
 
 These reading intervals stay independent of the walking-speed setting. A spin
-keeps the walker at the same screen position while the map turns; the camera
-reframes during settling before walking resumes. A flip marks the connected exit
-and entry with paired numbered rings and moves the camera while walking is held.
+turns around the **current card centre**. That centre stays fixed on screen
+through arrival, rotation, and settling; there is no second recenter move after
+the turn. The walker follows its position on the rotating card. Manual turns
+also use the card centre, including in a panned view. A flip marks the connected
+exit and entry with paired numbered rings. Its camera translation uses a
+1.35-second curve with zero velocity at either end, then holds still before
+walking resumes. Pausing also freezes the camera transition.
 A corner crossing is labelled **Double fold · same face**, not a face swap.
 
 In reverse, spins play in the opposite direction and flip labels swap their
@@ -170,7 +179,7 @@ node tests/replay.test.js
 
 Coverage includes negative tiles, diagonal crossings, touching an edge without
 crossing it, repeated corridors, sampling-independent pace, forward/reverse event
-order, endpoint spins, pause/resume, immutable seeking, stable spin pivots,
+order, endpoint spins, pause/resume, immutable seeking, stable card-centre rotation, slow camera transitions, focus hierarchy,
 branching from a fractional preview, compact endpoint recording, command/turn
 preservation, and marker projection across every rotated/folded copy.
 
