@@ -212,7 +212,7 @@
       <div class="status" id="status">
         <div><span class="k">Side</span><span class="v side">—</span></div>
         <div><span class="k">Up</span><span class="v ori">↑</span></div>
-        <div><span class="k">Recorded card-up</span><span class="v legend" title="Trail colour records the card’s up direction when drawn; it does not indicate face or replay progress."><i class="tc0">0° ↑</i><i class="tc1">90° →</i><i class="tc2">180° ↓</i><i class="tc3">270° ←</i></span></div>
+        <div><span class="k">Trace arrows</span><span class="v legend" title="Each arrow records which way was up at that visit. It stays attached to the card; it does not show walking direction.">↑ up at that visit</span></div>
         <div><span class="k">Zoom</span><span class="v zoom">—</span></div>
         <div><span class="k">Walked</span><span class="v dist">0</span></div>
       </div>
@@ -280,7 +280,7 @@
       <li><b>Zoom</b> — mouse wheel / pinch, or the <b>+ / −</b> buttons.</li>
       <li><b>Pan</b> — drag anywhere to look around; moving again brings your card back to the middle.</li>
       <li><b>Markers</b> — choose any shape, colour, and optional label, then click the map to place it. Markers repeat on every copy of that face and stay independent of walking, rotation, reset, and replay. Select a marker in the list to edit or remove it. There are no required starts, destinations, or routes.</li>
-      <li><b>Trail</b> — solid ink records where you walked on every copy of a face. Colour and upright <b>0° / 90° / 180° / 270°</b> labels record the card’s up direction at that visit, not your walking direction. A label with several angles means you visited that place in several orientations. Labels are spaced to keep the map readable; they do not mark every step.</li>
+      <li><b>Trail</b> — solid ink records where you walked on every copy of a face. The outlined <b>arrow stamps</b> show which way was up at that visit, not your walking direction. They stay fixed to the card as you continue walking or zoom. An arrow pointing toward the top of your screen means you visited in the current orientation. Several arrowheads in one stamp record several orientations at that place.</li>
       <li><b>Undo &amp; replay</b> — once you've walked a little a <b>transport bar</b> appears at the bottom. <b>↶</b> steps back (hold it, or <span class="keycap">Z</span>, to wind smoothly), <b>◀</b> / <b>▶</b> replay your whole walk backwards or forwards (<span class="keycap">Space</span> / <span class="keycap">Shift</span>+<span class="keycap">Space</span>), the speed button cycles how fast that playback runs (<b>0.1×</b> / <b>0.2×</b> / 0.5× / 1× / 2× / 4× — it starts slow, at 0.2×), and the <b>slider</b> scrubs anywhere along it. <b>|‹ / ›|</b> jump between flips and spins. The event menu jumps directly to a numbered event. Flip and spin events pause before and after the transition; the current face and up direction appear in the replay panel. The replay <b>turns the card too</b>, so you see the spins you made — and spins you made without walking collapse to the shortest single turn (three to the left replay as one to the right). Trail colours record the card’s up direction when drawn: gold ↑, blue →, red ↓, violet ←. They do not mean front/back or playback progress. Winding back is a <b>preview</b>: the complete route stays faintly visible and a white segment highlights the current visit, and the moment you <b>walk again</b> the part you wound past is dropped.</li>
       <li><b>Reset</b> — <span class="keycap">R</span> clears the walker and lets you pick a new start.</li>
     </ul>
@@ -298,7 +298,7 @@
 <div id="toast"></div>
 
 <script src="replay-core.js?v=4"></script>
-<script src="trace-renderer.js?v=1"></script>
+<script src="trace-renderer.js?v=2"></script>
 <script>
 (function () {
 "use strict";
@@ -986,28 +986,18 @@ function drawTrace(g) {
   }
   g.restore();
 }
-function drawTraceLabels(g) {
+function drawTraceStamps(g) {
   if(!S.trailOn||S.trail.length<2)return;
-  const cache=traceScene(),anchors=TraceRenderer.anchors(cache.pieces,160/S.zoom),occupied=[];
-  // User markers and the live player take precedence over historical labels.
-  for(const m of S.markers)for(const p of markerCopies(m)) {
-    const at=p;occupied.push({x:at.x-24,y:at.y-24,w:48,h:48});
-  }
-  if(S.started) {const p=w2s(S.walker.x,S.walker.y);occupied.push({x:p.x-18,y:p.y-18,w:36,h:36});}
-  g.save();g.font='700 12px system-ui';g.textAlign='center';g.textBaseline='middle';
-  const tiles=cache.tiles.slice().sort((a,b)=>cardLight(b.i,b.j)-cardLight(a.i,a.j));
-  for(const tile of tiles)for(const p of anchors) {
+  const cache=traceScene();
+  if(!cache.stamps)cache.stamps=TraceRenderer.anchors(cache.pieces,Math.min(S.W,S.H)*.34);
+  g.save();
+  for(const tile of cache.tiles)for(const p of cache.stamps) {
     if(p.face!==faceIdx(tile.i,tile.j))continue;
     const odd=ReplayCore.mod(tile.j,2),at=w2s(tile.i*S.W+(odd?S.W-p.x:p.x),tile.j*S.H+(odd?S.H-p.y:p.y));
-    if(at.x<12||at.x>view.w-12||at.y<12||at.y>view.h-12)continue;
-    const bits=TraceRenderer.statesAt(cache.pieces,p.face,p,Math.min(S.W,S.H)*.004);
-    const states=[0,1,2,3].filter(r=>bits&(1<<r)),text=states.map(r=>TraceRenderer.angles[r]).join(' · ');
-    const w=g.measureText(text).width+16,h=24,box={x:at.x-w/2,y:at.y-h/2,w,h};
-    if(occupied.some(b=>box.x<b.x+b.w+14&&box.x+box.w>b.x-14&&box.y<b.y+b.h+14&&box.y+box.h>b.y-14))continue;
-    occupied.push(box);g.globalAlpha=tile.amt*(tile.i===S.anchor.i&&tile.j===S.anchor.j?1:.68);
-    g.beginPath();g.roundRect(box.x,box.y,w,h,7);g.fillStyle='#081523';g.fill();
-    g.lineWidth=2;g.strokeStyle=states.length===1?TRAIL_COLORS[states[0]]:'#fffbee';g.stroke();
-    g.fillStyle='#fffbee';g.fillText(text,at.x,at.y+.5);
+    if(at.x < -16||at.x>view.w+16||at.y < -16||at.y>view.h+16)continue;
+    const bits=TraceRenderer.statesAt(cache.pieces,p.face,p,Math.min(S.W,S.H)*.004)|(1<<p.r);
+    g.globalAlpha=tile.amt*(tile.i===S.anchor.i&&tile.j===S.anchor.j?1:.65);
+    TraceRenderer.stamp(g,at.x,at.y,bits,tile.j,S.rot,13);
   }
   g.restore();
 }
@@ -1066,7 +1056,7 @@ function drawReplayLayer() {
       g.fillStyle = "#ffdf94"; g.fillText(String(e.id + 1), p.x + 23, p.y - 21);
     });
   }
-  drawTraceLabels(g);
+  drawTraceStamps(g);
   drawMarkers(g);
   if (!S.started) return;
   // Retain a precise centre above route emphasis and event rings.

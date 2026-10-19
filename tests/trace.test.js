@@ -22,6 +22,24 @@ assert(groups.some(g=>g.lines.some(l=>l[0].x===40&&l[0].y===50&&l[l.length-1].x=
 const compact=T.compile([p(10,50),p(90,50)],100,100);
 const dense=T.compile(Array.from({length:81},(_,i)=>p(10+i,50)),100,100);
 assert.deepEqual(T.anchors(compact,30),T.anchors(dense,30));
+// Appending steps, extending the moving endpoint and crossing a seam never
+// redistribute old anchors. There is no zoom argument or screen-space reflow.
+for(let length=12;length<380;length+=7) {
+  const old=T.anchors(T.compile([p(10,50),p(length,50)],100,100),30);
+  const extended=T.anchors(T.compile([p(10,50),p(length+7,50)],100,100),30);
+  assert(extended.length>=old.length);
+  old.forEach((a,k)=>{const b=extended[k];assert.equal(a.face,b.face);assert.equal(a.r,b.r);near(a.x,b.x);near(a.y,b.y);});
+}
+const turned=[p(10,30),p(80,30),p(80,80,1)];
+const before=T.anchors(T.compile(turned,100,100),30);
+const after=T.anchors(T.compile(turned.concat([p(20,80,1),p(-20,40,3)]),100,100),30);
+before.forEach((a,k)=>{const b=after[k];assert.equal(a.face,b.face);assert.equal(a.r,b.r);near(a.x,b.x);near(a.y,b.y);});
+assert.equal(T.anchors(T.compile([p(10,50),p(12,50)],100,100),30).length,0,'No moving midpoint for unfinished short steps');
+for(let q=0;q<4;q++)for(let row=-2;row<=2;row++) {
+  const r=((q+2*((row%2+2)%2))%4);
+  near(Math.sin(T.upAngle(r,row,q*Math.PI/2)),0);
+  near(Math.cos(T.upAngle(r,row,q*Math.PI/2)),1);
+}
 // Exact overlapping visits keep all recorded orientations, including blue and red.
 pieces=T.compile([p(10,50),p(90,50),p(10,50,1),p(90,50,2)],100,100);
 assert.equal(T.statesAt(pieces,0,p(50,50),.1),7);
@@ -34,4 +52,4 @@ T.paint(g,scene,5);
 assert.equal(calls[0][0],'#081523');assert.equal(calls.length,scene.paths.length+1);
 assert(calls.every(c=>c[1]==='round'&&c[2]==='round'));
 assert(calls.slice(1).every(c=>c[0]!=='#081523'));
-console.log('PASS: exact multi-edge projection, seam stitching, negative tiles, sampling-independent labels, overlapping orientation states, non-destructive round vector strokes');
+console.log('PASS: exact multi-edge projection, seam stitching, negative tiles, stable append-only stamps and historical up directions, overlapping orientation states, non-destructive round vector strokes');

@@ -4,7 +4,6 @@
   'use strict';
   const C = typeof module !== 'undefined' && module.exports ? require('./replay-core.js') : root.ReplayCore;
   const colors=['#ffcc4d','#5aa9ff','#ff6b6b','#b06bff'];
-  const angles=['0°','90°','180°','270°'];
   const close=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y)<1e-6;
   function compile(trail,W,H,from=0,to=trail.length-1) {
     const result=[]; let run=-1, previous=-1;
@@ -64,26 +63,40 @@
     let bits=0;for(const s of pieces)if(s.face===face&&distance(p,s.a,s.b)<=tolerance)bits|=1<<s.r;
     return bits;
   }
-  // Arc-length anchors, independent of compact vertex density. Each orientation
-  // run gets an anchor even when it is shorter than the regular label spacing.
+  // Distances are measured from the START of each historical run, never
+  // redistributed across its current length. Zoom and new endpoints cannot
+  // move old stamps. Greedy suppression is chronological in card coordinates.
   function anchors(pieces,spacing) {
-    const out=[];let group=[];
-    const flush=()=>{
-      if(!group.length)return;
-      const total=group.reduce((n,p)=>n+Math.hypot(p.b.x-p.a.x,p.b.y-p.a.y),0);
-      const count=Math.max(1,Math.floor(total/spacing));
-      let offset=0,index=0;
-      for(let k=0;k<count;k++) {
-        const at=total*(k+.5)/count;
-        while(index<group.length-1&&offset+Math.hypot(group[index].b.x-group[index].a.x,group[index].b.y-group[index].a.y)<at) {
-          offset+=Math.hypot(group[index].b.x-group[index].a.x,group[index].b.y-group[index].a.y);index++;
-        }
-        const s=group[index],len=Math.hypot(s.b.x-s.a.x,s.b.y-s.a.y),t=len?(at-offset)/len:0;
-        out.push({face:s.face,r:s.r,x:s.a.x+(s.b.x-s.a.x)*t,y:s.a.y+(s.b.y-s.a.y)*t});
+    const out=[];let run=-1,travel=0,next=spacing*.18;
+    for(const p of pieces) {
+      if(p.run!==run) {run=p.run;travel=0;next=spacing*.18;}
+      const len=Math.hypot(p.b.x-p.a.x,p.b.y-p.a.y);
+      while(next<=travel+len+1e-7) {
+        const t=len?Math.max(0,Math.min(1,(next-travel)/len)):0;
+        const candidate={face:p.face,r:p.r,x:p.a.x+(p.b.x-p.a.x)*t,y:p.a.y+(p.b.y-p.a.y)*t};
+        if(!out.some(a=>a.face===candidate.face&&Math.hypot(a.x-candidate.x,a.y-candidate.y)<spacing*.23))out.push(candidate);
+        next+=spacing;
       }
-    };
-    for(const p of pieces) {if(group.length&&group[0].run!==p.run){flush();group=[];}group.push(p);}flush();return out;
+      travel+=len;
+    }
+    return out;
   }
-  const api={compile,project,scene,paint,statesAt,anchors,colors,angles};
+  // Historical card-up in canonical card coordinates. If the present card has
+  // the same orientation as the visit, its stamp points to screen-up. Stamps
+  // rotate WITH the card, instead of acting like walking-direction arrows.
+  function upAngle(r,row,rotation) {return rotation+(C.mod(row,2)?Math.PI:0)-r*Math.PI/2;}
+  function stamp(g,x,y,bits,row,rotation,radius=13) {
+    g.save();g.translate(x,y);
+    g.beginPath();g.arc(0,0,radius,0,Math.PI*2);g.fillStyle='#081523';g.fill();
+    g.lineWidth=1.3;g.strokeStyle='#e7f4ff99';g.stroke();
+    for(let r=0;r<4;r++)if(bits&(1<<r)) {
+      g.save();g.rotate(upAngle(r,row,rotation));g.scale(radius/13,radius/13);
+      g.beginPath();g.moveTo(-2.4,6);g.lineTo(2.4,6);g.lineTo(2.4,-2);
+      g.lineTo(7,-2);g.lineTo(0,-10);g.lineTo(-7,-2);g.lineTo(-2.4,-2);g.closePath();
+      g.fillStyle=colors[r];g.fill();g.restore();
+    }
+    g.restore();
+  }
+  const api={compile,project,scene,paint,statesAt,anchors,colors,upAngle,stamp};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.TraceRenderer=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

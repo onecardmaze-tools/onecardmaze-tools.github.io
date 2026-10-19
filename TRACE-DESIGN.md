@@ -14,7 +14,7 @@ A [maze-player discussion](https://www.reddit.com/r/mazes/comments/ii8obt/)
 describes transparent film and erasable pens. A [One Card Maze play report](https://www.whatboardgame.com/post/one-card-maze-card-game-preview)
 mentions pencil traces that can be erased. Those support persistent, lightweight
 ink as a useful convention, but do not establish a standard rotation notation.
-The angle badges are a design decision for this app, not a claimed player consensus.
+The historical-up arrows are a design decision for this app, not a claimed player consensus.
 Colour is redundant with explicit text, following [W3C guidance](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html).
 
 ## Root causes removed
@@ -38,21 +38,32 @@ moves the recorded centreline.
 
 Solid narrow ink makes the route legible without covering the maze with hollow
 rails. A dark outline separates every colour from water, sand and printed arrows.
-Widths are clamped in screen pixels. Upright dark badges say 0°, 90°, 180° or 270°;
-they describe card-up when recorded, not walking direction or the current screen
-rotation. Nearby overlapping visits contribute all their angles. Labels are
-placed by arc length, independent of recorded sample density; screen-space
-collision avoidance gives user markers and the current player precedence.
-They summarise orientation along the route rather than labelling every point.
+Widths are clamped in screen pixels. High-contrast arrow stamps have a shaft
+and head on a dark round backing, with no numeric angle decoding. Their direction
+is historical card-up in canonical sheet coordinates: inverse recorded rotation,
+then the visible tile's half-turn and the current camera rotation. Thus an arrow
+points to screen-up exactly when the current card orientation matches that visit.
+It rotates with the physical sheet rather than behaving like a travel arrow.
+Overlapping visits can add arrowheads in other directions to the same backing.
+
+Anchors begin at 18% of a fixed card-relative interval from each orientation run's
+start, then repeat by that interval. They are never redistributed by total route
+length, viewport size or zoom. Chronological suppression in canonical coordinates
+lets old stamps keep priority over new nearby candidates. There is no dynamic
+screen-space packing or player-based hiding. Player markers and the walker render
+above stamps. Short unfinished runs wait for the first fixed threshold; a moving
+midpoint would recreate the distracting behaviour this replaces.
+
 At an exact crossing the upper ink can obscure lower ink locally; orientation
-labels along each run retain its meaning. No false lane offsets or interpolated
+stamps along each run retain its meaning. No false lane offsets or interpolated
 curves change the path a player actually took.
 
 ## Validation
 
 - `node tests/replay.test.js`: existing movement/replay/marker/camera regressions.
 - `node tests/trace.test.js`: projection, stitching, multi-edge diagonals,
-  negative tiles, compact/dense label equivalence, multiple orientation states,
+  negative tiles, compact/dense anchor equivalence, append-only stamp positions, historical-up
+  direction on every tile parity, multiple orientation states,
   round strokes and outline-before-colour ordering.
 - Optional native raster check: `CANVAS_MODULE=/path/to/@napi-rs/canvas node tests/trace-raster.test.js`.
   Checks actual centreline alpha and colour at 3 zoom levels × 4 rotations,

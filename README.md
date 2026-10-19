@@ -67,12 +67,18 @@ percentages therefore move in opposite directions.
   casing for contrast. It appears only at the actual walker location, making it
   distinct from the repeated neighbouring copies.
 
-Trail **colour and upright angle labels record card-up direction when drawn**:
-gold 0° ↑, blue 90° →, red 180° ↓, violet 270° ←. These are historical
-orientations, not walking directions. Labels combine multiple angles when their
-anchor was visited in several orientations. They are spaced along the route,
-remain readable at every zoom, and yield to player markers. The status legend
-explains the mapping.
+Trail **arrow stamps record which way was up at that visit**. They have a
+visible shaft and head, a dark circular backing, and the visit's trace colour.
+They turn with the card: an arrow pointing to screen-up means the visit used
+the current card orientation. They do not indicate walking direction. Several
+arrowheads in one stamp represent overlapping historical orientations.
+
+Stamps are attached at fixed distances from the beginning of each orientation
+run, in card coordinates. Extending the route only appends new stamps; it never
+redistributes existing ones. Zoom changes neither their map position nor their
+spacing on the card. New nearby candidates yield to earlier stamps, and player
+markers remain drawn above them. Short unfinished steps wait until they reach
+the first fixed stamp distance instead of displaying a moving midpoint.
 
 The renderer retains exact polylines, splits them at mathematically exact sheet
 boundaries, and stitches physical sheet symmetries into complete paths. Canvas2D
