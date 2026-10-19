@@ -12,7 +12,7 @@ Everything is a single self-contained file. No build, no backend, no dependencie
 
 ## Play online
 
-**[Open One Card Maze Helper](https://blog.xuezhonghao.com/one-card-maze-helper/)** — no installation or account required.
+**[Open One Card Maze Helper](https://onecardmaze-tools.github.io/)** — no installation or account required.
 
 An unofficial, open-source OneCardMaze / One Card Maze companion with path tracking,
 card rotation, undo, and replay. Your uploaded images stay in your browser.
@@ -26,7 +26,8 @@ from the original online source; no game artwork is included in this repository.
 
 ## Deployment
 
-GitHub Pages serves the repository root on the `main` branch. Push changes to `main`
+GitHub Pages serves the repository root on the `main` branch of
+[`onecardmaze-tools/onecardmaze-tools.github.io`](https://github.com/onecardmaze-tools/onecardmaze-tools.github.io). Push changes to `main`
 to update the live site automatically. No build step is needed.
 
 ## Run it
