@@ -44,42 +44,115 @@
   }
   function scene(pieces,tiles,W,H,Path) {
     const groups=project(pieces,tiles,W,H);
-    return {pieces,groups,casing:path(groups,Path),paths:groups.map(g=>({r:g.r,path:path([g],Path)}))};
+    const runs=[];
+    for(const group of groups) {
+      let run=runs[runs.length-1];
+      if(!run||run.run!==group.run){run={run:group.run,r:group.r,groups:[]};runs.push(run);}
+      run.groups.push(group);
+    }
+    return {pieces,groups,casing:path(groups,Path),paths:runs.map(run=>({r:run.r,path:path(run.groups,Path)}))};
   }
-  function paint(g,scene,width,alpha=1) {
+  function mergeScenes(scenes,Path) {
+    const casing=new Path(),paths=[];
+    for(const scene of scenes) {
+      casing.addPath(scene.casing);
+      for(const item of scene.paths) {
+        const previous=paths[paths.length-1];
+        if(previous&&previous.r===item.r)previous.path.addPath(item.path);
+        else {const path=new Path();path.addPath(item.path);paths.push({r:item.r,path});}
+      }
+    }
+    return {casing,paths};
+  }
+  function paintMany(g,scenes,width,alpha=1) {
     g.save();g.globalAlpha*=alpha;g.lineCap='round';g.lineJoin='round';
     // All outlines first. No later outline or eraser can cut an earlier colour.
-    g.lineWidth=width+3.4*(width/5);g.strokeStyle='#081523';g.stroke(scene.casing);
+    g.lineWidth=width+3.4*(width/5);g.strokeStyle='#081523';for(const scene of scenes)g.stroke(scene.casing);
     g.lineWidth=width;
-    for(const item of scene.paths) {g.strokeStyle=colors[item.r];g.stroke(item.path);}
+    for(const scene of scenes)for(const item of scene.paths) {g.strokeStyle=colors[item.r];g.stroke(item.path);}
     g.restore();
   }
+  function paint(g,scene,width,alpha=1) {paintMany(g,[scene],width,alpha);}
   function distance(p,a,b) {
     const dx=b.x-a.x,dy=b.y-a.y,l=dx*dx+dy*dy;
     const t=l?Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/l)):0;
     return Math.hypot(p.x-a.x-dx*t,p.y-a.y-dy*t);
   }
   function statesAt(pieces,face,p,tolerance) {
-    let bits=0;for(const s of pieces)if(s.face===face&&distance(p,s.a,s.b)<=tolerance)bits|=1<<s.r;
+    let bits=0;for(const s of pieces)if(s.face===face&&
+      p.x>=Math.min(s.a.x,s.b.x)-tolerance&&p.x<=Math.max(s.a.x,s.b.x)+tolerance&&
+      p.y>=Math.min(s.a.y,s.b.y)-tolerance&&p.y<=Math.max(s.a.y,s.b.y)+tolerance&&
+      distance(p,s.a,s.b)<=tolerance)bits|=1<<s.r;
     return bits;
+  }
+  function pointGrid(cell) {
+    const cells=new Map();let serial=0;
+    const key=(face,x,y)=>face+':'+x+':'+y;
+    return {
+      add(p) {const k=key(p.face,Math.floor(p.x/cell),Math.floor(p.y/cell));let bucket=cells.get(k);if(!bucket){bucket=[];cells.set(k,bucket);}bucket.push({p,serial:serial++});},
+      near(p,radius) {
+        const x=Math.floor(p.x/cell),y=Math.floor(p.y/cell),range=Math.ceil(radius/cell);let first=null;
+        for(let j=y-range;j<=y+range;j++)for(let i=x-range;i<=x+range;i++) {
+          const bucket=cells.get(key(p.face,i,j));if(!bucket)continue;
+          for(const candidate of bucket)if((!first||candidate.serial<first.serial)&&Math.hypot(candidate.p.x-p.x,candidate.p.y-p.y)<radius)first=candidate;
+        }
+        return first&&first.p;
+      }
+    };
+  }
+  function withoutStampOverlap(marks,stamps,radius) {
+    const grid=pointGrid(radius);for(const p of stamps)grid.add(p);
+    return marks.filter(p=>!grid.near(p,radius));
   }
   // Distances are measured from the START of each historical run, never
   // redistributed across its current length. Zoom and new endpoints cannot
   // move old stamps. Greedy suppression is chronological in card coordinates.
   function anchors(pieces,spacing) {
-    const out=[];let run=-1,travel=0,next=spacing*.18;
+    const out=[],grid=pointGrid(spacing*.23);let run=-1,travel=0,next=spacing*.18;
     for(const p of pieces) {
       if(p.run!==run) {run=p.run;travel=0;next=spacing*.18;}
       const len=Math.hypot(p.b.x-p.a.x,p.b.y-p.a.y);
       while(next<=travel+len+1e-7) {
         const t=len?Math.max(0,Math.min(1,(next-travel)/len)):0;
         const candidate={face:p.face,r:p.r,x:p.a.x+(p.b.x-p.a.x)*t,y:p.a.y+(p.b.y-p.a.y)*t};
-        if(!out.some(a=>a.face===candidate.face&&Math.hypot(a.x-candidate.x,a.y-candidate.y)<spacing*.23))out.push(candidate);
+        if(!grid.near(candidate,spacing*.23)){out.push(candidate);grid.add(candidate);}
         next+=spacing;
       }
       travel+=len;
     }
     return out;
+  }
+  // Small, unboxed chevrons record travel independently of historical up.
+  // Fixed arc distances preserve earlier glyph positions as endpoints extend.
+  function travelMarks(pieces,spacing) {
+    const out=[],grid=pointGrid(spacing*.22);let run=-1,travel=0,next=spacing*.60;
+    for(const p of pieces) {
+      if(p.run!==run){run=p.run;travel=0;next=spacing*.60;}
+      const dx=p.b.x-p.a.x,dy=p.b.y-p.a.y,len=Math.hypot(dx,dy);
+      if(len<1e-9)continue;
+      while(next<=travel+len+1e-7) {
+        const t=Math.max(0,Math.min(1,(next-travel)/len));
+        const mark={face:p.face,x:p.a.x+dx*t,y:p.a.y+dy*t,dx:dx/len,dy:dy/len,both:false};
+        const near=grid.near(mark,spacing*.22);
+        if(!near){out.push(mark);grid.add(mark);}
+        else if(near.dx*mark.dx+near.dy*mark.dy<-.96&&Math.abs((mark.x-near.x)*near.dy-(mark.y-near.y)*near.dx)<spacing*.025)near.both=true;
+        next+=spacing;
+      }
+      travel+=len;
+    }
+    return out;
+  }
+  function chevronPath(g,x,y,dx,dy,both,row,rotation) {
+    const angle=rotation+(C.mod(row,2)?Math.PI:0),cs=Math.cos(angle),sn=Math.sin(angle);
+    const ux=dx*cs-dy*sn,uy=dx*sn+dy*cs;
+    const point=(u,v,move)=>g[move?'moveTo':'lineTo'](x+u*ux-v*uy,y+u*uy+v*ux);
+    const tip=both?4.5:2.5,tail=both?-.5:-2.5;
+    point(tail,-4,true);point(tip,0,false);point(tail,4,false);
+    if(both){point(-tail,-4,true);point(-tip,0,false);point(-tail,4,false);}
+  }
+  function paintChevrons(g) {
+    g.lineCap='round';g.lineJoin='round';g.lineWidth=4.5;g.strokeStyle='#081523';g.stroke();
+    g.lineWidth=1.8;g.strokeStyle='#fffbee';g.stroke();
   }
   // Historical card-up in canonical card coordinates. If the present card has
   // the same orientation as the visit, its stamp points to screen-up. Stamps
@@ -97,6 +170,6 @@
     }
     g.restore();
   }
-  const api={compile,project,scene,paint,statesAt,anchors,colors,upAngle,stamp};
+  const api={compile,project,scene,mergeScenes,paint,paintMany,statesAt,anchors,colors,upAngle,stamp,travelMarks,withoutStampOverlap,chevronPath,paintChevrons};
   if(typeof module!=='undefined'&&module.exports)module.exports=api;else root.TraceRenderer=api;
 })(typeof globalThis!=='undefined'?globalThis:this);

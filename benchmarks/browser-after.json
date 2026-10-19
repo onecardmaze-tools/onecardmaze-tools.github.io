@@ -1,0 +1,16 @@
+{
+  "viewport": [
+    1200,
+    900
+  ],
+  "devicePixelRatio": 2,
+  "frames": 60,
+  "render": {
+    "medianMs": 1.2,
+    "p95Ms": 1.8
+  },
+  "frameIntervals": {
+    "medianMs": 33.4,
+    "p95Ms": 49.3
+  }
+}

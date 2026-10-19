@@ -9,7 +9,10 @@ const scene=T.scene(T.compile(route,100,100),tiles,100,100,Path2D);
 for(const zoom of [1,2,4])for(let q=0;q<4;q++) {
   const cv=createCanvas(900,900),g=cv.getContext('2d'),a=q*Math.PI/2;
   g.translate(450,450);g.rotate(a);g.scale(zoom,zoom);g.translate(-100,-100);
-  T.paint(g,scene,5/zoom);
+  const split=T.mergeScenes([
+    T.scene(T.compile(route,100,100,0,3),tiles,100,100,Path2D),
+    T.scene(T.compile(route,100,100,3),tiles,100,100,Path2D)],Path2D);
+  T.paint(g,split,5/zoom);
   const data=g.getImageData(0,0,900,900).data;
   for(let k=1;k<route.length;k++)for(let t=.005;t<1;t+=.005) {
     const x=(route[k-1].x+(route[k].x-route[k-1].x)*t-100)*zoom;
@@ -21,4 +24,4 @@ for(const zoom of [1,2,4])for(let q=0;q<4;q++) {
   }
   if(zoom===2&&q===0)fs.writeFileSync('/tmp/onecardmaze-trace-raster.png',cv.toBuffer('image/png'));
 }
-console.log('PASS: real raster centreline coverage and colour, 3 zoom levels × 4 rotations, seams, hairpins and crossings');
+console.log('PASS: real raster centreline coverage and colour, 3 zoom levels × 4 rotations, seams, hairpins and crossings, retained prefix + mutable tail');

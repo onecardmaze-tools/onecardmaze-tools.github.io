@@ -1,0 +1,37 @@
+{
+  "100": {
+    "stable": {
+      "medianMs": 2.902,
+      "p95Ms": 3.293
+    },
+    "artDrawsFor35OverlayRenders": 0,
+    "edit": {
+      "medianMs": 4.27,
+      "p95Ms": 4.782
+    },
+    "replay": {
+      "medianMs": 3.038,
+      "p95Ms": 3.297
+    }
+  },
+  "1000": {
+    "stable": {
+      "medianMs": 5.56,
+      "p95Ms": 5.875
+    },
+    "artDrawsFor35OverlayRenders": 0,
+    "edit": {
+      "medianMs": 11.367,
+      "p95Ms": 14.744
+    },
+    "replay": {
+      "medianMs": 5.392,
+      "p95Ms": 5.917
+    }
+  },
+  "adapter": "native Canvas2D + counted WebGL",
+  "idleTwoSeconds": {
+    "rafCallbacks": 0,
+    "glDraws": 0
+  }
+}

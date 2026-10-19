@@ -44,6 +44,22 @@ for(let q=0;q<4;q++)for(let row=-2;row<=2;row++) {
 pieces=T.compile([p(10,50),p(90,50),p(10,50,1),p(90,50,2)],100,100);
 assert.equal(T.statesAt(pieces,0,p(50,50),.1),7);
 assert.equal(T.statesAt(pieces,1,p(50,50),.1),0);
+// Travel uses the recorded tangent in canonical coordinates, including row
+// reflection, and stays independent of historical-up. Exact reverse visits
+// add an opposing direction instead of silently overwriting the first visit.
+let travel=T.travelMarks(T.compile([p(10,50),p(90,50)],100,100),20);
+assert(travel.length>0&&travel.every(m=>m.dx===1&&m.dy===0&&!m.both));
+travel=T.travelMarks(T.compile([p(90,50),p(10,50)],100,100),20);
+assert(travel.every(m=>m.dx===-1&&m.dy===0));
+travel=T.travelMarks(T.compile([p(10,150,2),p(90,150,2)],100,100),20);
+assert(travel.every(m=>m.dx===-1&&m.dy===0),'Odd-row tangent reverses on the physical card');
+travel=T.travelMarks(T.compile([p(10,50),p(90,50),p(10,50)],100,100),20);
+assert(travel.some(m=>m.both),'Walking back over the same corridor preserves both directions');
+for(let length=20;length<100;length+=7) {
+  const old=T.travelMarks(T.compile([p(10,50),p(length,50)],100,100),20);
+  const extended=T.travelMarks(T.compile([p(10,50),p(length+7,50)],100,100),20);
+  old.forEach((a,k)=>{near(a.x,extended[k].x);near(a.y,extended[k].y);});
+}
 // No compositing eraser, butt ends or segment-by-segment outline overpainting.
 class Path {moveTo(){}lineTo(){}}
 const scene=T.scene(pieces,tiles,100,100,Path),calls=[];
@@ -52,4 +68,4 @@ T.paint(g,scene,5);
 assert.equal(calls[0][0],'#081523');assert.equal(calls.length,scene.paths.length+1);
 assert(calls.every(c=>c[1]==='round'&&c[2]==='round'));
 assert(calls.slice(1).every(c=>c[0]!=='#081523'));
-console.log('PASS: exact multi-edge projection, seam stitching, negative tiles, stable append-only stamps and historical up directions, overlapping orientation states, non-destructive round vector strokes');
+console.log('PASS: exact multi-edge projection, seam stitching, negative tiles, stable append-only stamps and historical up directions, overlapping orientation states, fixed travel chevrons and reverse visits, non-destructive round vector strokes');

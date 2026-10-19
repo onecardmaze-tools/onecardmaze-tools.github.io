@@ -51,12 +51,12 @@ function element(id) {
   elements.set(id,e); return e;
 }
 const listeners = {};
-const sandbox = { console, ReplayCore:core, TraceRenderer:require('../trace-renderer.js'), document:{getElementById:element,createElement:element,
+const sandbox = { console, ReplayCore:core, TraceRenderer:require('../trace-renderer.js'), document:{addEventListener:noop,getElementById:element,createElement:element,
   body:element('body'),querySelector:s=>element(s)},
   innerWidth:1200,innerHeight:900,devicePixelRatio:1,matchMedia:()=>({matches:false}),addEventListener:(name,fn)=>{listeners[name]=fn;},
-  requestAnimationFrame:noop,performance:{now:()=>0},setTimeout:noop,clearTimeout:noop,
+  requestAnimationFrame:noop,cancelAnimationFrame:noop,performance:{now:()=>0},setTimeout:noop,clearTimeout:noop,
   URLSearchParams,URL,location:{search:''},Float32Array,Uint8ClampedArray,
-  Option:function(text,value){this.text=text;this.value=value;},Path2D:function(){this.moveTo=noop;this.lineTo=noop;}};
+  Option:function(text,value){this.text=text;this.value=value;},Path2D:function(){this.moveTo=noop;this.lineTo=noop;this.addPath=noop;}};
 sandbox.window=sandbox;
 vm.createContext(sandbox);
 const html=fs.readFileSync(require('path').join(__dirname,'../index.html'),'utf8');
@@ -119,6 +119,13 @@ S.walker={x:70,y:20,tx:null,ty:null};S.trail=[p(70,20)];S.rot=S.rotTarget=0;S.ro
 const centerBefore=app.w2s(50,50);app.spin(1);
 for(let k=0;k<120;k++){app.update(.01);const at=app.w2s(50,50);near(at.x,centerBefore.x);near(at.y,centerBefore.y);}
 assert(!S.manualPivot);assert(!S.follow);
+// A viewport change during a held spin preserves the pivot's relative screen
+// position instead of keeping the old desktop pixel coordinate off a phone screen.
+fixture();S.anchor={i:0,j:0};S.cam={x:50,y:50};S.rot=S.rotTarget=0;
+S.play=0;S.phase={event:{type:'spin'},elapsed:0,pivot:{world:{x:50,y:50},screen:app.w2s(50,50)}};
+sandbox.innerWidth=390;sandbox.innerHeight=844;app.resize();app.update(.01);
+near(app.w2s(50,50).x,195);near(app.w2s(50,50).y,422);
+S.phase=null;sandbox.innerWidth=1200;sandbox.innerHeight=900;app.resize();
 // Flip camera moves are slower than the former exponential jump and finish exactly.
 fixture();app.play(1);let flip=null,lastCamera=null,maxFraction=0;
 for(let k=0;k<1500;k++) {

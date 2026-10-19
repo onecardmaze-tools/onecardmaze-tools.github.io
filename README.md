@@ -80,6 +80,11 @@ spacing on the card. New nearby candidates yield to earlier stamps, and player
 markers remain drawn above them. Short unfinished steps wait until they reach
 the first fixed stamp distance instead of displaying a moving midpoint.
 
+Small **open chevrons ›** on the line indicate the original walking direction,
+independently of the round historical-up stamps. Opposing tips record travel in
+both directions. They remain fixed to the card and do not animate during review.
+
+
 The renderer retains exact polylines, splits them at mathematically exact sheet
 boundaries, and stitches physical sheet symmetries into complete paths. Canvas2D
 supplies native round joins and caps. Every dark casing is drawn before any
@@ -191,6 +196,8 @@ Append `?demo` to load the rules card automatically (requires Internet access).
 
 ```sh
 node tests/replay.test.js
+node tests/trace.test.js
+node tests/performance.test.js
 ```
 
 Coverage includes negative tiles, diagonal crossings, touching an edge without
@@ -198,6 +205,15 @@ crossing it, repeated corridors, sampling-independent pace, forward/reverse even
 order, endpoint spins, pause/resume, immutable seeking, stable card-centre rotation, slow camera transitions, focus hierarchy,
 branching from a fractional preview, compact endpoint recording, command/turn
 preservation, and marker projection across every rotated/folded copy.
+
+## Rendering and energy
+
+The app sleeps when settled, suspends in the background, reuses unchanged artwork
+and static history, and updates only the partial progress leg during ordinary
+replay. Controls remain immediate; the animated HUD refreshes at 10 Hz. There are
+no third-party runtime dependencies. See [measurements, memory tradeoffs and
+remaining limits](PERFORMANCE.md), including browser and native-Canvas benchmarks.
+
 
 ## Deployment
 

@@ -58,6 +58,21 @@ At an exact crossing the upper ink can obscure lower ink locally; orientation
 stamps along each run retain its meaning. No false lane offsets or interpolated
 curves change the path a player actually took.
 
+## Original travel direction
+
+Unboxed white chevrons follow the recorded segment tangent. The circular coloured
+arrow stamps continue to encode historical card-up. Both use canonical physical
+card coordinates, transform through the visible tile row and camera rotation,
+and remain fixed as the route extends. Collinear reverse visits may add an
+opposing tip; nearby parallel routes are not treated as the same corridor.
+Small direction marks yield to the larger orientation stamps. Reversing replay
+does not reverse these historical travel cues.
+
+The source of truth remains retained vectors. Screen-space caches are disposable
+and rebuilt after view/geometry changes; no destructive raster eraser or painted
+segment repair has returned. [Performance notes](PERFORMANCE.md) describe the
+static-history layer, retained geometric prefix, sprite cache and tests.
+
 ## Validation
 
 - `node tests/replay.test.js`: existing movement/replay/marker/camera regressions.

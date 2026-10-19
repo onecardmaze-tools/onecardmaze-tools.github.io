@@ -14,7 +14,7 @@
   :root{
     --bg:#0a0e16; --ink:#e8eef7; --muted:#93a2b8;
     --teal:#4fd1c5; --gold:#ffcb6b;
-    --panel:rgba(16,22,34,.82); --line:rgba(255,255,255,.12);
+    --panel:rgba(16,22,34,.94); --line:rgba(255,255,255,.12);
   }
   *{box-sizing:border-box}
   html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);
@@ -24,14 +24,14 @@
 
   #hud{position:fixed;inset:0;pointer-events:none;padding:14px;display:flex;flex-direction:column;justify-content:space-between;}
   .topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
-  .brand{pointer-events:auto;background:var(--panel);backdrop-filter:blur(10px);
+  .brand{pointer-events:auto;background:var(--panel);
     border:1px solid var(--line);border-radius:14px;padding:10px 14px;max-width:min(46vw,420px);}
   .brand h1{font-size:14px;margin:0;letter-spacing:.02em;font-weight:650;}
   .brand h1 b{color:var(--teal)}
   .brand p{margin:4px 0 0;font-size:11.5px;color:var(--muted);line-height:1.4}
   .tools{pointer-events:auto;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
   button{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);
-    border-radius:11px;padding:9px 12px;cursor:pointer;backdrop-filter:blur(10px);transition:.15s;white-space:nowrap;}
+    border-radius:11px;padding:9px 12px;cursor:pointer;transition:.15s;white-space:nowrap;}
   button:hover{border-color:rgba(79,209,197,.6);color:#fff}
   button:active{transform:translateY(1px)}
   button.primary{background:linear-gradient(180deg,#2fb8ad,#1d8f88);border-color:transparent;color:#04140f;font-weight:700}
@@ -39,7 +39,7 @@
   button.on{border-color:var(--teal);color:#fff;box-shadow:0 0 0 1px rgba(79,209,197,.35) inset}
 
   .bottom{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;}
-  .status{pointer-events:auto;background:var(--panel);backdrop-filter:blur(10px);border:1px solid var(--line);
+  .status{pointer-events:auto;background:var(--panel);border:1px solid var(--line);
     border-radius:14px;padding:9px 12px;font-size:12px;display:flex;gap:14px;align-items:center;}
   .status .k{color:var(--muted);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:2px}
   .status .v{font-weight:650;font-variant-numeric:tabular-nums}
@@ -49,14 +49,14 @@
   .status .legend i{font-style:normal;font-weight:700;font-size:13px;margin-right:6px}
   .status .legend i:last-child{margin-right:0}
   .tc0{color:#ffcc4d}.tc1{color:#5aa9ff}.tc2{color:#ff6b6b}.tc3{color:#b06bff}
-  .hint{pointer-events:auto;background:var(--panel);backdrop-filter:blur(10px);border:1px solid var(--line);
+  .hint{pointer-events:auto;background:var(--panel);border:1px solid var(--line);
     border-radius:14px;padding:10px 14px;font-size:12.5px;color:var(--muted);max-width:min(52vw,520px);line-height:1.5}
   .hint b{color:var(--ink)}
 
   /* the walk's transport: undo, replay both ways, scrub the whole walk */
   .footer{display:flex;flex-direction:column;gap:10px;}
   .player{pointer-events:auto;display:flex;align-items:center;gap:6px;background:var(--panel);
-    backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:14px;padding:7px 10px;}
+    border:1px solid var(--line);border-radius:14px;padding:7px 10px;}
   .player[hidden]{display:none}
   .player button{padding:6px 10px;border-radius:9px;font-size:13px;line-height:1}
   .player button#btnSpeed{min-width:52px;font-variant-numeric:tabular-nums}
@@ -73,8 +73,7 @@
   .player input[type=range]::-moz-range-progress{height:6px;border-radius:3px;background:var(--teal)}
   .player input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:#fff;border:2px solid #0f1420}
 
-  /* the full-screen loader/help dim is NOT blurred: blurring the live GL canvas
-     every frame is the one backdrop-filter that actually costs a phone */
+  /* Avoid a full-screen backdrop blur over the live canvas. */
   .overlay{position:fixed;inset:0;display:grid;place-items:center;background:rgba(4,7,12,.78);
     z-index:20;padding:18px;}
   .overlay.hidden{display:none}
@@ -101,7 +100,7 @@
   .startwrap .primary{flex:1;padding:14px}
 
   #toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--panel);
-    border:1px solid var(--line);backdrop-filter:blur(10px);border-radius:12px;padding:10px 16px;font-size:13px;
+    border:1px solid var(--line);border-radius:12px;padding:10px 16px;font-size:13px;
     opacity:0;transition:.25s;pointer-events:none;z-index:30}
   #toast.show{opacity:1;transform:translate(-50%,0)}
 
@@ -111,7 +110,7 @@
   #help ul{margin:12px 0 0;padding-left:18px;color:var(--muted);font-size:13px;line-height:1.9}
   #help b{color:var(--ink)}
 
-  #replayLayer{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+  #traceLayer,#replayLayer{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
   [hidden]{display:none!important}
   #replayReadout{pointer-events:auto;align-self:center;width:min(620px,100%);box-sizing:border-box;
     border:1px solid rgba(79,209,197,.4);border-radius:16px;padding:13px 18px;
@@ -134,6 +133,10 @@
   .player button.on{background:#173d40;color:#a5fff1}
   .status .legend{white-space:nowrap}
   button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
+  @media(pointer:coarse){
+    :root{--panel:rgba(16,22,34,.96)}
+    .brand,button,.status,.hint,.player,.toast{backdrop-filter:none}
+  }
   @media(max-width:700px){
     #hud{padding:9px}.topbar{gap:7px}.brand{padding:8px;max-width:40%}.brand p{display:none}
     .tools{gap:4px}.tools button{padding:7px 8px;font-size:12px}.brand h1{font-size:12px}
@@ -163,11 +166,16 @@
   #markerList{padding:0;list-style:none;margin:12px 0 0}#markerList li{display:flex;gap:5px;margin-top:6px}
   #markerList li button:first-child{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;text-align:left;font-size:11px}
   #markerList li button{padding:7px}
+  @media(pointer:coarse){
+    :root{--panel:rgba(16,22,34,.96)}
+    .brand,button,.status,.hint,.player,.toast{backdrop-filter:none}
+  }
   @media(max-width:700px){#markerPanel{right:9px;top:96px;width:min(285px,calc(100% - 18px));max-height:55vh}}
 </style>
 </head>
 <body>
 <canvas id="stage" aria-label="Maze map"></canvas>
+<canvas id="traceLayer" aria-hidden="true"></canvas>
 <canvas id="replayLayer" aria-hidden="true"></canvas>
 
 <div id="hud">
@@ -212,7 +220,7 @@
       <div class="status" id="status">
         <div><span class="k">Side</span><span class="v side">—</span></div>
         <div><span class="k">Up</span><span class="v ori">↑</span></div>
-        <div><span class="k">Trace arrows</span><span class="v legend" title="Each arrow records which way was up at that visit. It stays attached to the card; it does not show walking direction.">↑ up at that visit</span></div>
+        <div><span class="k">Trace arrows</span><span class="v legend" title="Each arrow records which way was up at that visit. It stays attached to the card; it does not show walking direction.">●↑ past up · › travel</span></div>
         <div><span class="k">Zoom</span><span class="v zoom">—</span></div>
         <div><span class="k">Walked</span><span class="v dist">0</span></div>
       </div>
@@ -280,7 +288,7 @@
       <li><b>Zoom</b> — mouse wheel / pinch, or the <b>+ / −</b> buttons.</li>
       <li><b>Pan</b> — drag anywhere to look around; moving again brings your card back to the middle.</li>
       <li><b>Markers</b> — choose any shape, colour, and optional label, then click the map to place it. Markers repeat on every copy of that face and stay independent of walking, rotation, reset, and replay. Select a marker in the list to edit or remove it. There are no required starts, destinations, or routes.</li>
-      <li><b>Trail</b> — solid ink records where you walked on every copy of a face. The outlined <b>arrow stamps</b> show which way was up at that visit, not your walking direction. They stay fixed to the card as you continue walking or zoom. An arrow pointing toward the top of your screen means you visited in the current orientation. Several arrowheads in one stamp record several orientations at that place.</li>
+      <li><b>Trail</b> — solid ink records where you walked on every copy of a face. The outlined <b>arrow stamps</b> show which way was up at that visit, not your walking direction. They stay fixed to the card as you continue walking or zoom. An arrow pointing toward the top of your screen means you visited in the current orientation. Several arrowheads in one stamp record several orientations at that place. Small <b>open chevrons ›</b> on the line show the original walking direction; opposing tips mean the corridor was walked both ways.</li>
       <li><b>Undo &amp; replay</b> — once you've walked a little a <b>transport bar</b> appears at the bottom. <b>↶</b> steps back (hold it, or <span class="keycap">Z</span>, to wind smoothly), <b>◀</b> / <b>▶</b> replay your whole walk backwards or forwards (<span class="keycap">Space</span> / <span class="keycap">Shift</span>+<span class="keycap">Space</span>), the speed button cycles how fast that playback runs (<b>0.1×</b> / <b>0.2×</b> / 0.5× / 1× / 2× / 4× — it starts slow, at 0.2×), and the <b>slider</b> scrubs anywhere along it. <b>|‹ / ›|</b> jump between flips and spins. The event menu jumps directly to a numbered event. Flip and spin events pause before and after the transition; the current face and up direction appear in the replay panel. The replay <b>turns the card too</b>, so you see the spins you made — and spins you made without walking collapse to the shortest single turn (three to the left replay as one to the right). Trail colours record the card’s up direction when drawn: gold ↑, blue →, red ↓, violet ←. They do not mean front/back or playback progress. Winding back is a <b>preview</b>: the complete route stays faintly visible and a white segment highlights the current visit, and the moment you <b>walk again</b> the part you wound past is dropped.</li>
       <li><b>Reset</b> — <span class="keycap">R</span> clears the walker and lets you pick a new start.</li>
     </ul>
@@ -298,7 +306,7 @@
 <div id="toast"></div>
 
 <script src="replay-core.js?v=4"></script>
-<script src="trace-renderer.js?v=2"></script>
+<script src="trace-renderer.js?v=3"></script>
 <script>
 (function () {
 "use strict";
@@ -397,7 +405,7 @@ const $ = (id) => document.getElementById(id);
 const c = $("stage");
 const glOpts = { alpha: false, antialias: false, depth: false, stencil: false,
                  premultipliedAlpha: false, preserveDrawingBuffer: false,
-                 powerPreference: "high-performance" };
+                 powerPreference: "low-power" };
 let gl = null, isGL2 = false;
 try {
   gl = c.getContext("webgl2", glOpts);
@@ -435,8 +443,6 @@ uniform vec4  uCSeam[NCARD];     // the shared edge(s), where the faint fold lin
 uniform float uCBright[NCARD];   // how far "over there" each card reads
 uniform float uCAmt[NCARD];      // 0..1: a card leaving the set fades away
 uniform float uSeamDark;
-uniform vec2  uMark, uDest;
-uniform float uMarkOn, uDestOn;
 uniform sampler2D uArt;                  // atlas: W x 2H  (front on top, back below)
 
 vec2 gWorld;
@@ -507,25 +513,15 @@ void main() {
 
   vec3 ck; float ak;
 
+  vec2 tile=floor(gWorld/uStep);
   for (int k = 0; k < NCARD; k++) {
     float amt = uCAmt[k];
-    if (amt > 0.004) {
+    if (amt > 0.004 && all(equal(uCIdx[k],tile))) {
       float b = uCBright[k];
       tileLayer(uCIdx[k], uCOut[k], uCSeam[k], amt, b, mix(0.40, 1.0, b), ck, ak);
       col = mix(col, ck, ak);
+      break;
     }
-  }
-
-  // walker + destination markers, in screen space
-  if (uMarkOn > 0.5) {
-    float dm = distance(sp, uMark);
-    col += vec3(0.20, 0.72, 0.68) * 0.40 * exp(-dm * dm / 260.0);
-    col  = mix(col, vec3(0.93, 1.0, 0.98), smoothstep(7.0, 5.2, dm));
-    col  = mix(col, vec3(0.31, 0.82, 0.77), smoothstep(3.4, 2.2, abs(dm - 11.0)));
-  }
-  if (uDestOn > 0.5) {
-    float dz = distance(sp, uDest);
-    col = mix(col, vec3(1.0, 0.80, 0.42), smoothstep(2.4, 1.3, abs(dz - 9.0)));
   }
 
   gl_FragColor = vec4(col, 1.0);
@@ -533,7 +529,7 @@ void main() {
 
 const UNIFORMS = ["uView","uBg","uCam","uZoom","uRot","uCard","uStep",
   "uCIdx","uCOut","uCSeam","uCBright","uCAmt","uSeamDark",
-  "uMark","uDest","uMarkOn","uDestOn","uArt"];
+  "uArt"];
 
 let prog = null, quadBuf = null, aPos = -1;
 const U = {};
@@ -573,13 +569,14 @@ try { buildProgram(); } catch (e) {
 }
 
 /* ---- Artwork atlas; trace geometry stays vector all the way to the screen. ---- */
-let artTex = null;
+let artTex = null, artVersion=0, lastArtKey="";
 const artCv = document.createElement("canvas"), artCtx = artCv.getContext("2d");
 function pixelStore() {
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
   gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false);
 }
 function uploadArt() {
+  artVersion++;lastArtKey="";
   if (artTex) gl.deleteTexture(artTex);
   artTex = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, artTex);
@@ -631,7 +628,7 @@ function applyImages(front, back) {
   setAnchor(0, 0);
   clearWalk();
   fitView();
-  dirty = true;
+  invalidate();
   $("btnStart").disabled = false;
   updateHUD();
 }
@@ -645,7 +642,7 @@ function fitView() {
   const fit = Math.min(view.w / (S.W * grow), view.h / (S.H * grow));
   S.zoom = clamp(fit, .02, 40);
   S.minZoom = S.zoom * 0.45; S.maxZoom = S.zoom * 14;
-  dirty = true;
+  invalidate();
 }
 function clampZoom() { S.zoom = clamp(S.zoom, S.minZoom, S.maxZoom); }
 
@@ -707,7 +704,7 @@ function zoomAt(px, py, factor) {
   S.zoom = clamp(S.zoom * factor, S.minZoom, S.maxZoom);
   const after = s2w(px, py);
   S.cam.x += before.x - after.x; S.cam.y += before.y - after.y;
-  dirty = true;
+  invalidate();
 }
 
 /* Where the view wants to be: the middle of the card you are standing on — slid
@@ -774,8 +771,10 @@ function setAnchor(i, j) {
    EVENT REVIEW — presentation never edits the recorded points.
    ============================================================ */
 const replayCanvas = $("replayLayer"), replayCtx = replayCanvas.getContext("2d");
+const traceCanvas=$("traceLayer"),traceCtx=traceCanvas.getContext("2d");
+let staticTraceKey="";
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-let progressCache = null, menuVersion = -1;
+let progressCache = null, menuVersion = -1, menuSignature = null, hudPending = true;
 function invalidateReplay() { S.replayVersion++; progressCache = null; }
 function resetProgress() { progressCache = null; }
 function replayModel() {
@@ -790,7 +789,7 @@ function cancelPhase() {
 }
 function exitReview() {
   cancelPhase(); S.play = 0; S.review = false; S.reviewDone = false; S.reviewEvent = null;
-  resetProgress(); dirty = true;
+  resetProgress(); invalidate();
 }
 function eventName(e, dir) {
   if (e.type === "spin") {
@@ -809,13 +808,18 @@ function syncReviewHUD() {
   $("replayReadout").hidden = !show;
   document.body.classList.toggle("reviewing", show);
   if (S.trail.length > 1 && menuVersion !== S.replayVersion) {
-    const events = replayModel().events, select = $("eventSelect"), ticks = $("eventTicks");
-    select.replaceChildren(new Option("Jump to event", "")); ticks.replaceChildren();
-    for (const e of events) {
-      select.add(new Option((e.id + 1) + ". " + eventName(e, 1), String(e.id)));
-      const tick = document.createElement("i"); tick.className = e.type;
-      tick.style.left = (ReplayCore.distanceAt(replayModel(),e.at) / (replayModel().distances.slice(-1)[0] || 1) * 100) + "%"; ticks.appendChild(tick);
+    const model=replayModel(),events=model.events,select=$("eventSelect"),ticks=$("eventTicks");
+    const signature=events.map(e=>[e.type,e.at,e.delta,e.fromFace,e.toFace].join(':')).join(';');
+    if(signature!==menuSignature) {
+      select.replaceChildren(new Option("Jump to event", ""));ticks.replaceChildren();
+      for(const e of events) {
+        select.add(new Option((e.id+1)+". "+eventName(e,1),String(e.id)));
+        const tick=document.createElement('i');tick.className=e.type;ticks.appendChild(tick);
+      }
+      menuSignature=signature;
     }
+    const total=model.distances[model.distances.length-1]||1;
+    if(ticks.children)events.forEach((e,i)=>{ticks.children[i].style.left=(ReplayCore.distanceAt(model,e.at)/total*100)+'%';});
     $("btnPrevEvent").disabled = !events.some(e => e.at < S.cursor - 1e-5);
     $("btnNextEvent").disabled = !events.some(e => e.at > S.cursor + 1e-5);
     select.disabled = !events.length;
@@ -940,7 +944,7 @@ function advanceReplay(dt) {
       else S.cam={x:p.toCam.x,y:p.toCam.y};
       S.phase = null;
     }
-    dirty = true; return;
+    invalidate(); return;
   }
   const next = ReplayCore.advance(model, S.cursor, dir * S.H * CFG.replayWalkFrac * S.replaySpeed * dt);
   const ordered = dir > 0 ? model.events : model.events.slice().reverse();
@@ -955,13 +959,37 @@ function advanceReplay(dt) {
 
 /* Retained complete polylines, projected through physical sheet symmetries.
    Internal seams are joins in one path, never independently clipped end caps. */
-let traceCache=null;
+let traceCache=null, geometryCache=null, prefixCache=null;
+const stampSprites=new Map();
+function stampKey(p) {return p.face+':'+p.r+':'+p.x.toFixed(6)+':'+p.y.toFixed(6);}
 function traceScene() {
   const tiles=[...S.cards.values()].filter(t=>t.amt>.01);
   const key=S.replayVersion+':'+tiles.map(t=>t.i+','+t.j).join(';');
   if(!traceCache||traceCache.key!==key) {
-    const pieces=TraceRenderer.compile(S.trail,S.W,S.H);
-    traceCache={key,tiles,pieces,scene:TraceRenderer.scene(pieces,tiles,S.W,S.H,Path2D)};
+    if(!geometryCache||geometryCache.version!==S.replayVersion||geometryCache.W!==S.W||geometryCache.H!==S.H) {
+      const unit=Math.min(S.W,S.H),end=Math.max(0,S.trail.length-2);
+      if(!prefixCache||prefixCache.trail!==S.trail||prefixCache.end!==end||prefixCache.vertex!==S.trail[end]||prefixCache.W!==S.W||prefixCache.H!==S.H) {
+        const pieces=TraceRenderer.compile(S.trail,S.W,S.H,0,end);
+        const stampBits=new Map();
+        for(const p of TraceRenderer.anchors(pieces,unit*.34))stampBits.set(stampKey(p),TraceRenderer.statesAt(pieces,p.face,p,unit*.004)|(1<<p.r));
+        prefixCache={trail:S.trail,end,vertex:S.trail[end],W:S.W,H:S.H,pieces,stampBits};
+      }
+      const tail=TraceRenderer.compile(S.trail,S.W,S.H,end),last=prefixCache.pieces[prefixCache.pieces.length-1];
+      if(last&&tail.length) {
+        const offset=last.run+(last.r===tail[0].r?0:1);
+        for(const p of tail)p.run+=offset;
+      }
+      const pieces=prefixCache.pieces.concat(tail);
+      const stamps=TraceRenderer.anchors(pieces,unit*.34).map(p=>({...p,bits:
+        (prefixCache.stampBits.get(stampKey(p))||TraceRenderer.statesAt(prefixCache.pieces,p.face,p,unit*.004))|
+        TraceRenderer.statesAt(tail,p.face,p,unit*.004)|(1<<p.r)}));
+      const travel=TraceRenderer.withoutStampOverlap(TraceRenderer.travelMarks(pieces,unit*.18),stamps,unit*.045);
+      geometryCache={version:S.replayVersion,W:S.W,H:S.H,pieces,stamps,travel,tail,prefix:prefixCache};
+    }
+    const {pieces,stamps,travel,tail,prefix}=geometryCache;
+    const tileKey=tiles.map(t=>t.i+','+t.j).join(';');
+    if(prefix.tileKey!==tileKey){prefix.tileKey=tileKey;prefix.scene=TraceRenderer.scene(prefix.pieces,tiles,S.W,S.H,Path2D);}
+    traceCache={key,tiles,pieces,stamps,travel,scene:TraceRenderer.mergeScenes([prefix.scene,TraceRenderer.scene(tail,tiles,S.W,S.H,Path2D)],Path2D)};
   }
   return traceCache;
 }
@@ -971,9 +999,10 @@ function drawTrace(g) {
   g.save();g.beginPath();for(const t of cache.tiles)g.rect(t.i*S.W,t.j*S.H,S.W,S.H);g.clip();
   TraceRenderer.paint(g,cache.scene,width,S.review?.19:.62);
   if(S.review) {
-    const from=S.reviewDir>0?0:S.cursor,to=S.reviewDir>0?S.cursor:S.trail.length-1;
-    const key=cache.key+':'+from+':'+to;
-    if(!progressCache||progressCache.key!==key)progressCache={key,scene:TraceRenderer.scene(TraceRenderer.compile(S.trail,S.W,S.H,from,to),cache.tiles,S.W,S.H,Path2D)};
+    const bound=S.reviewDir>0?Math.floor(S.cursor):Math.ceil(S.cursor),n=S.trail.length-1;
+    const key=cache.key+':'+S.reviewDir+':'+bound;
+    if(!progressCache||progressCache.key!==key)progressCache={key,scene:TraceRenderer.scene(
+      TraceRenderer.compile(S.trail,S.W,S.H,S.reviewDir>0?0:bound,S.reviewDir>0?bound:n),cache.tiles,S.W,S.H,Path2D)};
     TraceRenderer.paint(g,progressCache.scene,width,.9);
   } else {
     // Emphasis is an extra pass; a continuous baseline survives every seam.
@@ -989,15 +1018,31 @@ function drawTrace(g) {
 function drawTraceStamps(g) {
   if(!S.trailOn||S.trail.length<2)return;
   const cache=traceScene();
-  if(!cache.stamps)cache.stamps=TraceRenderer.anchors(cache.pieces,Math.min(S.W,S.H)*.34);
   g.save();
+  for(const tile of cache.tiles) {
+    const odd=ReplayCore.mod(tile.j,2),face=faceIdx(tile.i,tile.j);
+    g.globalAlpha=tile.amt*(tile.i===S.anchor.i&&tile.j===S.anchor.j?1:.55);
+    g.beginPath();
+    for(const p of cache.travel)if(p.face===face) {
+      const at=w2s(tile.i*S.W+(odd?S.W-p.x:p.x),tile.j*S.H+(odd?S.H-p.y:p.y));
+      if(at.x < -10||at.x>view.w+10||at.y < -10||at.y>view.h+10)continue;
+      TraceRenderer.chevronPath(g,at.x,at.y,p.dx,p.dy,p.both,tile.j,S.rot);
+    }
+    TraceRenderer.paintChevrons(g);
+  }
   for(const tile of cache.tiles)for(const p of cache.stamps) {
     if(p.face!==faceIdx(tile.i,tile.j))continue;
     const odd=ReplayCore.mod(tile.j,2),at=w2s(tile.i*S.W+(odd?S.W-p.x:p.x),tile.j*S.H+(odd?S.H-p.y:p.y));
     if(at.x < -16||at.x>view.w+16||at.y < -16||at.y>view.h+16)continue;
-    const bits=TraceRenderer.statesAt(cache.pieces,p.face,p,Math.min(S.W,S.H)*.004)|(1<<p.r);
+    const spriteKey=p.bits+':'+dpr;
+    let sprite=stampSprites.get(spriteKey);
+    if(!sprite) {
+      sprite=document.createElement('canvas');sprite.width=sprite.height=Math.ceil(30*dpr);
+      const ctx=sprite.getContext('2d');ctx.scale(dpr,dpr);TraceRenderer.stamp(ctx,15,15,p.bits,0,0,13);
+      stampSprites.set(spriteKey,sprite);
+    }
     g.globalAlpha=tile.amt*(tile.i===S.anchor.i&&tile.j===S.anchor.j?1:.65);
-    TraceRenderer.stamp(g,at.x,at.y,bits,tile.j,S.rot,13);
+    g.save();g.translate(at.x,at.y);g.rotate(S.rot+(odd?Math.PI:0));g.drawImage(sprite,-15,-15,30,30);g.restore();
   }
   g.restore();
 }
@@ -1011,17 +1056,40 @@ function routeRange(g, from, to) {
   for (let i = Math.floor(a) + 1; i <= Math.floor(b) && i < S.trail.length; i++) g.lineTo(S.trail[i].x, S.trail[i].y);
   const last = trailAt(b); g.lineTo(last.x, last.y);
 }
+function drawStaticTrace() {
+  const bound=S.review?(S.reviewDir>0?Math.floor(S.cursor):Math.ceil(S.cursor)):-1;
+  const key=[lastArtKey,S.replayVersion,S.trailOn,S.review,S.reviewDir,bound,traceCanvas.width,traceCanvas.height].join(':');
+  if(key===staticTraceKey)return;
+  staticTraceKey=key;
+  const g=traceCtx;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,traceCanvas.width,traceCanvas.height);
+  if(!S.ready)return;
+  g.scale(dpr,dpr);g.save();worldTransform(g);
+  const a=S.anchor;
+  g.strokeStyle='rgba(79,209,197,.55)';g.lineWidth=1/S.zoom;
+  g.strokeRect(a.i*S.W+1/S.zoom,a.j*S.H+1/S.zoom,S.W-2/S.zoom,S.H-2/S.zoom);
+  drawTrace(g);g.restore();
+}
+function partialTrace() {
+  const cache=traceScene(),bound=S.reviewDir>0?Math.floor(S.cursor):Math.ceil(S.cursor);
+  if(!progressCache||progressCache.cursor===S.cursor)return progressCache&&progressCache.partial;
+  progressCache.cursor=S.cursor;
+  progressCache.partial=TraceRenderer.scene(TraceRenderer.compile(S.trail,S.W,S.H,
+    Math.min(bound,S.cursor),Math.max(bound,S.cursor)),cache.tiles,S.W,S.H,Path2D);
+  return progressCache.partial;
+}
 function drawReplayLayer() {
+  drawStaticTrace();
   const g = replayCtx;
   g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, replayCanvas.width, replayCanvas.height);
   if (!S.ready) return;
   g.scale(dpr, dpr); g.save(); worldTransform(g);
-  // A restrained border distinguishes the current card without dimming its neighbours.
-  const a = S.anchor, width = Math.min(S.W, S.H) * CFG.trailWidthFrac;
-  g.strokeStyle = "rgba(79,209,197,.55)"; g.lineWidth = 1 / S.zoom;
-  g.strokeRect(a.i * S.W + 1 / S.zoom, a.j * S.H + 1 / S.zoom, S.W - 2 / S.zoom, S.H - 2 / S.zoom);
-  drawTrace(g);
+  const width=Math.min(S.W,S.H)*CFG.trailWidthFrac;
   if (S.review && S.trailOn && S.trail.length > 1) {
+    const partial=partialTrace();
+    if(partial) {
+      const cache=traceScene();g.save();g.beginPath();for(const tile of cache.tiles)g.rect(tile.i*S.W,tile.j*S.H,S.W,S.H);g.clip();
+      TraceRenderer.paint(g,partial,clamp(Math.min(S.W,S.H)*.008*S.zoom,3.5,6)/S.zoom,.9);g.restore();
+    }
     const length = S.H * .12, model = replayModel();
     const tail = ReplayCore.advance(model, S.cursor, -S.reviewDir * length);
     routeRange(g, tail, S.cursor);
@@ -1059,6 +1127,14 @@ function drawReplayLayer() {
   drawTraceStamps(g);
   drawMarkers(g);
   if (!S.started) return;
+  if(S.walker.tx!=null) {
+    const dest=w2s(S.walker.tx,S.walker.ty);g.beginPath();g.arc(dest.x,dest.y,9,0,TAU);
+    g.strokeStyle='#ffcc6b';g.lineWidth=2;g.stroke();
+  }
+  // Player motion is a small overlay, independent of the artwork pass.
+  const player=w2s(S.walker.x,S.walker.y);
+  g.beginPath();g.arc(player.x,player.y,15,0,TAU);g.fillStyle='#31d2bd18';g.fill();
+  g.beginPath();g.arc(player.x,player.y,11,0,TAU);g.strokeStyle='#4fd1c5';g.lineWidth=2;g.stroke();
   // Retain a precise centre above route emphasis and event rings.
   const mark = w2s(S.walker.x, S.walker.y);
   g.beginPath(); g.arc(mark.x, mark.y, 5, 0, Math.PI * 2); g.fillStyle = "#edfffc"; g.fill();
@@ -1077,7 +1153,7 @@ function orientationAt(t, before) {
 function alignRotation(q) {
   S.rotTarget += ReplayCore.turn(rotIndex(), q) * Math.PI / 2;
 }
-function applySpins(c0, c1) { alignRotation(orientationAt(c1)); dirty = true; }
+function applySpins(c0, c1) { alignRotation(orientationAt(c1)); invalidate(); }
 
 /* The walk's position after `t` points, interpolating the last partial segment. */
 function trailAt(t) { return ReplayCore.point(S.trail, t); }
@@ -1101,7 +1177,11 @@ function placeWalker(t) {
   S.walker.x = p.x; S.walker.y = p.y; S.walker.tx = null; S.walker.ty = null;
   S.follow = true;
 }
-function syncTimeline() {
+function syncTimeline(immediate=true) {
+  hudPending=true;invalidate();
+  if(immediate){paintTimeline();hudPending=false;}
+}
+function paintTimeline() {
   const n = Math.max(0, S.trail.length - 1);
   if (playerEl.hidden !== (n < 1)) playerEl.hidden = n < 1;
   const model = replayModel(), total = model.distances[model.distances.length-1] || 0;
@@ -1117,7 +1197,6 @@ function syncTimeline() {
   backBtn.classList.toggle("on", S.play < 0);
   fwdBtn.classList.toggle("on", S.play > 0);
   syncReviewHUD();
-  dirty = true;
 }
 function setCursor(t, place) {
   cancelPhase();
@@ -1167,7 +1246,7 @@ function undoOnce() {
 }
 /* Invalidate retained geometry; route vertices are the sole source of truth. */
 function refreshTrace() {
-  traceCache=null; resetProgress(); syncTimeline();
+  traceCache=null;geometryCache=null;prefixCache=null; resetProgress(); syncTimeline();
 }
 /* Walking again makes the rewound future real: drop it. */
 function commitWalk() {
@@ -1189,7 +1268,7 @@ function clearWalk() {
   exitReview(); invalidateReplay();
   // the card's orientation is where the walk starts from; the replayed turns are relative
   S.spins = []; S.rotQ0 = rotIndex();
-  traceCache=null;
+  traceCache=null;geometryCache=null;prefixCache=null;
   syncTimeline();
 }
 
@@ -1215,7 +1294,7 @@ function setMarkerMode(on) {
   $("markerHint").textContent = on ? "Click any copy of either face. This does not move the walker." :
     "Choose a style, then place it on the map. Markers do not control the walker.";
   c.style.cursor = on ? "copy" : "crosshair";
-  dirty = true;
+  invalidate();
 }
 const markerShapes = ["circle","diamond","square","triangle","star"];
 const markerGlyphs = {circle:"●",diamond:"◆",square:"■",triangle:"▲",star:"★"};
@@ -1224,7 +1303,7 @@ function restoreMarkers(items) {
     Number.isFinite(m.u) && Number.isFinite(m.v) && m.u>=0 && m.u<=1 && m.v>=0 && m.v<=1 &&
     markerShapes.includes(m.shape) && /^#[0-9a-f]{6}$/i.test(m.color)).map((m,i) => ({
       id:i+1,face:m.face,u:m.u,v:m.v,shape:m.shape,color:m.color,label:String(m.label||"").slice(0,24) })) : [];
-  S.nextMarkerId = S.markers.length+1; S.selectedMarker=null; syncMarkers(); dirty=true;
+  S.nextMarkerId = S.markers.length+1; S.selectedMarker=null; syncMarkers(); invalidate();
 }
 function addMarker(p) {
   const i=Math.floor(p.x/S.W), j=Math.floor(p.y/S.H);
@@ -1250,7 +1329,7 @@ function syncMarkers() {
     });
     remove.textContent="×"; remove.setAttribute("aria-label","Remove "+(m.label||"marker "+m.id));
     remove.addEventListener("click",()=>{S.markers=S.markers.filter(item=>item.id!==m.id);
-      if(S.selectedMarker===m.id) S.selectedMarker=null; syncMarkers();saveMarkers();dirty=true;});
+      if(S.selectedMarker===m.id) S.selectedMarker=null; syncMarkers();saveMarkers();invalidate();});
     row.appendChild(pick);row.appendChild(remove);list.appendChild(row);
   }
 }
@@ -1297,7 +1376,7 @@ function drawMarkers(g) {
 function updateMarkerStyle() {
   const m=S.markers.find(m=>m.id===S.selectedMarker);if(!m)return;
   m.shape=$("markerShape").value;m.color=$("markerColor").value;m.label=$("markerLabel").value.slice(0,24);
-  syncMarkers();saveMarkers();dirty=true;
+  syncMarkers();saveMarkers();invalidate();
 }
 $("btnMarkers").addEventListener("click",()=>{
   const panel=$("markerPanel");panel.hidden=!panel.hidden;
@@ -1326,7 +1405,7 @@ function recordPosition(x,y) {
   if(!S.recordBreak && !protectedEnd && n>=2 && ReplayCore.canExtend(S.trail[n-2],last,p)) S.trail[n-1]=p;
   else S.trail.push(p);
   S.recordBreak=false;
-  S.cursor=S.trail.length-1;invalidateReplay();syncTimeline();
+  S.cursor=S.trail.length-1;invalidateReplay();syncTimeline(false);
 }
 function seekPercent(percent) {
   const model=replayModel(),total=model.distances[model.distances.length-1]||0;
@@ -1361,7 +1440,7 @@ function update(dt) {
     let walked = false;
     if (S.play) {
       advanceReplay(dt);
-      syncTimeline();
+      syncTimeline(false);
       moving = true;
     } else if (S.undoHeld && S.cursor > 0) {
       // ---- holding undo winds the walk back, smoothly ------------------------
@@ -1372,7 +1451,7 @@ function update(dt) {
       S.cursor = ReplayCore.advance(replayModel(), c0, -S.H * .9 * dt);
       applySpins(c0, S.cursor);
       placeWalker(S.cursor);
-      syncTimeline();
+      syncTimeline(false);
       moving = true;
     } else if (dx || dy) {
       const m = Math.hypot(dx, dy);
@@ -1432,9 +1511,11 @@ function update(dt) {
     let fading = false,lighting=false;
     for (const [key, c] of live) {
       c.amt += (c.target - c.amt) * ka;
+      if(Math.abs(c.amt-c.target)<=.004)c.amt=c.target;
       const light=cardLight(c.i,c.j);
       if(c.bright===undefined)c.bright=light;
       c.bright+=(light-c.bright)*(1-Math.exp(-CFG.lightLerp*dt));
+      if(Math.abs(c.bright-light)<=.002)c.bright=light;
       if(Math.abs(c.bright-light)>.002)lighting=true;
       if (Math.abs(c.amt - c.target) > 0.004) fading = true;
       if (c.amt < 0.004 && !c.target) live.delete(key);
@@ -1449,6 +1530,8 @@ function update(dt) {
     const f = 1 - Math.exp(-CFG.camLerp * dt);
     S.cam.x += (t.x - S.cam.x) * f;
     S.cam.y += (t.y - S.cam.y) * f;
+    if(Math.abs(S.cam.x-t.x)<=.05)S.cam.x=t.x;
+    if(Math.abs(S.cam.y-t.y)<=.05)S.cam.y=t.y;
   }
 
   animating = moving ||
@@ -1504,35 +1587,33 @@ function render() {
   }
   for (let n = k; n < NCARD; n++) cardAmt[n] = 0;
 
-  const mk = S.started ? w2s(S.walker.x, S.walker.y) : { x: -999, y: -999 };
-  const ds = (S.started && S.walker.tx != null) ? w2s(S.walker.tx, S.walker.ty) : { x: -999, y: -999 };
+  const artKey=[artVersion,c.width,c.height,S.cam.x,S.cam.y,S.zoom,S.rot,
+    ...cardIdx,...cardOut,...cardSeam,...cardBright,...cardAmt].join(',');
+  if(artKey!==lastArtKey) {
+    lastArtKey=artKey;
+    gl.viewport(0, 0, c.width, c.height);
+    gl.useProgram(prog);
+    gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+    gl.enableVertexAttribArray(aPos);
+    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
 
-  gl.viewport(0, 0, c.width, c.height);
-  gl.useProgram(prog);
-  gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
-  gl.enableVertexAttribArray(aPos);
-  gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+    gl.uniform2f(U.uView, view.w, view.h);
+    gl.uniform3fv(U.uBg, BG);
+    gl.uniform2f(U.uCam, S.cam.x, S.cam.y);
+    gl.uniform1f(U.uZoom, S.zoom);
+    gl.uniform1f(U.uRot, S.rot);
+    gl.uniform2f(U.uCard, S.W, S.H);
+    gl.uniform2f(U.uStep, stepX, stepY);
+    gl.uniform2fv(U.uCIdx, cardIdx);
+    gl.uniform4fv(U.uCOut, cardOut);
+    gl.uniform4fv(U.uCSeam, cardSeam);
+    gl.uniform1fv(U.uCBright, cardBright);
+    gl.uniform1fv(U.uCAmt, cardAmt);
+    gl.uniform1f(U.uSeamDark, CFG.seamDark);
+    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, artTex); gl.uniform1i(U.uArt, 0);
 
-  gl.uniform2f(U.uView, view.w, view.h);
-  gl.uniform3fv(U.uBg, BG);
-  gl.uniform2f(U.uCam, S.cam.x, S.cam.y);
-  gl.uniform1f(U.uZoom, S.zoom);
-  gl.uniform1f(U.uRot, S.rot);
-  gl.uniform2f(U.uCard, S.W, S.H);
-  gl.uniform2f(U.uStep, stepX, stepY);
-  gl.uniform2fv(U.uCIdx, cardIdx);
-  gl.uniform4fv(U.uCOut, cardOut);
-  gl.uniform4fv(U.uCSeam, cardSeam);
-  gl.uniform1fv(U.uCBright, cardBright);
-  gl.uniform1fv(U.uCAmt, cardAmt);
-  gl.uniform1f(U.uSeamDark, CFG.seamDark);
-  gl.uniform2f(U.uMark, mk.x, mk.y);
-  gl.uniform2f(U.uDest, ds.x, ds.y);
-  gl.uniform1f(U.uMarkOn, S.started ? 1 : 0);
-  gl.uniform1f(U.uDestOn, (S.started && S.walker.tx != null) ? 1 : 0);
-  gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, artTex); gl.uniform1i(U.uArt, 0);
-
-  gl.drawArrays(gl.TRIANGLES, 0, 6);
+    gl.drawArrays(gl.TRIANGLES, 0, 6);
+  }
   drawReplayLayer();
 }
 
@@ -1562,7 +1643,7 @@ function spin(dir) {
   }
   invalidateReplay();
   syncTimeline();
-  dirty = true;
+  invalidate();
 }
 function rotIndex() { const k = Math.round(S.rotTarget / (Math.PI / 2)) % 4; return k < 0 ? k + 4 : k; }
 /* Where the card's own "up" actually points on screen: the spin you dialled in,
@@ -1586,33 +1667,45 @@ const elSide = elStatus.querySelector(".side");
 const elOri = elStatus.querySelector(".ori");
 const elZoom = elStatus.querySelector(".zoom");
 const elDist = elStatus.querySelector(".dist");
+function setText(el,value) {if(el.textContent!==value)el.textContent=value;}
 function updateHUD() {
-  const side = currentFace();
-  elStatus.className = "status side-" + side;
-  elSide.textContent = side;
-  elOri.textContent = ORI_ARROWS[oriIndex()];
-  elZoom.textContent = Math.round(S.zoom * 100) + "%";
-  // rewound a little? Walked reads the distance up to the playhead
-  const d = (S.cursor < S.trail.length) ? walkedTo(S.cursor) : S.travelled;
-  elDist.textContent = d < 1000 ? Math.round(d) + "px" : (d / S.H).toFixed(1) + "×H";
-  syncReviewHUD();
+  const side=currentFace(),name='status side-'+side;
+  if(elStatus.className!==name)elStatus.className=name;
+  setText(elSide,side);setText(elOri,ORI_ARROWS[oriIndex()]);
+  setText(elZoom,Math.round(S.zoom*100)+'%');
+  const model=replayModel(),d=ReplayCore.distanceAt(model,S.cursor);
+  setText(elDist,d<1000?Math.round(d)+'px':(d/S.H).toFixed(1)+'×H');
 }
 
 /* ============================================================
    MAIN LOOP — draws on demand; idles when nothing is moving
    ============================================================ */
-let lastT = 0;
-function frame(t) {
-  const dt = Math.min(0.05, lastT ? (t - lastT) / 1000 : 0.016);
-  lastT = t;
-  update(dt);
-  if (dirty || animating) {
-    render();
-    dirty = false;
-    updateHUD();
-  }
-  requestAnimationFrame(frame);
+let lastT=0, rafId=null, inFrame=false, lastHudT=-Infinity;
+function scheduleFrame() {
+  if(!inFrame&&rafId===null&&!document.hidden)rafId=requestAnimationFrame(frame);
 }
+function invalidate() {dirty=true;scheduleFrame();}
+function frame(t) {
+  rafId=null;inFrame=true;
+  const dt=Math.min(.05,lastT?(t-lastT)/1000:.016);lastT=t;
+  update(dt);
+  const changed=dirty||animating;
+  if(changed){dirty=false;render();}
+  if(changed&&(t-lastHudT>=100||!animating)) {
+    if(hudPending){paintTimeline();hudPending=false;}
+    updateHUD();lastHudT=t;
+  }
+  inFrame=false;
+  if(dirty||animating||S.play||S.undoHeld||(S.started&&S.walker.tx!=null))scheduleFrame();
+  else lastT=0;
+}
+function suspendFrames() {
+  if(rafId!==null)cancelAnimationFrame(rafId);
+  rafId=null;lastT=0;S.keys=Object.create(null);S.undoHeld=false;
+}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)suspendFrames();else invalidate();});
+window.addEventListener('pagehide',suspendFrames);
+window.addEventListener('pageshow',invalidate);
 
 /* ============================================================
    INPUT
@@ -1622,7 +1715,7 @@ let panning = false, downMoved = 0, downT = 0, lastDist = 0;
 
 function tap(wpt) {
   if (!S.ready) return;
-  dirty = true;
+  invalidate();
   if (S.placingMarker) { addMarker(wpt); return; }
   S.recordBreak = true;
   if (!S.started) {
@@ -1655,7 +1748,7 @@ c.addEventListener("pointermove", (e) => {
       const cs = Math.cos(-S.rot), sn = Math.sin(-S.rot);
       S.cam.x -= (dx * cs - dy * sn) / S.zoom;
       S.cam.y -= (dx * sn + dy * cs) / S.zoom;
-      dirty = true;
+      invalidate();
     }
     p.x = nx; p.y = ny;
   } else if (pointers.size === 2) {
@@ -1695,7 +1788,7 @@ window.addEventListener("keydown", (e) => {
   if (k.startsWith("arrow") || k === " ") e.preventDefault();
   if (e.metaKey || e.ctrlKey) { if (k === "z") undoOnce(); return; }
   S.keys[k] = true;
-  dirty = true;
+  invalidate();
   if (k === "z") { if (!e.repeat) undoOnce(); S.undoHeld = true; return; }
   if (e.repeat) return;
   if (k === "r") doReset();
@@ -1712,13 +1805,14 @@ window.addEventListener("keyup", (e) => {
   const k = e.key.toLowerCase();
   S.keys[k] = false;
   if (k === "z") S.undoHeld = false;
+  invalidate();
 });
 
 c.addEventListener("webglcontextlost", (e) => { e.preventDefault(); });
 c.addEventListener("webglcontextrestored", () => {
   try { buildProgram(); } catch (err) { return; }
   if (S.ready) { uploadArt(); traceCache=null; }
-  dirty = true;
+  invalidate();
 });
 
 /* ============================================================
@@ -1798,7 +1892,7 @@ function startNow() {
   S.walker.x = S.W / 2; S.walker.y = S.H / 2; S.walker.tx = null; S.walker.ty = null;
   S.follow = true; clearWalk();
   S.trail.push({ x: S.walker.x, y: S.walker.y, r: oriIndex() });
-  invalidateReplay(); dirty = true;
+  invalidateReplay(); invalidate();
   setHint("<b>Walking.</b> WASD / arrows, or click a spot to walk there. The other side opens up above, below, left and right; the corners show this side turned 180°. Undo &amp; replay appear at the bottom once you've walked a little.");
 }
 
@@ -1813,14 +1907,14 @@ $("btnForget").addEventListener("click", async () => {
 $("btnStart").addEventListener("click", () => {
   if (!S.ready) return;
   loader.classList.add("hidden");
-  dirty = true;
+  invalidate();
   if (!S.started) setHint("<b>Click anywhere</b> on the card to drop your walker and begin.");
 });
 
 $("btnUpload").addEventListener("click", () => loader.classList.remove("hidden"));
 $("btnHelp").addEventListener("click", toggleHelp);
 $("btnHelpClose").addEventListener("click", toggleHelp);
-function toggleHelp() { help.classList.toggle("hidden"); dirty = true; }
+function toggleHelp() { help.classList.toggle("hidden"); invalidate(); }
 
 $("btnTrail").addEventListener("click", toggleTrail);
 function toggleTrail() {
@@ -1828,7 +1922,7 @@ function toggleTrail() {
   $("btnTrail").classList.toggle("on", S.trailOn);
   // switching it back on redraws whatever the walk recorded while it was off
   if (S.trailOn && S.trail.length) refreshTrace();
-  dirty = true;
+  invalidate();
 }
 
 $("btnReset").addEventListener("click", doReset);
@@ -1838,7 +1932,7 @@ function doReset() {
   setAnchor(0, 0);
   S.walker.x = S.W / 2; S.walker.y = S.H / 2; S.walker.tx = null; S.walker.ty = null;
   S.cam = { x: S.W / 2, y: S.H / 2 }; S.follow = true;
-  clearWalk(); loader.classList.add("hidden"); dirty = true;
+  clearWalk(); loader.classList.add("hidden"); invalidate();
   setHint("<b>Click anywhere</b> on the card to drop your walker and begin.");
 }
 
@@ -1870,22 +1964,29 @@ $("eventSelect").addEventListener("change", e => {
   if (e.target.value !== "") seekEvent(Number(e.target.value));
 });
 $("btnReplayAgain").addEventListener("click", () => { S.cursor = S.reviewDir > 0 ? S.trail.length - 1 : 0; play(S.reviewDir); });
-window.addEventListener("blur", () => { S.keys = Object.create(null); S.undoHeld = false; });
+window.addEventListener("blur", () => { S.keys = Object.create(null); S.undoHeld = false; invalidate(); });
 syncTimeline();
 
 /* ============================================================
    RESIZE + BOOT
    ============================================================ */
 function resize() {
-  dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const oldW=view.w,oldH=view.h;
+  const nextDpr=Math.min(window.devicePixelRatio||1,2);
+  if(nextDpr!==dpr)stampSprites.clear();
+  dpr=nextDpr;
   view.w = window.innerWidth; view.h = window.innerHeight;
+  if(oldW&&oldH)for(const pivot of [S.manualPivot,S.phase&&S.phase.pivot])if(pivot) {
+    pivot.screen.x*=view.w/oldW;pivot.screen.y*=view.h/oldH;
+  }
   c.width = Math.max(1, Math.floor(view.w * dpr));
   c.height = Math.max(1, Math.floor(view.h * dpr));
   c.style.width = view.w + "px"; c.style.height = view.h + "px";
   replayCanvas.width = c.width; replayCanvas.height = c.height;
+  traceCanvas.width=c.width;traceCanvas.height=c.height;staticTraceKey="";
   gl.viewport(0, 0, c.width, c.height);
   if (S.ready) clampZoom();
-  dirty = true;
+  invalidate();
 }
 window.addEventListener("resize", resize);
 window.addEventListener("orientationchange", () => setTimeout(resize, 120));
@@ -1918,7 +2019,7 @@ window.OCM = { S, CFG, gl, render, update, applyImages, w2s, s2w, resize,
   } catch {}
 })();
 
-requestAnimationFrame(frame);
+scheduleFrame();
 })();
 </script>
 </body>

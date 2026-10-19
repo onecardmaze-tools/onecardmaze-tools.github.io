@@ -1,0 +1,8 @@
+{
+  "control": true,
+  "frames": 60,
+  "frameIntervals": {
+    "medianMs": 16.7,
+    "p95Ms": 18.3
+  }
+}

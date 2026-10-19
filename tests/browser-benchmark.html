@@ -1,0 +1,36 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Local rendering benchmark</title>
+<style>body{font:15px system-ui;color:#edf5fc;background:#101722;margin:18px}button{padding:10px}iframe{width:1200px;height:900px;max-width:100%;border:1px solid #345}pre{white-space:pre-wrap}</style>
+<h1>Local rendering benchmark</h1><p>Controlled synthetic artwork and route. Desktop browser only; this is not a phone battery test. Rendering is forced once per browser animation frame.</p>
+<button id="run">Run 1000-vertex replay benchmark</button><button id="control">Measure empty animation-frame control</button><pre id="result">Ready</pre><iframe id="app" src="../index.html?benchmark=1" title="App under test"></iframe>
+<script>
+'use strict';
+const button=document.getElementById('run'),result=document.getElementById('result'),frame=document.getElementById('app');
+document.getElementById('control').onclick=async()=>{
+  result.textContent='Running empty control…';const intervals=[];let previous=null;
+  for(let k=0;k<80;k++){const t=await new Promise(requestAnimationFrame);if(k>=20&&previous!==null)intervals.push(t-previous);previous=t;}
+  intervals.sort((a,b)=>a-b);result.textContent=JSON.stringify({control:true,frames:60,frameIntervals:{medianMs:+intervals[30].toFixed(2),p95Ms:+intervals[57].toFixed(2)}},null,2);
+};
+button.onclick=async()=>{
+  button.disabled=true;result.textContent='Running…';
+  try {
+    const app=frame.contentWindow.OCM;if(!app)throw Error('Wait for the app to load');
+    const canvas=frame.contentDocument.createElement('canvas');canvas.width=750;canvas.height=1050;
+    const ctx=canvas.getContext('2d');ctx.fillStyle='#85d5f5';ctx.fillRect(0,0,750,1050);
+    ctx.strokeStyle='#101820';ctx.lineWidth=8;ctx.strokeRect(4,4,742,1042);
+    app.applyImages(canvas,canvas);frame.contentDocument.getElementById('loader').classList.add('hidden');const S=app.S;S.started=true;
+    S.trail=Array.from({length:1000},(_,k)=>({x:50+(k*67)%640,y:50+(k*109)%940,r:Math.floor(k/25)%4}));
+    S.spins=[];S.replayVersion++;S.cursor=650.1;S.review=true;S.reviewDir=1;S.play=0;
+    (app.refreshTrace||app.rebuildInk)();
+    for(let k=0;k<240;k++)app.update(.05);
+    const renders=[],intervals=[];let previous=null;
+    for(let k=0;k<80;k++) {
+      const time=await new Promise(requestAnimationFrame);
+      if(k>=20&&previous!==null)intervals.push(time-previous);previous=time;
+      S.cursor=650.1+k*.002;const begin=performance.now();app.render();
+      if(k>=20)renders.push(performance.now()-begin);
+    }
+    const stats=a=>{a.sort((a,b)=>a-b);return {medianMs:+a[Math.floor(a.length*.5)].toFixed(2),p95Ms:+a[Math.floor(a.length*.95)].toFixed(2)}};
+    result.textContent=JSON.stringify({viewport:[frame.clientWidth,frame.clientHeight],devicePixelRatio:devicePixelRatio,frames:60,render:stats(renders),frameIntervals:stats(intervals)},null,2);
+  }catch(e){result.textContent='Error: '+e.message;}finally{button.disabled=false;}
+};
+</script></html>
