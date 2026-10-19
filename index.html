@@ -1867,7 +1867,10 @@ function rotIndex() { const k = Math.round(S.rotTarget / (Math.PI / 2)) % 4; ret
    horizontal edge also turns it over (see tileLayer). */
 function oriIndex() {
   const j = Math.floor((S.started ? S.walker.y : S.cam.y) / S.H);
-  return ((((j % 2) + 2) % 2) === 1) ? (rotIndex() + 2) % 4 : rotIndex();
+  // During an event the target is already the final orientation. Report the
+  // displayed orientation, so arrival never claims the turn has happened early.
+  const q = S.phase && S.phase.event.type === "spin" ? ReplayCore.mod(Math.round(S.rot / (Math.PI / 2)), 4) : rotIndex();
+  return ((((j % 2) + 2) % 2) === 1) ? (q + 2) % 4 : q;
 }
 function currentFace() {
   if (!S.ready) return "—";

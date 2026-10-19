@@ -105,6 +105,15 @@ assert(checked>20);
 // Pausing mid-spin freezes the phase; same-direction resume continues that phase.
 fixture();app.play(1);
 for(let k=0;k<1000;k++){app.update(.01);if(S.phase && S.phase.event.type==='spin' && S.phase.elapsed>.45)break;}
+assert(S.phase);
+// Arrival reports the displayed card orientation, not the eventual target.
+fixture();app.play(-1);
+for(let k=0;k<1000;k++){app.update(.01);if(S.phase && S.phase.event.type==='spin' && S.phase.elapsed>.02)break;}
+const fold=Math.floor(S.walker.y/S.H)%2?2:0;
+const expectedArrow=['↑','→','↓','←'][(S.phase.event.toQ+fold)%4];
+assert(elements.get('replayFace').textContent.endsWith(expectedArrow));
+fixture();app.play(1);
+for(let k=0;k<1000;k++){app.update(.01);if(S.phase && S.phase.event.type==='spin' && S.phase.elapsed>.45)break;}
 assert(S.phase);const paused=S.phase,elapsed=paused.elapsed,rotation=S.rot;
 app.play(1);assert.equal(S.play,0);app.update(.05);
 assert.strictEqual(S.phase,paused);near(S.phase.elapsed,elapsed);near(S.rot,rotation);
