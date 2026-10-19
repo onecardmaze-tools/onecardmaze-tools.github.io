@@ -12,7 +12,7 @@ Everything is a single self-contained file. No build, no backend, no dependencie
 
 ## Play online
 
-**[Open One Card Maze Helper](https://zhonghaoxue.github.io/one-card-maze-helper/)** — no installation or account required.
+**[Open One Card Maze Helper](https://blog.xuezhonghao.com/one-card-maze-helper/)** — no installation or account required.
 
 An unofficial, open-source OneCardMaze / One Card Maze companion with path tracking,
 card rotation, undo, and replay. Your uploaded images stay in your browser.
