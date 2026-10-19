@@ -145,6 +145,25 @@
     #replayDetail{font-size:11px;margin-bottom:7px}.footer{gap:7px}
   }
   @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+  #markerPlacementTip{position:fixed;left:50%;top:96px;transform:translateX(-50%);z-index:13;
+    max-width:calc(100% - 20px);box-sizing:border-box;display:flex;align-items:center;gap:12px;
+    border:1px solid var(--teal);border-radius:12px;background:#0b1523f5;padding:8px 12px;font-size:12px}
+  #markerPlacementTip button{padding:5px 9px;font-size:11px}
+  #markerPanel{position:fixed;right:14px;top:85px;z-index:12;width:285px;max-height:65vh;overflow:auto;
+    box-sizing:border-box;padding:16px;border:1px solid #446071;border-radius:15px;background:#0b1523f5;box-shadow:0 12px 30px #0007}
+  .marker-title{display:flex;justify-content:space-between;align-items:center}.marker-title button{padding:3px 9px}
+  #markerPanel p{font-size:12px;line-height:1.5;color:#b4c4d7;margin:10px 0}
+  .marker-fields{display:flex;gap:12px}.marker-fields label{flex:1;min-width:0}
+  #markerPanel label{font-size:11px;color:var(--muted);display:block}
+  #markerPanel select,#markerPanel input{box-sizing:border-box;width:100%;margin:5px 0 10px;background:#172638;color:var(--ink);
+    border:1px solid #456075;border-radius:7px;min-height:34px;padding:6px;font:inherit;font-size:13px}
+  #markerPanel input[type=color]{padding:3px;cursor:pointer}
+  #btnPlaceMarker{width:100%;font-size:12px;white-space:normal}
+  #markerList{padding:0;list-style:none;margin:12px 0 0}#markerList li{display:flex;gap:5px;margin-top:6px}
+  #markerList li button:first-child{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;text-align:left;font-size:11px}
+  #markerList li button{padding:7px}
+  @media(max-width:700px){#markerPanel{right:9px;top:96px;width:min(285px,calc(100% - 18px));max-height:55vh}}
 </style>
 </head>
 <body>
@@ -160,7 +179,7 @@
     <div class="tools">
       <button id="btnUpload">Images</button>
       <button id="btnTrail" class="on">Trail</button>
-      <button id="btnDoor" title="Pause at a spin, then mark the next door on the map" aria-pressed="false">Mark door</button>
+      <button id="btnMarkers" aria-expanded="false" aria-controls="markerPanel">Markers</button>
       <button id="btnSpinL" title="Rotate the card left (Q)">⟲</button>
       <button id="btnSpinR" title="Rotate the card right (E)">⟳</button>
       <button id="btnReset">Reset</button>
@@ -201,6 +220,20 @@
     </div>
   </div>
 </div>
+
+<div id="markerPlacementTip" hidden role="status">Click / tap the map to place a marker <button id="btnCancelMarker">Cancel</button></div>
+<section id="markerPanel" hidden aria-label="Markers">
+  <div class="marker-title"><strong>Markers</strong><button id="btnMarkersClose" aria-label="Close markers">×</button></div>
+  <p>Place anything you want to remember. Each marker repeats on every copy of its card face.</p>
+  <div class="marker-fields">
+    <label for="markerShape">Shape<select id="markerShape"><option value="circle">Circle</option><option value="diamond">Diamond</option><option value="square">Square</option><option value="triangle">Triangle</option><option value="star">Star</option></select></label>
+    <label for="markerColor">Colour<input id="markerColor" type="color" value="#ff5b7a" /></label>
+  </div>
+  <label class="marker-label" for="markerLabel">Label (optional)<input id="markerLabel" type="text" maxlength="24" placeholder="Anything you like" /></label>
+  <button id="btnPlaceMarker" class="primary">Place marker</button>
+  <p id="markerHint">Choose a style, then place it on the map. Markers do not control the walker.</p>
+  <ul id="markerList" aria-label="Your markers"></ul>
+</section>
 
 <div class="overlay" id="loader">
   <div class="panel">
@@ -243,11 +276,12 @@
       <li><b>Go somewhere</b> — click / tap a spot and the walker walks there.</li>
       <li><b>Cross any edge</b> — all eight cards around you are drawn, so you can see where every edge leads before you get there. <b>Left, right, up and down</b> show the <b>other side</b>; the four <b>corners</b> show the <b>same side turned 180°</b> (a diagonal step crosses two folds). Step over an edge and the view <b>slides the card you land on into the middle</b>; keep going and you're simply on the other face.</li>
       <li><b>Watch your "up"</b> — crossing a <b>side</b> edge keeps you the same way up, but crossing a <b>top or bottom</b> edge tumbles the card, so you come out turned around 180°.</li>
-      <li><b>Rotate the card</b> — <span class="keycap">Q</span> / <span class="keycap">E</span> or the <b>⟲ / ⟳</b> buttons spin the whole card 90°, so a door's arrow can point up.</li>
+      <li><b>Rotate the card</b> — <span class="keycap">Q</span> / <span class="keycap">E</span> or the <b>⟲ / ⟳</b> buttons rotate the whole card freely in 90° steps.</li>
       <li><b>Zoom</b> — mouse wheel / pinch, or the <b>+ / −</b> buttons.</li>
       <li><b>Pan</b> — drag anywhere to look around; moving again brings your card back to the middle.</li>
+      <li><b>Markers</b> — choose any shape, colour, and optional label, then click the map to place it. Markers repeat on every copy of that face and stay independent of walking, rotation, reset, and replay. Select a marker in the list to edit or remove it. There are no required starts, destinations, or routes.</li>
       <li><b>Trail</b> — toggles the path you've walked. It's a <b>hollow ribbon</b> whose colour records the card orientation it was laid at, with little <b>arrows</b> inside pointing to the card's "up" back then. It's marked on the <b>card</b>, so it shows on every copy of a face — walk off and come back and it's still there. Where a crossing <b>tumbled you 180°</b> a <b>⟲ badge</b> is stamped beside the trail; a plain seam with no badge means you came out the same way up.</li>
-      <li><b>Undo &amp; replay</b> — once you've walked a little a <b>transport bar</b> appears at the bottom. <b>↶</b> steps back (hold it, or <span class="keycap">Z</span>, to wind smoothly), <b>◀</b> / <b>▶</b> replay your whole walk backwards or forwards (<span class="keycap">Space</span> / <span class="keycap">Shift</span>+<span class="keycap">Space</span>), the speed button cycles how fast that playback runs (<b>0.1×</b> / <b>0.2×</b> / 0.5× / 1× / 2× / 4× — it starts slow, at 0.2×), and the <b>slider</b> scrubs anywhere along it. <b>|‹ / ›|</b> jump between flips and spins. The event menu jumps directly to a numbered event. Flip and spin events pause before and after the transition; the current face and up direction appear in the replay panel. The replay <b>turns the card too</b>, so you see the spins you made — and spins you made without walking collapse to the shortest single turn (three to the left replay as one to the right). Trail colours record the card’s up direction when drawn: gold ↑, blue →, red ↓, violet ←. They do not mean front/back or playback progress. To highlight a relevant door, pause at a spin using the event menu, click <b>Mark door</b>, then click that door on the map. Door arrows must point up to unlock in the physical game; this free-walk helper does not detect doors or verify a solution. Winding back is a <b>preview</b>: the complete route stays faintly visible and a white segment highlights the current visit, and the moment you <b>walk again</b> the part you wound past is dropped.</li>
+      <li><b>Undo &amp; replay</b> — once you've walked a little a <b>transport bar</b> appears at the bottom. <b>↶</b> steps back (hold it, or <span class="keycap">Z</span>, to wind smoothly), <b>◀</b> / <b>▶</b> replay your whole walk backwards or forwards (<span class="keycap">Space</span> / <span class="keycap">Shift</span>+<span class="keycap">Space</span>), the speed button cycles how fast that playback runs (<b>0.1×</b> / <b>0.2×</b> / 0.5× / 1× / 2× / 4× — it starts slow, at 0.2×), and the <b>slider</b> scrubs anywhere along it. <b>|‹ / ›|</b> jump between flips and spins. The event menu jumps directly to a numbered event. Flip and spin events pause before and after the transition; the current face and up direction appear in the replay panel. The replay <b>turns the card too</b>, so you see the spins you made — and spins you made without walking collapse to the shortest single turn (three to the left replay as one to the right). Trail colours record the card’s up direction when drawn: gold ↑, blue →, red ↓, violet ←. They do not mean front/back or playback progress. Winding back is a <b>preview</b>: the complete route stays faintly visible and a white segment highlights the current visit, and the moment you <b>walk again</b> the part you wound past is dropped.</li>
       <li><b>Reset</b> — <span class="keycap">R</span> clears the walker and lets you pick a new start.</li>
     </ul>
     <div class="row"><button class="primary" id="btnHelpClose" style="flex:1;padding:12px">Got it</button></div>
@@ -263,7 +297,7 @@
 
 <div id="toast"></div>
 
-<script src="replay-core.js"></script>
+<script src="replay-core.js?v=3"></script>
 <script>
 (function () {
 "use strict";
@@ -284,10 +318,7 @@
    pixel works out which tile it is on and samples the packed art
    atlas directly. The trail is baked into a second atlas with
    canvas2D and repeated by the same shader, so the trace rides on
-   the card and shows on every copy of a face. A third atlas -- the
-   same layout but one texel per world pixel -- records, per stroke,
-   the index of the point that laid it (the first one to reach each
-   texel), for the live trail. In review, that atlas stays visible as a faint
+   the card and shows on every copy of a face. The live atlas stays visible in review as a faint
    full-route reference. A separate two-face Path2D layer tracks
    direction-aware progress and the current visit. ReplayCore supplies
    seam geometry and a distance-based event timeline.
@@ -306,10 +337,7 @@ const CFG = {
   speedFrac:      0.55,   // walker speed, card-heights per second
   camLerp:        8,      // how fast the view eases onto the centred card
   rotLerp:        14,     // how fast the card settles after a 90° spin
-  trailMax:       4000,   // points kept in the walk (the history the timeline can reach)
-  trailDrop:      1000,   // points dropped at a time when the walk hits the cap
-  inkMax:         65000,  // mask index ceiling; above this the trace is rebuilt and renumbered
-  trailStepFrac:  0.010,
+  // Straight motion retains only its endpoints; render samples are not stored.
   trailWidthFrac: 0.022,  // ribbon width, fraction of the card's shorter side
   trailCasingFrac:0.30,   // dark casing around the ribbon, fraction of the ribbon width
   trailHollowFrac:0.52,   // hollow channel width, fraction of the ribbon
@@ -317,7 +345,6 @@ const CFG = {
   trailArrowGapFrac:3.2,  // gap between arrows, multiples of the ribbon width
   trailEdgeFrac:  0.40,   // the trace's fade ramp, as a fraction of the card's own
   turnBadgeFrac:  2.40,   // diameter of the "turned 180°" badge, multiples of the ribbon width
-  clickMoveEps:   0.02,
   spinArrive:     0.35,
   spinDuration:   0.55,
   spinSettle:     0.45,
@@ -327,8 +354,6 @@ const CFG = {
   replayWalkFrac: 1.2,   // card heights/second at 1×; independent of sampling density
   replaySpeeds:   [0.1, 0.2, 0.5, 1, 2, 4],  // the speeds the transport cycles through
   replaySpeed:    0.2,    // ...and the one it starts on (slow enough to follow the route)
-  rewindRate:     95,     // points per second while undo is held (≈2× the walk speed)
-  undoPoints:     20,     // one undo step: 20 points ≈ a fifth of a card
 };
 
 /* Trail colours keyed to the card's orientation when the trace was laid, and the
@@ -347,11 +372,12 @@ const S = {
   rot: 0, rotTarget: 0,
   started: false,
   walker: { x: 0, y: 0, tx: null, ty: null },
-  trail: [], trailOn: true, travelled: 0, trailBase: 0,
-  spins: [],                       // { i, q } -- a turn recorded when the walk had i points
+  trail: [], trailOn: true, travelled: 0,
+  spins: [],                       // { i, q } -- a turn at a compact route vertex
   rotQ0: 0,                        // the card's orientation when the recorded walk began
-  cursor: 0,                       // playhead along the recorded walk, in points
-  doorNotes: [], markingDoor: false,
+  cursor: 0,                       // interpolated position along the compact route vertices
+  markers: [], placingMarker: false, selectedMarker: null, nextMarkerId: 1,
+  recordBreak: true,
   review: false, reviewDir: 1, reviewDone: false, reviewEvent: null,
   replayModel: null, replayVersion: 0, modelVersion: -1, eventDone: new Set(),
   phase: null, // event arrival -> action -> settle, kept separate from the recorded route
@@ -419,12 +445,10 @@ uniform float uSeamDark;
 uniform float uTrailOn;
 uniform float uTrailEdge;   // the trace's own, shorter edge fade
 uniform float uReview;
-uniform vec2  uInkProg;     // playhead, as an (hi, lo) byte pair over the recorded points
 uniform vec2  uMark, uDest;
 uniform float uMarkOn, uDestOn;
 uniform sampler2D uArt;                  // atlas: W x 2H  (front on top, back below)
 uniform sampler2D uTrail;                // atlas: W*SS x 2H*SS
-uniform sampler2D uInk;                  // same layout, one texel per world pixel: R,G = index
 
 vec2 gWorld;
 
@@ -468,20 +492,24 @@ void tileLayer(vec2 idx, vec4 outer, vec4 seam, float vis, float bright, float s
   // faint fold line where this card meets its neighbour -- on the artwork only,
   // so the trail crosses the seam unbroken
   art *= mix(1.0 - uSeamDark, 1.0, edgeMask(local, seam, uCard));
+  // A real border in CSS pixels, independent of printed artwork and scan resolution.
+  // Only the artwork is darkened: an unconstrained trail can cross it continuously.
+  vec4 edgePx = vec4(local.x * uCard.x, (1.0-local.x) * uCard.x,
+                     local.y * uCard.y, (1.0-local.y) * uCard.y) * uZoom;
+  float border = 0.0;
+  if (seam.x > .001) border = max(border, 1.0-smoothstep(1.1,1.8,edgePx.x));
+  if (seam.y > .001) border = max(border, 1.0-smoothstep(1.1,1.8,edgePx.y));
+  if (seam.z > .001) border = max(border, 1.0-smoothstep(1.1,1.8,edgePx.z));
+  if (seam.w > .001) border = max(border, 1.0-smoothstep(1.1,1.8,edgePx.w));
+  art = mix(art, vec3(.012,.018,.026), border * .96);
   if (uTrailOn > 0.5) {
     vec4 t = texture2D(uTrail, uv);
     // The trace is a record the player reads: it still fades near an edge that has
     // no neighbour, but over a much shorter distance than the artwork, so a badge
     // stamped beside the seam stays crisp instead of dissolving into the dark.
-    // Every stroke also carries the index of the point that laid it in uInk, as two
-    // bytes, so "show the walk up to here" is a pair of byte compares -- exact on any
-    // precision, and no redrawing at all. The mask keeps each texel's FIRST stroke,
-    // so the trace comes back complete as the playhead sweeps forward.
-    vec2 mk = texture2D(uInk, uv).rg * 255.0;
-    float show = mk.x < uInkProg.x - 0.5 ? 1.0
-               : (mk.x > uInkProg.x + 0.5 ? 0.0 : step(mk.y, uInkProg.y + 0.5));
+    float show = 1.0; // The full reference is independent of compact timeline indices.
     // Review never erases the full route. Exact, direction-aware progress is drawn
-    // separately, so overlapping visits are not inferred from the first-touch mask.
+    // separately from exact segments, including repeated visits.
     if (uReview > 0.5) { show = 0.28; t.rgb = mix(vec3(dot(t.rgb, vec3(.3,.59,.11))), t.rgb, .5); }
     tA = clamp(t.a * edgeMask(local, outer * uTrailEdge, uCard) * show, 0.0, 1.0);
     art = mix(art, t.rgb, tA);
@@ -531,7 +559,7 @@ void main() {
 
 const UNIFORMS = ["uView","uBg","uCam","uZoom","uRot","uCard","uStep",
   "uCIdx","uCOut","uCSeam","uCBright","uCAmt","uSeamDark","uTrailOn","uTrailEdge",
-  "uReview","uInkProg","uMark","uDest","uMarkOn","uDestOn","uArt","uTrail","uInk"];
+  "uReview","uMark","uDest","uMarkOn","uDestOn","uArt","uTrail"];
 
 let prog = null, quadBuf = null, aPos = -1;
 const U = {};
@@ -571,14 +599,12 @@ try { buildProgram(); } catch (e) {
 }
 
 /* ---- textures: a W x 2H atlas for the art, a W*SS x 2H*SS one for the trace,
-       and a 1-px-per-world-px mask that records WHEN each bit of trace was laid ---- */
-let artTex = null, trailTex = null, markTex = null;
+       with compact route vertices supplying replay geometry ---- */
+let artTex = null, trailTex = null;
 const artCv = document.createElement("canvas"), artCtx = artCv.getContext("2d");
 const trailCv = document.createElement("canvas"), trailCtx = trailCv.getContext("2d");
-const markCv = document.createElement("canvas"), markCtx = markCv.getContext("2d");
 const stg = document.createElement("canvas"), stgCtx = stg.getContext("2d");
-const stg2 = document.createElement("canvas"), stg2Ctx = stg2.getContext("2d");
-let trailDirty = null, markDirty = null;
+let trailDirty = null;
 
 function pixelStore() {
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
@@ -606,17 +632,6 @@ function uploadTrail() {
   gl.bindTexture(gl.TEXTURE_2D, trailTex);
   pixelStore();
   gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, trailCv);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-}
-function uploadMark() {
-  if (markTex) gl.deleteTexture(markTex);
-  markTex = gl.createTexture();
-  gl.bindTexture(gl.TEXTURE_2D, markTex);
-  pixelStore();
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, markCv);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -674,18 +689,12 @@ function applyImages(front, back) {
   trailCtx.clearRect(0, 0, trailCv.width, trailCv.height);
   trailDirty = null;
 
-  // progress mask: same layout, one texel per world pixel
-  markCv.width = S.W; markCv.height = S.H * 2;
-  markCtx.setTransform(1, 0, 0, 1, 0, 0);
-  markCtx.globalCompositeOperation = "source-over";
-  markCtx.clearRect(0, 0, markCv.width, markCv.height);
-  markDirty = null;
-
   uploadArt();
   uploadTrail();
-  uploadMark();
 
   S.ready = true;
+  S.persistMarkers = false;
+  S.markers = []; S.nextMarkerId = 1; S.selectedMarker = null; setMarkerMode(false); syncMarkers();
   S.cam = { x: S.W / 2, y: S.H / 2 };
   S.walker = { x: S.W / 2, y: S.H / 2, tx: null, ty: null };
   S.started = false; S.follow = true;
@@ -759,48 +768,6 @@ const Ink = (function () {
       if (tt >= 0 && tt <= 1) { t = Math.min(t, tt); hit = true; }
     }
     return hit ? { x: ax + (bx - ax) * t, y: ay + (by - ay) * t } : null;
-  }
-
-  /* ---- the progress mask ---------------------------------------------------
-     Every stroke is mirrored into a second, one-texel-per-world-pixel canvas that
-     records the index of the point that laid it (R = high byte, G = low byte). The
-     shader shows trace only where index <= the playhead, so replaying or rewinding
-     the walk is one uniform rather than a redraw.
-
-     The mask is painted `destination-over`, so a texel keeps the index of the FIRST
-     stroke that reached it: the trace then appears, complete, at exactly the moment
-     it was first drawn there, and a strand is never knocked out by a later one
-     crossing it. (The ink itself is still painted normally, so the artwork's look --
-     over and under at a crossing -- is unchanged.) The capsule is a little fatter
-     than the ink (casing + slack), so no ink can be left behind. */
-  let seq = 0;                                            // index of the point being drawn
-  const markW = () => outer * (1 + CFG.trailCasingFrac) + 6;
-  function markRect(x0, y0, x1, y1) {
-    const d = markDirty || (markDirty = { x0: 1e9, y0: 1e9, x1: -1e9, y1: -1e9 });
-    d.x0 = Math.min(d.x0, x0); d.y0 = Math.min(d.y0, y0);
-    d.x1 = Math.max(d.x1, x1); d.y1 = Math.max(d.y1, y1);
-  }
-  function markColour(idx) {
-    const v = clamp(idx | 0, 0, 65535);                   // two bytes: exact in any float
-    return "rgb(" + (v >> 8) + "," + (v & 255) + ",255)";
-  }
-  function markSeg(face, ax, ay, bx, by, idx) {
-    const g = markCtx, h = markW() * 0.5;
-    g.setTransform(1, 0, 0, 1, 0, face * S.H);
-    g.globalCompositeOperation = "destination-over";
-    g.strokeStyle = markColour(idx); g.lineWidth = h * 2;
-    g.lineCap = "round"; g.lineJoin = "round";
-    g.beginPath(); g.moveTo(ax, ay); g.lineTo(bx, by); g.stroke();
-    markRect(Math.min(ax, bx) - h, face * S.H + Math.min(ay, by) - h,
-             Math.max(ax, bx) + h, face * S.H + Math.max(ay, by) + h);
-  }
-  function markDisc(face, x, y, r, idx) {
-    const g = markCtx;
-    g.setTransform(1, 0, 0, 1, 0, face * S.H);
-    g.globalCompositeOperation = "destination-over";
-    g.fillStyle = markColour(idx);
-    g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill();
-    markRect(x - r, face * S.H + y - r, x + r, face * S.H + y + r);
   }
 
   function arrow(g, px, py, ux, uy) {
@@ -900,21 +867,20 @@ const Ink = (function () {
   }
 
   // round off the start of a subpath (a fresh dot)
-  function dot(face, lx, ly, r, idx) {
+  function dot(face, lx, ly, r) {
     const g = trailCtx, SS = TRAIL_SS, off = face * S.H * SS;
     g.setTransform(SS, 0, 0, SS, 0, off);
     g.globalCompositeOperation = "destination-over";
-    g.fillStyle = "rgba(9,13,20,0.42)";
+    g.fillStyle = "#07111f";
     g.beginPath(); g.arc(lx, ly, outer * (1 + CFG.trailCasingFrac) * 0.5, 0, TAU); g.fill();
     g.globalCompositeOperation = "source-over";
     g.fillStyle = TRAIL_COLORS[r];
     g.beginPath(); g.arc(lx, ly, outer * 0.5, 0, TAU); g.fill();
     dirty(lx - outer, face * S.H + ly - outer, lx + outer, face * S.H + ly + outer);
-    markDisc(face, lx, ly, markW() * 0.5, idx);
   }
 
   // draw one segment (ax,ay)->(bx,by) on `face`, deferring its punch by a segment
-  function seg(face, ax, ay, bx, by, r, idx) {
+  function seg(face, ax, ay, bx, by, r) {
     const g = trailCtx, SS = TRAIL_SS, off = face * S.H * SS;
     g.setTransform(SS, 0, 0, SS, 0, off);
     g.lineJoin = "round"; g.lineCap = "butt";
@@ -926,7 +892,7 @@ const Ink = (function () {
     const corner = pending && (pending.dx * ux + pending.dy * uy) < 0.999;
     if (corner) {
       g.globalCompositeOperation = "destination-over";
-      g.fillStyle = "rgba(9,13,20,0.42)";
+      g.fillStyle = "#07111f";
       g.beginPath(); g.arc(ax, ay, outer * (1 + CFG.trailCasingFrac) * 0.5, 0, TAU); g.fill();
       g.globalCompositeOperation = "source-over";
       g.fillStyle = TRAIL_COLORS[r];
@@ -937,13 +903,12 @@ const Ink = (function () {
     if (L > 1e-6) {
       g.globalCompositeOperation = "destination-over";
       g.lineWidth = outer * (1 + CFG.trailCasingFrac);
-      g.strokeStyle = "rgba(9,13,20,0.42)";
+      g.strokeStyle = "#07111f";
       g.beginPath(); g.moveTo(ax - ux * ov, ay - uy * ov); g.lineTo(bx, by); g.stroke();
 
       g.globalCompositeOperation = "source-over";
       g.lineWidth = outer; g.strokeStyle = TRAIL_COLORS[r];
       g.beginPath(); g.moveTo(ax - ux * ov, ay - uy * ov); g.lineTo(bx, by); g.stroke();
-      markSeg(face, ax - ux * ov, ay - uy * ov, bx, by, idx);
 
       const up = TRAIL_UP[r];
       const arrows = [];
@@ -954,7 +919,7 @@ const Ink = (function () {
         d += agap;
       }
       acc = (acc + L) % agap;
-      pending = { face: face, idx: idx, ax, ay, bx, by, r, ux: up.x, uy: up.y, dx: ux, dy: uy, arrows, decor: [] };
+      pending = { face: face, ax, ay, bx, by, r, ux: up.x, uy: up.y, dx: ux, dy: uy, arrows, decor: [] };
 
       dirty(Math.min(ax, bx), face * S.H + Math.min(ay, by),
             Math.max(ax, bx), face * S.H + Math.max(ay, by));
@@ -965,10 +930,9 @@ const Ink = (function () {
     metrics();
     r = (((r | 0) % 4) + 4) % 4;
     const p = canon(x, y);
-    const idx = seq++;                 // the mask records which point laid this ink
 
     if (!last) {
-      dot(p.face, p.lx, p.ly, r, idx);
+      dot(p.face, p.lx, p.ly, r);
       acc = agap * 0.5;
       last = { face: p.face, i: p.i, j: p.j, lx: p.lx, ly: p.ly, r: r, wx: x, wy: y };
       return;
@@ -979,7 +943,7 @@ const Ink = (function () {
 
     if (!close) {
       // jumped a whole tile (or a reset): round off and start a fresh subpath
-      dot(p.face, p.lx, p.ly, r, idx);
+      dot(p.face, p.lx, p.ly, r);
       finishPending(0, true);
       acc = agap * 0.5;
     } else if (p.face !== last.face || rowOdd(p.j) !== rowOdd(last.j)) {
@@ -992,10 +956,10 @@ const Ink = (function () {
         ? { x: (p.i > last.i ? p.i : p.i + 1) * S.W, y: (p.j > last.j ? p.j : p.j + 1) * S.H }
         : (seamCross(last.wx, last.wy, x, y) || { x: last.wx, y: last.wy });
       const o = localOn(last.i, last.j, H.x, H.y);
-      if (Math.hypot(o.lx - last.lx, o.ly - last.ly) > 1e-6) seg(last.face, last.lx, last.ly, o.lx, o.ly, last.r, idx);
+      if (Math.hypot(o.lx - last.lx, o.ly - last.ly) > 1e-6) seg(last.face, last.lx, last.ly, o.lx, o.ly, last.r);
       finishPending(0, true);
       const n = localOn(p.i, p.j, H.x, H.y);
-      if (Math.hypot(p.lx - n.lx, p.ly - n.ly) > 1e-6) seg(p.face, n.lx, n.ly, p.lx, p.ly, r, idx);
+      if (Math.hypot(p.lx - n.lx, p.ly - n.ly) > 1e-6) seg(p.face, n.lx, n.ly, p.lx, p.ly, r);
 
       // A crossing that changes the row parity (a top/bottom edge, or a diagonal hop
       // over a corner) tumbles the card 180°; a side crossing does not. Mark the
@@ -1011,16 +975,15 @@ const Ink = (function () {
         const mark = { face: p.face, odd: oddJ, lx: bl.lx, ly: bl.ly, r: r };
         if (pending) pending.decor.push(mark);
         else turnMark(mark.face, mark.odd, mark.lx, mark.ly, mark.r);
-        markDisc(mark.face, mark.lx, mark.ly, turnR * 1.15 + 3, idx);
         dirty(bl.lx - turnR * 2, p.face * S.H + bl.ly - turnR * 2,
               bl.lx + turnR * 2, p.face * S.H + bl.ly + turnR * 2);
       }
     } else if (r !== last.r) {
       // the card was spun mid-walk: change the colour exactly at this point
       finishPending(0, true);
-      if (Math.hypot(p.lx - last.lx, p.ly - last.ly) > 1e-6) seg(p.face, last.lx, last.ly, p.lx, p.ly, r, idx);
+      if (Math.hypot(p.lx - last.lx, p.ly - last.ly) > 1e-6) seg(p.face, last.lx, last.ly, p.lx, p.ly, r);
     } else {
-      seg(p.face, last.lx, last.ly, p.lx, p.ly, r, idx);
+      seg(p.face, last.lx, last.ly, p.lx, p.ly, r);
     }
     last = { face: p.face, i: p.i, j: p.j, lx: p.lx, ly: p.ly, r: r, wx: x, wy: y };
   }
@@ -1030,21 +993,15 @@ const Ink = (function () {
     gl.bindTexture(gl.TEXTURE_2D, trailTex);
     pixelStore();
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, trailCv);
-    if (markTex) {
-      gl.bindTexture(gl.TEXTURE_2D, markTex);
-      gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, markCv);
-    }
+
   }
 
   function reset() {
-    last = null; pending = null; acc = 0; seq = 0;
-    trailDirty = null; markDirty = null;
+    last = null; pending = null; acc = 0;
+    trailDirty = null;
     trailCtx.setTransform(1, 0, 0, 1, 0, 0);
     trailCtx.globalCompositeOperation = "source-over";
     trailCtx.clearRect(0, 0, trailCv.width, trailCv.height);
-    markCtx.setTransform(1, 0, 0, 1, 0, 0);
-    markCtx.globalCompositeOperation = "source-over";
-    markCtx.clearRect(0, 0, markCv.width, markCv.height);
     reload();
     metrics();
   }
@@ -1052,8 +1009,7 @@ const Ink = (function () {
   function flush() {
     finishPending(0, true);
     uploadRect(trailCv, trailTex, stg, stgCtx, trailDirty, TRAIL_SS);
-    uploadRect(markCv, markTex, stg2, stg2Ctx, markDirty, 1);
-    trailDirty = null; markDirty = null;
+    trailDirty = null;
   }
 
   return { add, reset, reload, flush, metrics, get width() { return outer; } };
@@ -1196,15 +1152,6 @@ function eventName(e, dir) {
   return e.fromFace === e.toFace ? "Double fold · same face" : "Flip · " +
     ((dir > 0 ? e.fromFace : e.toFace) ? "back → front" : "front → back");
 }
-function doorAfter(event) {
-  if (!event || event.type !== "spin") return null;
-  const dir = S.reviewDir;
-  const spins = replayModel().events.filter(e => e.type === "spin");
-  const boundary = dir > 0 ? spins.find(e => e.at > event.at) : spins.slice().reverse().find(e => e.at < event.at);
-  return S.doorNotes.find(note => note.dir === dir && (dir > 0 ?
-    note.at >= event.at - 1e-6 && (!boundary || note.at < boundary.at) :
-    note.at <= event.at + 1e-6 && (!boundary || note.at > boundary.at)));
-}
 function setReplayTitle(text) {
   const el = $("replayEvent");
   if (el.textContent !== text) el.textContent = text;
@@ -1219,7 +1166,7 @@ function syncReviewHUD() {
     for (const e of events) {
       select.add(new Option((e.id + 1) + ". " + eventName(e, 1), String(e.id)));
       const tick = document.createElement("i"); tick.className = e.type;
-      tick.style.left = (e.at / Math.max(1, S.trail.length - 1) * 100) + "%"; ticks.appendChild(tick);
+      tick.style.left = (ReplayCore.distanceAt(replayModel(),e.at) / (replayModel().distances.slice(-1)[0] || 1) * 100) + "%"; ticks.appendChild(tick);
     }
     $("btnPrevEvent").disabled = !events.some(e => e.at < S.cursor - 1e-5);
     $("btnNextEvent").disabled = !events.some(e => e.at > S.cursor + 1e-5);
@@ -1247,7 +1194,7 @@ function syncReviewHUD() {
   if (S.reviewDone) {
     setReplayTitle("Replay complete");
     $("replayDetail").textContent = (S.reviewDir < 0 ? "Returned to the recorded start. " : "Reached the recorded end. ") +
-      "The full route is preserved. This is a route review, not a verified win.";
+      "The full route is preserved. Replay it again or explore freely.";
   } else if (phase) {
     const e = phase.event, spin = e.type === "spin";
     const pre = spin ? CFG.spinArrive : CFG.flipArrive;
@@ -1256,8 +1203,7 @@ function syncReviewHUD() {
     setReplayTitle((e.id + 1) + ". " + eventName(e, S.reviewDir));
     $("replayDetail").textContent = step + " · " + (spin ?
       (step === "Arrive" ? "Hold at the recorded turn." : step === "Transition" ? "Turning around the walker; walking is paused." :
-       (doorAfter(e) ? "The marked next door is highlighted. Check its arrow points ↑; this helper does not validate it." :
-       "Check the next white route segment. Door arrows must point ↑ to unlock; pause here and use Mark door to highlight yours.")) :
+       "The turn is complete. The dashed white segment previews the next part of the recorded route.") :
       "Paired rings mark the connected exit and entry. " + (step === "Settle" ? "Let the new face settle before walking." : "Walking pauses while the view crosses the fold."));
   } else if (S.reviewEvent && !S.play) {
     setReplayTitle((S.reviewEvent.id + 1) + ". " + eventName(S.reviewEvent, S.reviewDir));
@@ -1322,7 +1268,8 @@ function advanceReplay(dt) {
       S.rot = reducedMotion ? (f >= 1 ? p.toRot : p.fromRot) : p.fromRot + (p.toRot - p.fromRot) * ease;
       S.rotTarget = p.toRot;
     } else {
-      const source = trailAt(p.event.at - dir * 0.08), dest = trailAt(p.event.at + dir * 0.08);
+      const gap=Math.min(S.W,S.H)*.003;
+      const source=trailAt(ReplayCore.advance(model,p.event.at,-dir*gap)), dest=trailAt(ReplayCore.advance(model,p.event.at,dir*gap));
       S.walker.x = source.x + (dest.x - source.x) * ease;
       S.walker.y = source.y + (dest.y - source.y) * ease;
       const tile = f === 0 ? p.fromTile : p.toTile;
@@ -1345,7 +1292,7 @@ function advanceReplay(dt) {
   }
 }
 
-/* Two-face Path2D progress, independent of the first-touch ink atlas. Incremental
+/* Two-face Path2D progress, independent of the full-route ink atlas. Incremental
    in either direction; arbitrary seeks rebuild it. The white current visit is
    drawn only at the actual world location to disambiguate the nine copies. */
 function progressPaths() {
@@ -1383,7 +1330,7 @@ function routeRange(g, from, to) {
 function drawReplayLayer() {
   const g = replayCtx;
   g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, replayCanvas.width, replayCanvas.height);
-  if (!S.ready || !S.started) return;
+  if (!S.ready) return;
   g.scale(dpr, dpr); g.save(); worldTransform(g);
   // A restrained border distinguishes the current card without dimming its neighbours.
   const a = S.anchor, width = Math.min(S.W, S.H) * CFG.trailWidthFrac;
@@ -1391,6 +1338,10 @@ function drawReplayLayer() {
   g.strokeRect(a.i * S.W + 1 / S.zoom, a.j * S.H + 1 / S.zoom, S.W - 2 / S.zoom, S.H - 2 / S.zoom);
   if (S.review && S.trailOn && S.trail.length > 1) {
     const cache = progressPaths();
+    const index=S.reviewDir>0?Math.floor(S.cursor):Math.ceil(S.cursor)-1;
+    const partial=index>=0 && index<S.trail.length-1 ? ReplayCore.pieces(
+      S.reviewDir>0?S.trail[index]:trailAt(S.cursor),
+      S.reviewDir>0?trailAt(S.cursor):S.trail[index+1],S.W,S.H) : [];
     for (const tile of S.cards.values()) {
       if (tile.amt < .01) continue;
       g.save(); g.globalAlpha = tile.amt * .82;
@@ -1402,6 +1353,11 @@ function drawReplayLayer() {
       g.lineWidth = width * .64; g.strokeStyle = "#06101b"; g.stroke(cache.casing[face]);
       g.lineWidth = width * .30;
       cache.paths[face].forEach((path, r) => { g.strokeStyle = TRAIL_COLORS[r]; g.stroke(path); });
+      for(const piece of partial) if(piece.face===face) {
+        g.beginPath();g.moveTo(piece.a.x,piece.a.y);g.lineTo(piece.b.x,piece.b.y);
+        g.lineWidth=width*.64;g.strokeStyle="#06101b";g.stroke();
+        g.lineWidth=width*.30;g.strokeStyle=TRAIL_COLORS[S.trail[index+1].r];g.stroke();
+      }
       g.restore();
     }
     const length = S.H * .12, model = replayModel();
@@ -1411,7 +1367,7 @@ function drawReplayLayer() {
     g.lineWidth = Math.max(width * .65, 5 / S.zoom); g.strokeStyle = "#07111f"; g.stroke();
     g.lineWidth = Math.max(width * .22, 2.2 / S.zoom); g.strokeStyle = "#fffbee"; g.stroke();
     if (S.phase && S.phase.event.type === "spin" && S.phase.elapsed >= CFG.spinArrive + CFG.spinDuration) {
-      // Preview only the next route leg. This is not a claim that a door is unlocked.
+      // Preview only the next recorded leg; the player remains free to go anywhere.
       const next = ReplayCore.advance(model, S.cursor, S.reviewDir * S.H * .18);
       routeRange(g, S.cursor, next); g.setLineDash([4 / S.zoom, 5 / S.zoom]);
       g.lineWidth = 2 / S.zoom; g.strokeStyle = "#fff9"; g.stroke(); g.setLineDash([]);
@@ -1438,18 +1394,8 @@ function drawReplayLayer() {
       g.fillStyle = "#ffdf94"; g.fillText(String(e.id + 1), p.x + 23, p.y - 21);
     });
   }
-  if (S.review && S.phase && S.phase.event.type === "spin" && S.phase.elapsed >= CFG.spinArrive + CFG.spinDuration) {
-    const note = doorAfter(S.phase.event);
-    if (note) {
-      const p = w2s(note.x, note.y);
-      g.beginPath(); g.arc(p.x, p.y, 18, 0, Math.PI * 2);
-      g.strokeStyle = "#091322"; g.lineWidth = 5; g.stroke();
-      g.strokeStyle = "#ffdf94"; g.lineWidth = 2; g.stroke();
-      g.font = "600 11px system-ui"; g.textAlign = "center";
-      g.fillStyle = "#081321"; g.fillRect(p.x - 78, p.y - 42, 156, 20);
-      g.fillStyle = "#ffdf94"; g.fillText("Marked door · check ↑", p.x, p.y - 28);
-    }
-  }
+  drawMarkers(g);
+  if (!S.started) return;
   // Retain a precise centre above route emphasis and event rings.
   const mark = w2s(S.walker.x, S.walker.y);
   g.beginPath(); g.arc(mark.x, mark.y, 5, 0, Math.PI * 2); g.fillStyle = "#edfffc"; g.fill();
@@ -1495,11 +1441,13 @@ function placeWalker(t) {
 function syncTimeline() {
   const n = Math.max(0, S.trail.length - 1);
   if (playerEl.hidden !== (n < 1)) playerEl.hidden = n < 1;
-  if (scrubEl.max !== String(n)) scrubEl.max = String(n);
-  if (!S.scrubDrag) scrubEl.value = String(S.cursor);
-  scrubEl.style.setProperty("--p", (n ? S.cursor / n : 0).toFixed(4));
+  const model = replayModel(), total = model.distances[model.distances.length-1] || 0;
+  const fraction = total ? ReplayCore.distanceAt(model,S.cursor)/total : 0;
+  scrubEl.max = "100";
+  if (!S.scrubDrag) scrubEl.value = String(fraction*100);
+  scrubEl.style.setProperty("--p", fraction.toFixed(4));
   undoBtn.disabled = S.cursor <= 0;
-  const pct = n ? Math.round(clamp(S.cursor / n, 0, 1) * 100) : 0;
+  const pct = Math.round(fraction*100);
   countEl.textContent = pct + "%";
   scrubEl.setAttribute("aria-valuetext", pct + "% of recorded route");
   speedBtn.textContent = S.replaySpeed + "×";
@@ -1523,7 +1471,7 @@ function play(dir) {
   if (S.play === dir) { S.play = 0; syncTimeline(); return; }
   if (S.phase && dir === S.reviewDir) { S.play = dir; syncTimeline(); return; }
   cancelPhase();
-  S.markingDoor = false; $("btnDoor").classList.remove("on"); $("btnDoor").setAttribute("aria-pressed", "false");
+  setMarkerMode(false);
   const end = S.trail.length - 1;
   S.review = true; S.reviewDir = dir; S.reviewDone = false; S.reviewEvent = null;
   if (dir > 0 && S.cursor >= end - 1e-6) S.cursor = 0;
@@ -1551,15 +1499,17 @@ function cycleSpeed() {
 function undoOnce() {
   if (!S.started || !S.trail.length) return;
   S.play = 0;
-  setCursor(S.cursor - CFG.undoPoints);
+  setCursor(ReplayCore.advance(replayModel(), S.cursor, -S.H * .12));
 }
-/* The trace on the card is redrawn from the recorded points — identical ink, but
-   now the mask's indices start again from zero, so the two stay in step. */
+/* Rebuild the visual ribbon from compact vertices using temporary interpolation. */
 function rebuildInk() {
   Ink.reset();
-  for (let i = 0; i < S.trail.length; i++) Ink.add(S.trail[i].x, S.trail[i].y, S.trail[i].r);
+  for (let i = 0; i < S.trail.length; i++) {
+    const b = S.trail[i], a = i ? S.trail[i-1] : b;
+    const steps = Math.max(1, Math.ceil(Math.hypot(b.x-a.x,b.y-a.y) / (Math.min(S.W,S.H)*.012)));
+    for (let k=1;k<=steps;k++) Ink.add(a.x+(b.x-a.x)*k/steps,a.y+(b.y-a.y)*k/steps,b.r);
+  }
   Ink.flush();
-  S.trailBase = 0;                 // the mask numbers the recorded walk from zero again
   syncTimeline();
 }
 /* Walking again makes the rewound future real: drop it. */
@@ -1567,7 +1517,6 @@ function commitWalk() {
   const n = Math.floor(S.cursor);
   if (n >= S.trail.length - 1) { exitReview(); return; }
   const endpoint = trailAt(S.cursor);
-  S.doorNotes = S.doorNotes.filter(note => note.at <= S.cursor);
   S.trail.length = n + 1;
   if (S.cursor > n + 1e-6) S.trail.push({ x: endpoint.x, y: endpoint.y, r: oriIndex() });
   for (let k = S.spins.length - 1; k >= 0; k--) if (S.spins[k].i > n) S.spins.pop();
@@ -1579,9 +1528,7 @@ function commitWalk() {
 /* Wipe the walk itself: the trace, the timeline, and the counters. */
 function clearWalk() {
   S.trail = []; S.travelled = 0; S.cursor = 0; S.play = 0; S.undoHeld = false;
-  S.trailBase = 0;
-  S.doorNotes = []; S.markingDoor = false;
-  $("btnDoor").classList.remove("on"); $("btnDoor").setAttribute("aria-pressed", "false");
+  S.recordBreak = true;
   exitReview(); invalidateReplay();
   // the card's orientation is where the walk starts from; the replayed turns are relative
   S.spins = []; S.rotQ0 = rotIndex();
@@ -1594,6 +1541,141 @@ function clearWalk() {
    ============================================================ */
 let animating = false;
 let dirty = true;
+
+/* Free-form annotations belong to a physical card face, never to a route event. */
+let markerSaveQueue = Promise.resolve();
+function saveMarkers() {
+  if (!S.persistMarkers) return;
+  const snapshot = S.markers.map(m => ({ ...m }));
+  markerSaveQueue = markerSaveQueue.catch(() => {}).then(() => idbPut("markers", snapshot)).catch(() => {});
+}
+function setMarkerMode(on) {
+  S.placingMarker = !!on;
+  $("markerPlacementTip").hidden=!on;
+  $("btnMarkers").classList.toggle("on",!!on);
+  $("btnPlaceMarker").textContent = on ? "Click map to place · Esc to cancel" : "Place marker";
+  $("btnPlaceMarker").setAttribute("aria-pressed", String(!!on));
+  $("markerHint").textContent = on ? "Click any copy of either face. This does not move the walker." :
+    "Choose a style, then place it on the map. Markers do not control the walker.";
+  c.style.cursor = on ? "copy" : "crosshair";
+  dirty = true;
+}
+const markerShapes = ["circle","diamond","square","triangle","star"];
+const markerGlyphs = {circle:"●",diamond:"◆",square:"■",triangle:"▲",star:"★"};
+function restoreMarkers(items) {
+  S.markers = Array.isArray(items) ? items.filter(m => m && (m.face===0 || m.face===1) &&
+    Number.isFinite(m.u) && Number.isFinite(m.v) && m.u>=0 && m.u<=1 && m.v>=0 && m.v<=1 &&
+    markerShapes.includes(m.shape) && /^#[0-9a-f]{6}$/i.test(m.color)).map((m,i) => ({
+      id:i+1,face:m.face,u:m.u,v:m.v,shape:m.shape,color:m.color,label:String(m.label||"").slice(0,24) })) : [];
+  S.nextMarkerId = S.markers.length+1; S.selectedMarker=null; syncMarkers(); dirty=true;
+}
+function addMarker(p) {
+  const i=Math.floor(p.x/S.W), j=Math.floor(p.y/S.H);
+  const local=ReplayCore.canonical(p,i,j,S.W,S.H);
+  const m={id:S.nextMarkerId++,face:faceIdx(i,j),u:clamp(local.x/S.W,0,1),v:clamp(local.y/S.H,0,1),
+    shape:$("markerShape").value,color:$("markerColor").value,label:$("markerLabel").value.trim().slice(0,24)};
+  if (!markerShapes.includes(m.shape)) m.shape="circle";
+  if (!/^#[0-9a-f]{6}$/i.test(m.color)) m.color="#ff5b7a";
+  S.markers.push(m); S.selectedMarker=null;
+  setMarkerMode(false); syncMarkers(); saveMarkers();
+}
+function syncMarkers() {
+  const list=$("markerList"); list.replaceChildren();
+  for (const m of S.markers) {
+    const row=document.createElement("li"), pick=document.createElement("button"), remove=document.createElement("button");
+    pick.textContent=markerGlyphs[m.shape]+" "+(m.label||"Marker "+m.id)+" · "+(m.face?"Back":"Front");
+    pick.style.borderLeft="5px solid "+m.color; pick.classList.toggle("on",S.selectedMarker===m.id);
+    pick.setAttribute("aria-label","Edit "+(m.label||"marker "+m.id));
+    pick.addEventListener("click",()=>{
+      S.selectedMarker=m.id; setMarkerMode(false);
+      $("markerShape").value=m.shape; $("markerColor").value=m.color; $("markerLabel").value=m.label; syncMarkers();
+      $("markerHint").textContent="Editing "+(m.label||"marker "+m.id)+". Style changes update every copy.";
+    });
+    remove.textContent="×"; remove.setAttribute("aria-label","Remove "+(m.label||"marker "+m.id));
+    remove.addEventListener("click",()=>{S.markers=S.markers.filter(item=>item.id!==m.id);
+      if(S.selectedMarker===m.id) S.selectedMarker=null; syncMarkers();saveMarkers();dirty=true;});
+    row.appendChild(pick);row.appendChild(remove);list.appendChild(row);
+  }
+}
+function markerCopies(m) {
+  const points=[];
+  for(const tile of S.cards.values()) {
+    if(tile.amt<.01 || faceIdx(tile.i,tile.j)!==m.face) continue;
+    const odd=ReplayCore.mod(tile.j,2);
+    const p=w2s((tile.i+(odd?1-m.u:m.u))*S.W,(tile.j+(odd?1-m.v:m.v))*S.H);
+    points.push({x:p.x,y:p.y,alpha:tile.amt,i:tile.i,j:tile.j});
+  }
+  return points;
+}
+function drawMarkers(g) {
+  g.save();g.lineJoin="round";
+  for(const m of S.markers) for(const p of markerCopies(m)) {
+    if(p.x < -140 || p.x > view.w+140 || p.y < -60 || p.y > view.h+60) continue;
+    g.save();g.translate(p.x,p.y);g.globalAlpha=p.alpha;
+    const r=12; g.beginPath();
+    if(m.shape==="circle") g.arc(0,0,r,0,TAU);
+    else if(m.shape==="square") g.rect(-r,-r,r*2,r*2);
+    else {
+      const count=m.shape==="star"?10:m.shape==="triangle"?3:4;
+      for(let k=0;k<count;k++) {
+        const angle=-Math.PI/2+k*TAU/count, radius=m.shape==="star"&&k%2?r*.46:r*(m.shape==="triangle"?1.2:1);
+        const x=Math.cos(angle)*radius,y=Math.sin(angle)*radius;
+        if(k===0) g.moveTo(x,y); else g.lineTo(x,y);
+      }
+      g.closePath();
+    }
+    g.strokeStyle="#06101b";g.lineWidth=7;g.stroke();
+    g.strokeStyle="#fff";g.lineWidth=3.5;g.stroke();g.fillStyle=m.color;g.fill();
+    if(m.label) {
+      g.font="600 12px system-ui";g.textAlign="center";g.textBaseline="middle";
+      const w=g.measureText(m.label).width+16;
+      g.fillStyle="#07111fea";g.fillRect(-w/2,21,w,23);
+      g.strokeStyle=m.color;g.lineWidth=1;g.strokeRect(-w/2,21,w,23);
+      g.fillStyle="#fff";g.fillText(m.label,0,32.5);
+    }
+    g.restore();
+  }
+  g.restore();
+}
+function updateMarkerStyle() {
+  const m=S.markers.find(m=>m.id===S.selectedMarker);if(!m)return;
+  m.shape=$("markerShape").value;m.color=$("markerColor").value;m.label=$("markerLabel").value.slice(0,24);
+  syncMarkers();saveMarkers();dirty=true;
+}
+$("btnMarkers").addEventListener("click",()=>{
+  const panel=$("markerPanel");panel.hidden=!panel.hidden;
+  $("btnMarkers").setAttribute("aria-expanded",String(!panel.hidden));if(panel.hidden)setMarkerMode(false);
+});
+$("btnCancelMarker").addEventListener("click",()=>setMarkerMode(false));
+$("btnMarkersClose").addEventListener("click",()=>{
+  $("markerPanel").hidden=true;$("btnMarkers").setAttribute("aria-expanded","false");setMarkerMode(false);
+});
+$("btnPlaceMarker").addEventListener("click",()=>{
+  if(!S.ready){toast("Load your card first.");return;}
+  S.play=0;S.walker.tx=null;S.walker.ty=null;S.selectedMarker=null;
+  setMarkerMode(!S.placingMarker);
+  if(S.placingMarker && view.w<700){$("markerPanel").hidden=true;$("btnMarkers").setAttribute("aria-expanded","false");}
+  syncMarkers();syncTimeline();
+});
+for(const id of ["markerShape","markerColor","markerLabel"]) $(id).addEventListener("input",updateMarkerStyle);
+
+/* One straight movement is one segment. Only turns, command boundaries, changes
+   of recorded orientation, and spin locations require another vertex. The live
+   texture may sample a moving endpoint, but those animation samples are not kept. */
+function recordPosition(x,y) {
+  const p={x,y,r:oriIndex()},n=S.trail.length,last=S.trail[n-1];
+  if(last && Math.hypot(x-last.x,y-last.y)<1e-7)return;
+  if(S.trailOn)Ink.add(x,y,p.r);
+  const protectedEnd=S.spins.some(sp=>sp.i===n-1);
+  if(!S.recordBreak && !protectedEnd && n>=2 && ReplayCore.canExtend(S.trail[n-2],last,p)) S.trail[n-1]=p;
+  else S.trail.push(p);
+  S.recordBreak=false;
+  S.cursor=S.trail.length-1;invalidateReplay();syncTimeline();
+}
+function seekPercent(percent) {
+  const model=replayModel(),total=model.distances[model.distances.length-1]||0;
+  setCursor(ReplayCore.advance(model,0,total*clamp(percent,0,100)/100));
+}
 
 function update(dt) {
   if (!S.ready) { animating = false; return; }
@@ -1631,7 +1713,7 @@ function update(dt) {
       // stays at its own brisk rate whatever the replay is set to.
       const c0 = S.cursor;
       cancelPhase(); S.review = true; S.reviewDone = false;
-      S.cursor = clamp(c0 - CFG.rewindRate * dt, 0, Math.max(0, S.trail.length - 1));
+      S.cursor = ReplayCore.advance(replayModel(), c0, -S.H * .9 * dt);
       applySpins(c0, S.cursor);
       placeWalker(S.cursor);
       syncTimeline();
@@ -1644,42 +1726,13 @@ function update(dt) {
       S.follow = true; moving = walked = true;
     } else if (w.tx != null) {
       const vx = w.tx - w.x, vy = w.ty - w.y, dist = Math.hypot(vx, vy);
-      if (dist < S.H * CFG.clickMoveEps) { w.x = w.tx; w.y = w.ty; w.tx = null; w.ty = null; }
+      if (dist <= speed * dt) { S.travelled += dist; w.x = w.tx; w.y = w.ty; w.tx = null; w.ty = null; moving = dist > 1e-7; }
       else { const st = Math.min(dist, speed * dt); w.x += vx / dist * st; w.y += vy / dist * st; S.travelled += st; moving = true; }
       walked = true;
     }
 
-    // The walk is only recorded while the user is actually walking it: a replay or
-    // a rewind moves the playhead along the points that are already there.
-    if (walked) {
-      const last = S.trail[S.trail.length - 1];
-      if (!last || Math.hypot(w.x - last.x, w.y - last.y) > S.H * CFG.trailStepFrac) {
-        const r = oriIndex();
-        if (S.trailOn) Ink.add(w.x, w.y, r);
-        S.trail.push({ x: w.x, y: w.y, r: r });
-        if (S.trail.length > CFG.trailMax) {
-          // Slide the window. The ink stays exactly where it is -- the mask's indices
-          // are absolute (trailBase says how far back the history now starts), and the
-          // trace is revealed at the index a texel was FIRST inked, so nothing has to
-          // be redrawn. The recorded turns shift with the points. (Only running out of
-          // mask index room forces a rebuild, which is invisible: the ink it drops has
-          // already scrolled out of the history.)
-          S.trail.splice(0, CFG.trailDrop);
-          S.doorNotes = S.doorNotes.filter(note => note.at >= CFG.trailDrop);
-          for (const note of S.doorNotes) note.at -= CFG.trailDrop;
-          S.trailBase += CFG.trailDrop;
-          let q0 = S.rotQ0;
-          for (const sp of S.spins) if (sp.i < CFG.trailDrop) q0 = sp.q;
-          S.rotQ0 = q0;
-          S.spins = S.spins.filter(sp => sp.i >= CFG.trailDrop);
-          for (const sp of S.spins) sp.i -= CFG.trailDrop;
-          if (S.trailBase + S.trail.length > CFG.inkMax) rebuildInk();
-        }
-        S.cursor = S.trail.length - 1;
-        invalidateReplay();
-        syncTimeline();
-      }
-    }
+    if (walked) recordPosition(w.x, w.y);
+    else if (!S.play && !S.undoHeld) S.recordBreak = true;
   }
 
   // ---- which card the view is centred on ----------------------------------
@@ -1818,18 +1871,12 @@ function render() {
   gl.uniform1f(U.uReview, S.review ? 1 : 0);
   gl.uniform1f(U.uTrailOn, S.trailOn ? 1 : 0);
   gl.uniform1f(U.uTrailEdge, CFG.trailEdgeFrac);
-  // The playhead, as an (hi, lo) BYTE pair over the points -- the same units the mask
-  // stores, which the shader scales back up by 255. trailBase offsets it past any
-  // points that have slid out of the recorded history.
-  const play = ((S.trailBase + S.cursor + 0.25) | 0) & 0xffff;
-  gl.uniform2f(U.uInkProg, Math.floor(play / 256), play & 255);
   gl.uniform2f(U.uMark, mk.x, mk.y);
   gl.uniform2f(U.uDest, ds.x, ds.y);
   gl.uniform1f(U.uMarkOn, S.started ? 1 : 0);
   gl.uniform1f(U.uDestOn, (S.started && S.walker.tx != null) ? 1 : 0);
   gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, artTex); gl.uniform1i(U.uArt, 0);
   gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, trailTex); gl.uniform1i(U.uTrail, 1);
-  gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, markTex); gl.uniform1i(U.uInk, 2);
 
   gl.drawArrays(gl.TRIANGLES, 0, 6);
   drawReplayLayer();
@@ -1844,6 +1891,7 @@ function spin(dir) {
   // the recorded turns always describe the walk that is actually there.
   if (S.started && S.review && S.cursor < S.trail.length - 1) commitWalk();
   exitReview();
+  S.recordBreak = true;
   S.rotTarget += dir * Math.PI / 2;
   // Remember the turn so the replay can play it back. Spins with no walking in between
   // collapse into one, and the replay always takes the shortest way round: three turns
@@ -1921,15 +1969,8 @@ let panning = false, downMoved = 0, downT = 0, lastDist = 0;
 function tap(wpt) {
   if (!S.ready) return;
   dirty = true;
-  if (S.markingDoor && S.started) {
-    const dir = S.review ? S.reviewDir : 1;
-    S.doorNotes = S.doorNotes.filter(note => note.dir !== dir || Math.abs(note.at - S.cursor) > 1e-6);
-    S.doorNotes.push({ x: wpt.x, y: wpt.y, at: S.cursor, dir });
-    S.doorNotes.sort((a, b) => a.at - b.at);
-    S.markingDoor = false; $("btnDoor").classList.remove("on"); $("btnDoor").setAttribute("aria-pressed", "false");
-    toast("Door marked for this turn. It will be highlighted after the spin; check its ↑ arrow.");
-    return;
-  }
+  if (S.placingMarker) { addMarker(wpt); return; }
+  S.recordBreak = true;
   if (!S.started) {
     S.started = true;
     S.walker.x = wpt.x; S.walker.y = wpt.y; S.walker.tx = null; S.walker.ty = null;
@@ -1993,6 +2034,7 @@ c.addEventListener("wheel", (e) => {
 
 window.addEventListener("keydown", (e) => {
   const k = e.key.toLowerCase();
+  if (k === "escape") { setMarkerMode(false); $("markerPanel").hidden = true; $("btnMarkers").setAttribute("aria-expanded", "false"); return; }
   // Focused timeline/menu controls own their keys; reviewing must not accidentally walk.
   const tag = e.target && e.target.tagName;
   if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA" ||
@@ -2022,7 +2064,7 @@ window.addEventListener("keyup", (e) => {
 c.addEventListener("webglcontextlost", (e) => { e.preventDefault(); });
 c.addEventListener("webglcontextrestored", () => {
   try { buildProgram(); } catch (err) { return; }
-  if (S.ready) { uploadArt(); uploadTrail(); uploadMark(); Ink.reload(); }
+  if (S.ready) { uploadArt(); uploadTrail(); Ink.reload(); }
   dirty = true;
 });
 
@@ -2059,6 +2101,8 @@ async function handleFile(side, file) {
 function maybeActivate() {
   if (pending.front && pending.back) {
     applyImages(pending.front.img, pending.back.img);
+    S.persistMarkers = true;
+    idbPut("markers", []).catch(() => {});
     idbPut("front", pending.front.blob).catch(() => {});
     idbPut("back", pending.back.blob).catch(() => {});
     toast("Card ready — set your start");
@@ -2108,6 +2152,7 @@ function startNow() {
 
 $("btnForget").addEventListener("click", async () => {
   try { await idbClear(); } catch {}
+  S.persistMarkers=false;
   pending = { front: null, back: null };
   ["dropFront", "dropBack"].forEach((id) => $(id).classList.remove("has"));
   toast("Saved images cleared");
@@ -2147,15 +2192,6 @@ function doReset() {
 
 $("btnZoomIn").addEventListener("click", () => zoomAt(view.w / 2, view.h / 2, 1.25));
 $("btnZoomOut").addEventListener("click", () => zoomAt(view.w / 2, view.h / 2, 0.8));
-$("btnDoor").addEventListener("click", () => {
-  if (!S.started || S.trail.length < 2) { toast("Record a route first, then pause at a spin to mark its next door."); return; }
-  S.play = 0;
-  S.markingDoor = !S.markingDoor;
-  $("btnDoor").classList.toggle("on", S.markingDoor);
-  $("btnDoor").setAttribute("aria-pressed", String(S.markingDoor));
-  toast(S.markingDoor ? "Click the next door on the map. This adds a note, not a movement." : "Door marking cancelled");
-  syncTimeline();
-});
 $("btnSpinL").addEventListener("click", () => spin(-1));
 $("btnSpinR").addEventListener("click", () => spin(1));
 $("btnFit").addEventListener("click", () => { fitView(); S.follow = true; });
@@ -2173,8 +2209,8 @@ backBtn.addEventListener("click", () => play(-1));
 fwdBtn.addEventListener("click", () => play(1));
 speedBtn.addEventListener("click", cycleSpeed);
 scrubEl.addEventListener("pointerdown", () => { S.scrubDrag = true; S.play = 0; cancelPhase(); });
-scrubEl.addEventListener("input", () => { S.play = 0; setCursor(parseFloat(scrubEl.value)); });
-scrubEl.addEventListener("change", () => { S.scrubDrag = false; setCursor(parseFloat(scrubEl.value)); });
+scrubEl.addEventListener("input", () => { S.play = 0; seekPercent(parseFloat(scrubEl.value)); });
+scrubEl.addEventListener("change", () => { S.scrubDrag = false; seekPercent(parseFloat(scrubEl.value)); });
 window.addEventListener("pointerup", () => { S.scrubDrag = false; undoUp(); });
 $("btnPrevEvent").addEventListener("click", () => jumpEvent(-1));
 $("btnNextEvent").addEventListener("click", () => jumpEvent(1));
@@ -2208,14 +2244,14 @@ updateHUD();
 
 /* expose for headless probes */
 window.OCM = { S, CFG, gl, render, update, Ink, applyImages, w2s, s2w, resize,
-  trailCv, artCv, markCv, uploadArt, uploadTrail, uploadMark, fitView, camTarget,
+  trailCv, artCv, uploadArt, uploadTrail, fitView, camTarget,
   camGoal: () => S.camGoal, trailAt, walkedTo, setCursor, play, undoOnce, commitWalk,
-  rebuildInk, clearWalk, syncTimeline, replayModel, advanceReplay, spin, startNow, tap, seekEvent, orientationAt };
+  rebuildInk, clearWalk, syncTimeline, recordPosition, addMarker, restoreMarkers, markerCopies, replayModel, advanceReplay, spin, startNow, tap, seekEvent, orientationAt };
 
 (async () => {
   if (new URLSearchParams(location.search).has("demo")) { loadDemo(true); return; }
   try {
-    const [fb, bb] = await Promise.all([idbGet("front"), idbGet("back")]);
+    const [fb, bb, markers] = await Promise.all([idbGet("front"), idbGet("back"), idbGet("markers")]);
     if (fb && bb) {
       const fu = URL.createObjectURL(fb), bu = URL.createObjectURL(bb);
       const [fi, bi] = await Promise.all([loadImage(fu), loadImage(bu)]);
@@ -2223,6 +2259,8 @@ window.OCM = { S, CFG, gl, render, update, Ink, applyImages, w2s, s2w, resize,
       pending.back = { img: bi, blob: bb };
       markDrop("front", fu); markDrop("back", bu);
       applyImages(fi, bi);
+      S.persistMarkers = true;
+      restoreMarkers(markers);
       setHint("<b>Saved card restored.</b> Hit Start, then click to place your walker.");
     }
   } catch {}

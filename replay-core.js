@@ -41,6 +41,12 @@
     }
     return result;
   }
+  function canExtend(a,b,c) {
+    if(a.r!==b.r || b.r!==c.r)return false;
+    const dx=b.x-a.x,dy=b.y-a.y,ex=c.x-b.x,ey=c.y-b.y;
+    const length=Math.hypot(dx,dy);
+    return length>1e-9 && dx*ex+dy*ey>=0 && Math.abs(dx*ey-dy*ex)/length<1e-5;
+  }
   function build(trail, spins, W, H, q0) {
     const events = [], distances = [0];
     for (let i = 1; i < trail.length; i++) {
@@ -57,7 +63,10 @@
     }
     // A touch and return is not a fold. Compare positions on both sides of the seam.
     const folds = events.filter(e => {
-      const a = point(trail, e.at - 0.001), b = point(trail, e.at + 0.001);
+      const k=Math.min(trail.length-2,Math.max(0,Math.floor(e.at)));
+      const span=Math.max(Math.hypot(trail[k+1].x-trail[k].x,trail[k+1].y-trail[k].y),1);
+      const epsilon=Math.min(.0001,Math.min(W,H)*.00001/span);
+      const a = point(trail, e.at - epsilon), b = point(trail, e.at + epsilon);
       e.from = { i: Math.floor(a.x / W), j: Math.floor(a.y / H) };
       e.to = { i: Math.floor(b.x / W), j: Math.floor(b.y / H) };
       e.fromFace = face(e.from.i, e.from.j); e.toFace = face(e.to.i, e.to.j);
@@ -88,7 +97,7 @@
     if (lo >= ds.length - 1) return Math.max(0, ds.length - 1);
     return lo + (target - ds[lo]) / (ds[lo + 1] - ds[lo] || 1);
   }
-  const api = { mod, face, turn, point, canonical, pieces, build, distanceAt, advance };
+  const api = { mod, face, turn, point, canonical, pieces, canExtend, build, distanceAt, advance };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.ReplayCore = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);

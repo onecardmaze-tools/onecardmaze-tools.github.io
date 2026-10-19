@@ -118,10 +118,31 @@ assert(S.phase);const paused=S.phase,elapsed=paused.elapsed,rotation=S.rot;
 app.play(1);assert.equal(S.play,0);app.update(.05);
 assert.strictEqual(S.phase,paused);near(S.phase.elapsed,elapsed);near(S.rot,rotation);
 app.play(1);assert.strictEqual(S.phase,paused);app.update(.02);assert(S.phase.elapsed>elapsed);
-// Event selection and door notes never mutate the recorded route.
+// Free-form markers do not move the walker or mutate recordings, and repeat on all matching copies.
 fixture();app.seekEvent(1);const beforeNote=JSON.stringify({trail:S.trail,spins:S.spins});
-S.markingDoor=true;app.tap({x:170,y:70});assert.equal(S.doorNotes.length,1);near(S.doorNotes[0].at,3);
+elements.get('markerShape').value='star';elements.get('markerColor').value='#ff0055';elements.get('markerLabel').value='Anywhere';
+S.placingMarker=true;app.tap({x:170,y:70});assert.equal(S.markers.length,1);
+assert.equal(S.markers[0].face,1);near(S.markers[0].u,.7);near(S.markers[0].v,.7);
 assert.equal(JSON.stringify({trail:S.trail,spins:S.spins}),beforeNote);
+S.cards.clear();for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++)S.cards.set(i+','+j,{i,j,amt:1});
+for(const rotation of [0,Math.PI/2,Math.PI,Math.PI*1.5]) {
+  S.rot=rotation;const copies=app.markerCopies(S.markers[0]);assert.equal(copies.length,4);
+  for(const copy of copies){const w=app.s2w(copy.x,copy.y),l=core.canonical(w,copy.i,copy.j,S.W,S.H);near(l.x/S.W,.7);near(l.y/S.H,.7);}
+}
+app.clearWalk();assert.equal(S.markers.length,1,'Route reset preserves markers');
+// Collinear animation frames collapse to endpoints, while command boundaries, turns and spins remain.
+fixture();app.clearWalk();S.rot=S.rotTarget=0;S.rotQ0=0;S.started=true;
+S.walker={x:10,y:10,tx:null,ty:null};S.trail=[p(10,10)];app.tap({x:350,y:10});
+for(let k=0;k<1000&&S.walker.tx!==null;k++)app.update(.01);
+assert.equal(S.trail.length,2,'One long click needs only two retained points');near(S.trail[1].x,350);near(S.travelled,340);
+assert.equal(app.replayModel().events.length,3,'Compact segment preserves every crossed edge');
+app.tap({x:450,y:10});for(let k=0;k<1000&&S.walker.tx!==null;k++)app.update(.01);
+assert.equal(S.trail.length,3,'Next command preserves previous endpoint');near(S.trail[1].x,350);
+app.spin(1);const spinIndex=S.spins[0].i;app.tap({x:450,y:70});
+for(let k=0;k<1000&&S.walker.tx!==null;k++)app.update(.01);
+near(S.trail[spinIndex].x,450);near(S.trail[spinIndex].y,10);assert(S.trail.length<=6);
+assert(!core.canExtend(p(0,0),p(10,0),p(5,0)),'Reversal is retained');
+assert(!core.canExtend(p(0,0),p(10,0),p(10,10)),'Corner is retained');
 listeners.keydown({key:'ArrowRight',target:{tagName:'INPUT'},preventDefault:()=>assert.fail('slider key prevented')});
 assert(!S.keys.arrowright,'Slider keys do not walk');
 // Resuming a rewind commits only the displayed past, including a fractional endpoint.
@@ -131,4 +152,17 @@ assert.equal(S.spins.length,0);assert(!S.review);
 // A spin at the first sample and consecutive collapsed spins are real events.
 fixture();app.clearWalk();S.trail=[p(50,50),p(60,50)];S.started=true;S.cursor=1;S.rotQ0=0;S.spins=[{i:0,q:3}];S.replayVersion++;
 assert.deepEqual(finish(1),[0]);assert.deepEqual(finish(-1),[0]);
-console.log('PASS: geometry, sampling-independent pace, bidirectional events, immutable previews, spin pivot, branch commit, endpoint spins');
+// A vertical run retains only the few vertices needed for fold-orientation colours.
+fixture();app.clearWalk();S.rot=S.rotTarget=0;S.rotQ0=0;S.started=true;
+S.walker={x:10,y:10,tx:null,ty:null};S.trail=[p(10,10)];app.tap({x:10,y:350});
+for(let k=0;k<1000&&S.walker.tx!==null;k++)app.update(.01);
+assert(S.trail.length<=8);assert.equal(app.replayModel().events.length,3);near(S.trail.slice(-1)[0].y,350);
+// Actual Beach aspect ratio: annotations stay canonical at every screen rotation.
+app.applyImages({width:750,height:1050},{width:750,height:1050});
+app.restoreMarkers([{face:0,u:.31,v:.76,shape:'triangle',color:'#123abc',label:'Free'}]);
+S.cards.clear();for(let i=-1;i<=1;i++)for(let j=-1;j<=1;j++)S.cards.set(i+','+j,{i,j,amt:1});
+for(const angle of [0,Math.PI/2,Math.PI,Math.PI*1.5]) {
+ S.rot=angle;const copies=app.markerCopies(S.markers[0]);assert.equal(copies.length,5);
+ for(const copy of copies){const w=app.s2w(copy.x,copy.y),l=core.canonical(w,copy.i,copy.j,750,1050);near(l.x/750,.31);near(l.y/1050,.76);}
+}
+console.log('PASS: compact recording, exact folds, replay in both directions, immutable seeking, stable spin pivot, free markers on all copies, Beach aspect ratio');

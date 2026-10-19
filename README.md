@@ -6,10 +6,9 @@ A free, open-source **One Card Maze / OneCardMaze helper**. Upload the front and
 back of a maze card, explore both faces, and review your route with readable
 forward and reverse playback. No account, build step, backend, or dependencies.
 
-This is an unofficial companion. It supports **free walking**: walls, doors,
-SPIN locations, and victory conditions are not detected or enforced. In the
-physical game a door unlocks when its arrow points up; this app never claims a
-route is a verified solution.
+This is an unofficial **free-walking tool**. Move, rotate, draw, and annotate
+however you like. The tool imposes no routes, required start/end points, wall
+collisions, or game rules.
 
 ## Walk and plan
 
@@ -28,7 +27,10 @@ same folding transform as the artwork on every copy. A fine teal outline locates
 the current card without hiding the neighbouring connections.
 
 Uploaded images are saved only in your browser's IndexedDB and are never uploaded.
-The route and door notes last for the current page session; reloading clears them.
+The route lasts for the current page session. Markers are saved locally alongside
+your uploaded card and restored on reload. Loading a different card clears its
+on-screen markers; loading the demo does not overwrite the saved uploaded card
+and its markers. Demo markers last for the current session.
 
 ## Review a route
 
@@ -86,25 +88,60 @@ source and destination. Turns without intervening walking collapse to the shorte
 net turn. Reduced-motion preferences remove the animated spin while retaining the
 arrival and settling time.
 
-To explain a relevant door after a spin, pause at that spin with the event menu,
-choose **Mark door**, then click the next door on the map. This adds a manual note
-without moving the walker. Notes are specific to the selected replay direction, so
-a forward-route door is not mislabelled as the next door in reverse. During that turn's settling stage the marked door is
-highlighted with **check ↑**. The app does not infer whether the pictured arrow is
-actually up or whether the door is passable.
+## Free-form markers
+
+Open **Markers**, choose a **circle, diamond, square, triangle, or star**, pick any
+colour, optionally enter a label, then click **Place marker** and click the map.
+You can place a marker before or after starting a walk, or while reviewing.
+
+A marker belongs to the physical face you clicked. It appears on **every copy of
+that face**, using the same folding coordinates as the artwork. It stays obvious
+with a dark/white outline and a constant screen size when zooming, rotating,
+panning, or replaying. It is never assigned start/end/door semantics and never
+controls where the walker can go. Place as many as you need.
+
+Select a marker in the panel list to edit its shape, colour, or label everywhere
+at once, or remove it with **×**. **Reset** clears only the walk, preserving
+markers. Markers are stored only in your browser with the uploaded images.
 
 Completion explicitly says **Replay complete** and whether it reached the recorded
 start or end. It preserves the full route and offers **Replay again**; it does not
-claim a win.
+assign game outcomes.
 
 ### Recording versus preview
 
 Playing, reversing, seeking, pausing, and event jumps **do not change recorded
 points or turns**. Only explicitly walking or spinning from an earlier position
 branches the route and replaces its future. A fractional seek preserves its exact
-position as the new branch endpoint. The existing history limit is 4,000 points;
-when exceeded, the oldest 1,000 leave the seekable window, while their baked marks
-remain on the card until a route rebuild or reset.
+position as the new branch endpoint.
+
+### Compact route storage
+
+The animation does not need to be the saved recording. A straight movement now
+keeps its **start and end**, extending the current endpoint in place while the
+walker moves. New clicks, turns, reversals, orientation changes, and rotations
+preserve the vertices needed to reconstruct the actual route. Hundreds of
+animation frames along one straight leg therefore do not become hundreds of
+stored points.
+
+Playback positions and temporary drawing samples are interpolated from those
+vertices. The timeline, playback speed, and rewind use **physical distance**, so
+long and short legs behave consistently. Fold events are derived from exact
+boundary intersections, including when a compact leg crosses several edges.
+The coloured review progress also interpolates within a leg, rather than waiting
+for its endpoint.
+
+The obsolete per-pixel time-index canvas/GPU texture has been removed. The former
+4,000-sample rolling history cap is no longer needed; the compact route retains
+all commands in the current session. No route points are uploaded or written to
+disk/browser storage by the application.
+
+### Map borders
+
+Shared card edges have a narrow black border drawn in **screen pixels**. They do
+not rely on black borders being present in an uploaded scan (for example the
+Beach card has none). Their visible width remains stable across image resolutions
+and zoom levels. They are visual guides only; the route crosses them freely.
 
 ## Run locally
 
@@ -120,7 +157,7 @@ Append `?demo` to load the rules card automatically (requires Internet access).
 ## Development and checks
 
 - `index.html`: controls, WebGL artwork/reference trail, Canvas2D review layer,
-  event state machine, camera, local image storage.
+  event state machine, camera, free-form markers, local image/marker storage.
 - `replay-core.js`: dependency-free timeline geometry, exact seam intersections,
   fold mapping, distance interpolation, and spin events; also usable in Node.
 - `tests/replay.test.js`: geometry and actual application state-machine regression
@@ -133,8 +170,9 @@ node tests/replay.test.js
 
 Coverage includes negative tiles, diagonal crossings, touching an edge without
 crossing it, repeated corridors, sampling-independent pace, forward/reverse event
-order, endpoint spins, pause/resume, immutable seeking, stable spin pivots, and
-branching from a fractional preview.
+order, endpoint spins, pause/resume, immutable seeking, stable spin pivots,
+branching from a fractional preview, compact endpoint recording, command/turn
+preservation, and marker projection across every rotated/folded copy.
 
 ## Deployment
 
