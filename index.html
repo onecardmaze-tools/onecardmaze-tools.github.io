@@ -1198,8 +1198,12 @@ function eventName(e, dir) {
 }
 function doorAfter(event) {
   if (!event || event.type !== "spin") return null;
-  const nextSpin = replayModel().events.find(e => e.type === "spin" && e.at > event.at);
-  return S.doorNotes.find(note => note.at >= event.at - 1e-6 && (!nextSpin || note.at < nextSpin.at));
+  const dir = S.reviewDir;
+  const spins = replayModel().events.filter(e => e.type === "spin");
+  const boundary = dir > 0 ? spins.find(e => e.at > event.at) : spins.slice().reverse().find(e => e.at < event.at);
+  return S.doorNotes.find(note => note.dir === dir && (dir > 0 ?
+    note.at >= event.at - 1e-6 && (!boundary || note.at < boundary.at) :
+    note.at <= event.at + 1e-6 && (!boundary || note.at > boundary.at)));
 }
 function setReplayTitle(text) {
   const el = $("replayEvent");
@@ -1915,8 +1919,9 @@ function tap(wpt) {
   if (!S.ready) return;
   dirty = true;
   if (S.markingDoor && S.started) {
-    S.doorNotes = S.doorNotes.filter(note => Math.abs(note.at - S.cursor) > 1e-6);
-    S.doorNotes.push({ x: wpt.x, y: wpt.y, at: S.cursor });
+    const dir = S.review ? S.reviewDir : 1;
+    S.doorNotes = S.doorNotes.filter(note => note.dir !== dir || Math.abs(note.at - S.cursor) > 1e-6);
+    S.doorNotes.push({ x: wpt.x, y: wpt.y, at: S.cursor, dir });
     S.doorNotes.sort((a, b) => a.at - b.at);
     S.markingDoor = false; $("btnDoor").classList.remove("on"); $("btnDoor").setAttribute("aria-pressed", "false");
     toast("Door marked for this turn. It will be highlighted after the spin; check its ↑ arrow.");

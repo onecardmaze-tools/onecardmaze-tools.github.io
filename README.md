@@ -88,7 +88,8 @@ arrival and settling time.
 
 To explain a relevant door after a spin, pause at that spin with the event menu,
 choose **Mark door**, then click the next door on the map. This adds a manual note
-without moving the walker. During that turn's settling stage the marked door is
+without moving the walker. Notes are specific to the selected replay direction, so
+a forward-route door is not mislabelled as the next door in reverse. During that turn's settling stage the marked door is
 highlighted with **check ↑**. The app does not infer whether the pictured arrow is
 actually up or whether the door is passable.
 
