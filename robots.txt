@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://zhonghaoxue.github.io/one-card-maze-helper/sitemap.xml
