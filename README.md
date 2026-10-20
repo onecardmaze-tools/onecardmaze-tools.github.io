@@ -12,7 +12,7 @@ collisions, or game rules.
 
 ## Walk and plan
 
-1. The page opens straight into a small, original practice demo, with a personal introduction over it. The two practice faces have matching edge openings, a small nine-view key, and short on-card hints about moving, repeated traces, rotation and replay. The reverse links to the free official demo. Close the introduction to play, or choose **Import my card** to use your own images.
+1. The page opens straight into a small, original practice demo, with a personal introduction over it. The original practice maze uses the official Rules demo’s 755 × 1055 portrait proportions. One winding route joins both faces through three matching edge openings, with two small dead ends and short hints encountered along the walk. Some hints turn upright when the player rotates. The finish links to the free official demo. The practice card starts at a closer, readable scale on phones and keeps the active walker above the bottom controls; uploaded cards retain their existing fit. Close the introduction to play, or choose **Import my card** to use your own images.
 2. Click/tap a location to walk there. **Q / E** or the large **Rotate left / Rotate right** buttons turn the card in 90° steps. WASD and arrow-key movement are intentionally disabled.
 3. Drag to pan and wheel/pinch to zoom. **Tools → Fit card** reframes the card; **Tools** also holds markers, recording import/export, trail visibility and reset.
 4. Once you have walked, the compact transport provides undo, reverse replay, forward replay, a timeline and speed. Event jumps live under **Tools → Replay events**.
