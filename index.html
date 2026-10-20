@@ -4,14 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>One Card Maze Helper · Unofficial</title>
-<meta name="app-version" content="2026-10-19-companion-ui" />
+<meta name="app-version" content="2026-10-19-practice-card" />
 <meta name="description" content="Free, open-source One Card Maze helper. Upload both sides of your maze card, explore connected edges, track your path, and replay your walk in your browser." />
 <link rel="canonical" href="https://onecardmaze-tools.github.io/" />
 <meta property="og:title" content="One Card Maze Helper · Unofficial" />
 <meta property="og:description" content="Explore both sides of your One Card Maze card with path tracking, rotation, undo, and replay. Free and open source." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://onecardmaze-tools.github.io/" />
-<link rel="stylesheet" href="companion.css" />
+<link rel="stylesheet" href="companion.css?v=practice-1" />
 </head>
 <body>
 <canvas id="stage" aria-label="Maze map"></canvas>
@@ -35,6 +35,7 @@
     <nav class="quiet-footer" aria-label="Game tools">
       <span>Unofficial One Card Maze helper</span><span aria-hidden="true">·</span>
       <button id="btnHelp">About</button>
+      <a id="practiceOfficial" href="https://www.onecardmaze.com/downloads" target="_blank" rel="noopener" hidden>Free official demo ↗</a>
     </nav>
   </div>
 </div>
@@ -455,6 +456,7 @@ function applyImages(front, back) {
   uploadArt();
 
   S.ready = true; S.demo = false;
+  c.setAttribute("aria-label", "Maze map");
   S.persistMarkers = false;
   S.markers = []; S.nextMarkerId = 1; S.selectedMarker = null; setMarkerMode(false); syncMarkers();
   S.cam = { x: S.W / 2, y: S.H / 2 };
@@ -1509,7 +1511,10 @@ function currentFace() {
   const j = Math.floor((S.started ? S.walker.y : S.cam.y) / S.H);
   return faceIdx(i, j) === 0 ? "FRONT" : "BACK";
 }
-function updateHUD() {}
+function updateHUD() {
+  const link=$('practiceOfficial');
+  if(link) link.hidden=!S.demo;
+}
 
 /* ============================================================
    MAIN LOOP — draws on demand; idles when nothing is moving
@@ -1721,25 +1726,65 @@ $("fileBack").addEventListener("change", (e) => handleFile("back", e.target.file
   });
 });
 
-async function loadDemo(autoStart) {
-  // Original practice artwork, generated locally. Never fetch official mazes.
-  const make = back => {
-    const cv = document.createElement("canvas"); cv.width=420;cv.height=560;
-    const g=cv.getContext("2d");g.fillStyle=back?"#e8eddb":"#f3ead3";g.fillRect(0,0,420,560);
-    g.strokeStyle="#626952";g.lineWidth=5;g.lineCap="round";g.lineJoin="round";
-    g.strokeRect(12,12,396,536);
-    const walls=back?[[12,150,150,150,150,310,290,310],[150,12,150,80,330,80,330,220,408,220],[12,400,220,400,220,548],[290,310,290,470,408,470]]:
-      [[12,140,150,140,150,290,280,290,280,140,408,140],[85,12,85,70,215,70,215,210],[12,360,110,360,110,470,245,470,245,548],[215,360,340,360,340,430,408,430]];
-    for(const pts of walls){g.beginPath();g.moveTo(pts[0],pts[1]);for(let i=2;i<pts.length;i+=2)g.lineTo(pts[i],pts[i+1]);g.stroke();}
-    g.fillStyle="#677050";g.font="20px system-ui";g.fillText(back?"Practice · back":"Practice · front",28,530);
-
-    return cv;
+// Original teaching card: matching openings work across every fold, including
+// the 180-degree mapping at top/bottom edges. Labels live outside the walkways.
+function makePracticeCard(back) {
+  const cv=document.createElement('canvas');cv.width=cv.height=720;
+  const g=cv.getContext('2d');
+  const paper=back?'#edf0e3':'#f6efdf', ink='#5b654f', muted='#77816b';
+  g.fillStyle=paper;g.fillRect(0,0,720,720);
+  g.strokeStyle=ink;g.lineWidth=4;g.lineCap='round';g.lineJoin='round';
+  // Four wide exits, centered on each edge. Their symmetric coordinates meet
+  // on the reverse face even when the repeated card is turned upside down.
+  const walls=[[0,298,298,298,298,0],[422,0,422,298,720,298],
+    [720,422,422,422,422,720],[298,720,298,422,0,422]];
+  for(const line of walls){g.beginPath();g.moveTo(line[0],line[1]);for(let i=2;i<line.length;i+=2)g.lineTo(line[i],line[i+1]);g.stroke();}
+  const text=(lines,x,y,size=34,color=ink,hand=false)=>{
+    g.fillStyle=color;g.font='400 '+size+'px '+(hand?'"Segoe Print", "Bradley Hand", cursive':'system-ui, sans-serif');
+    lines.forEach((line,i)=>g.fillText(line,x,y+i*(size*1.32)));
   };
+  text([back?'BACK · PRACTICE':'FRONT · PRACTICE'],36,48,23,muted);
+  text(back?['The other','side.']:['One card.','Two sides.'],36,112,43,ink,true);
+  if(!back) {
+    text(['Tap a spot.'],36,239,32);
+    // This little key explains the visible layout without introducing a panel.
+    const size=42,gap=7,x=477,y=71;
+    for(let j=0;j<3;j++)for(let i=0;i<3;i++){
+      g.fillStyle=(i+j)%2?'#dfe6ce':'#eadfbe';g.fillRect(x+i*(size+gap),y+j*(size+gap),size,size);
+      g.strokeStyle=i===1&&j===1?ink:'#b1b79f';g.lineWidth=i===1&&j===1?3:1;
+      g.strokeRect(x+i*(size+gap),y+j*(size+gap),size,size);
+    }
+    text(['9 views.','Still one card.'],455,245,31);
+    text(['Leave a trail.','It stays on','the card.'],36,493,34);
+    text(['See it on','the matching','copies, too.'],452,493,34);
+    text(['Across an edge…'],447,398,29);
+    text(['start'],330,285,23,muted);
+  } else {
+    text(['Same card.','New view.'],452,101,36);
+    text(['Try another','edge.'],452,218,32);
+    text(['…the other side.'],27,398,29);
+    text(['Turn the card.','Q / E'],36,493,35);
+    text(['Walk a little.','Then Replay.'],452,493,34);
+  }
+  // A physical-card footer, not a floating explanation over the play area.
+  g.fillStyle=paper;g.fillRect(15,649,690,64);
+  if(back) {
+    text(['The official demo is free.'],30,674,29);
+    text(['Download it: onecardmaze.com/downloads'],30,707,27,muted);
+  } else text(['Original practice card · not an official maze'],30,692,27,muted);
+  return cv;
+}
+
+async function loadDemo(autoStart) {
+  // Generated locally; no official artwork or remote requests.
+  const make=makePracticeCard;
   const f=make(false),b=make(true);
   pending={front:null,back:null};
   for(const side of ["Front","Back"]){$("drop"+side).classList.remove("has");$("thumb"+side).removeAttribute("src");}
   applyImages(f,b);S.demo=true;
+  c.setAttribute('aria-label','Original two-sided practice card. Tap to walk, Q and E to rotate. The nine images are repeated views of one card; trails repeat on every copy of the same face.');
   if(autoStart) startNow();
+  updateHUD();
 }
 $("btnDemo").addEventListener("click", () => loadDemo(true));
 
@@ -1976,7 +2021,7 @@ updateHUD();
 
 /* expose for headless probes */
 window.OCM = { S, CFG, gl, foreground, render, update, applyImages, w2s, s2w, resize,
-  artCv, uploadArt, fitView, loadDemo, camTarget, traceLayout, captureSession, restoreSessionState, importSessionFile,
+  artCv, uploadArt, fitView, loadDemo, makePracticeCard, camTarget, traceLayout, captureSession, restoreSessionState, importSessionFile,
   camGoal: () => S.camGoal, trailAt, walkedTo, setCursor, play, undoOnce, commitWalk,
   refreshTrace, clearWalk, syncTimeline, recordPosition, addMarker, restoreMarkers, markerCopies, replayModel, advanceReplay, cardLight, cardCenter, spin, startNow, tap, seekEvent, orientationAt };
 
@@ -2003,6 +2048,6 @@ window.OCM = { S, CFG, gl, foreground, render, update, applyImages, w2s, s2w, re
 scheduleFrame();
 })();
 </script>
-<script src="companion-ui.js" defer></script>
+<script src="companion-ui.js?v=practice-1" defer></script>
 </body>
 </html>

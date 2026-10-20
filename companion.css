@@ -413,3 +413,5 @@ max-height:calc(100dvh - 145px)}
 #aboutTitle{margin-top:4px;margin-right:30px}
 @media(max-width:520px){.canvas-tools{right:12px;top:max(12px,env(safe-area-inset-top))}.quiet-footer{gap:7px;padding:0 8px}.quiet-footer span{font-size:10.5px}#aboutTitle{font-size:24px;margin-right:24px}}
 @media(max-height:500px){#moreMenu{bottom:auto;max-height:calc(100dvh - 90px)}}
+.quiet-footer a{color:#465239;font-size:11px;min-height:36px;display:inline-flex;align-items:center}
+@media(max-width:520px){.quiet-footer{gap:4px 8px}.quiet-footer a{flex-basis:100%;justify-content:center;min-height:28px}.quiet-footer button{min-height:32px}}
