@@ -3,232 +3,52 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-<title>One Card Maze Helper · Infinite Walker</title>
-<meta name="app-version" content="2026-10-19-retained-gpu" />
+<title>One Card Maze Helper · Unofficial</title>
+<meta name="app-version" content="2026-10-19-companion-ui" />
 <meta name="description" content="Free, open-source One Card Maze helper. Upload both sides of your maze card, explore connected edges, track your path, and replay your walk in your browser." />
 <link rel="canonical" href="https://onecardmaze-tools.github.io/" />
-<meta property="og:title" content="One Card Maze Helper · Infinite Walker" />
+<meta property="og:title" content="One Card Maze Helper · Unofficial" />
 <meta property="og:description" content="Explore both sides of your One Card Maze card with path tracking, rotation, undo, and replay. Free and open source." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://onecardmaze-tools.github.io/" />
-<style>
-  :root{
-    --bg:#0a0e16; --ink:#e8eef7; --muted:#93a2b8;
-    --teal:#4fd1c5; --gold:#ffcb6b;
-    --panel:rgba(16,22,34,.94); --line:rgba(255,255,255,.12);
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);
-    font-family:ui-sans-serif,-apple-system,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif;
-    -webkit-font-smoothing:antialiased;overflow:hidden;}
-  #stage{position:fixed;inset:0;display:block;touch-action:none;cursor:crosshair;}
-
-  #hud{position:fixed;inset:0;pointer-events:none;padding:14px;display:flex;flex-direction:column;justify-content:space-between;}
-  .topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
-  .brand{pointer-events:auto;background:var(--panel);
-    border:1px solid var(--line);border-radius:14px;padding:10px 14px;max-width:min(46vw,420px);}
-  .brand h1{font-size:14px;margin:0;letter-spacing:.02em;font-weight:650;}
-  .brand h1 b{color:var(--teal)}
-  .brand p{margin:4px 0 0;font-size:11.5px;color:var(--muted);line-height:1.4}
-  .tools{pointer-events:auto;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
-  button{font:inherit;color:var(--ink);background:var(--panel);border:1px solid var(--line);
-    border-radius:11px;padding:9px 12px;cursor:pointer;transition:.15s;white-space:nowrap;}
-  button:hover{border-color:rgba(79,209,197,.6);color:#fff}
-  button:active{transform:translateY(1px)}
-  button.primary{background:linear-gradient(180deg,#2fb8ad,#1d8f88);border-color:transparent;color:#04140f;font-weight:700}
-  button.primary:disabled{opacity:.4;cursor:not-allowed}
-  button.on{border-color:var(--teal);color:#fff;box-shadow:0 0 0 1px rgba(79,209,197,.35) inset}
-
-  .bottom{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;}
-  .status{pointer-events:auto;background:var(--panel);border:1px solid var(--line);
-    border-radius:14px;padding:9px 12px;font-size:12px;display:flex;gap:14px;align-items:center;}
-  .status .k{color:var(--muted);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:2px}
-  .status .v{font-weight:650;font-variant-numeric:tabular-nums}
-  .status .v.side{color:var(--muted)}
-  .side-FRONT .v.side{color:var(--teal)}
-  .side-BACK .v.side{color:var(--gold)}
-  .status .legend i{font-style:normal;font-weight:700;font-size:13px;margin-right:6px}
-  .status .legend i:last-child{margin-right:0}
-  .tc0{color:#ffcc4d}.tc1{color:#5aa9ff}.tc2{color:#ff6b6b}.tc3{color:#b06bff}
-  .hint{pointer-events:auto;background:var(--panel);border:1px solid var(--line);
-    border-radius:14px;padding:10px 14px;font-size:12.5px;color:var(--muted);max-width:min(52vw,520px);line-height:1.5}
-  .hint b{color:var(--ink)}
-
-  /* the walk's transport: undo, replay both ways, scrub the whole walk */
-  .footer{display:flex;flex-direction:column;gap:10px;}
-  .player{pointer-events:auto;display:flex;align-items:center;gap:6px;background:var(--panel);
-    border:1px solid var(--line);border-radius:14px;padding:7px 10px;}
-  .player[hidden]{display:none}
-  .player button{padding:6px 10px;border-radius:9px;font-size:13px;line-height:1}
-  .player button#btnSpeed{min-width:52px;font-variant-numeric:tabular-nums}
-  .player .pcount{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums;
-    min-width:64px;text-align:right;white-space:nowrap}
-  .player input[type=range]{-webkit-appearance:none;appearance:none;flex:1;min-width:80px;height:20px;
-    background:transparent;cursor:pointer;margin:0}
-  .player input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:3px;
-    background:linear-gradient(90deg,var(--teal) 0 calc(var(--p,0) * 100%),
-               rgba(255,255,255,.16) calc(var(--p,0) * 100%) 100%);}
-  .player input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;height:15px;
-    margin-top:-4.5px;border-radius:50%;background:#fff;border:2px solid #0f1420;box-shadow:0 1px 4px rgba(0,0,0,.5)}
-  .player input[type=range]::-moz-range-track{height:6px;border-radius:3px;background:rgba(255,255,255,.16)}
-  .player input[type=range]::-moz-range-progress{height:6px;border-radius:3px;background:var(--teal)}
-  .player input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:#fff;border:2px solid #0f1420}
-
-  /* Avoid a full-screen backdrop blur over the live canvas. */
-  .overlay{position:fixed;inset:0;display:grid;place-items:center;background:rgba(4,7,12,.78);
-    z-index:20;padding:18px;}
-  .overlay.hidden{display:none}
-  .panel{width:min(680px,100%);max-height:92vh;overflow:auto;background:linear-gradient(180deg,rgba(20,27,42,.96),rgba(12,17,27,.96));
-    border:1px solid var(--line);border-radius:20px;padding:26px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
-  .panel h1{font-size:21px;margin:0;font-weight:700}
-  .panel h1 span{color:var(--teal);font-weight:600}
-  .lead{color:var(--muted);font-size:13.5px;line-height:1.6;margin:10px 0 20px}
-  .drops{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-  @media (max-width:560px){.drops{grid-template-columns:1fr}}
-  .drop{position:relative;aspect-ratio:5/7;border:2px dashed var(--line);border-radius:16px;display:flex;
-    flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;overflow:hidden;
-    background:rgba(255,255,255,.02);transition:.18s;text-align:center;padding:12px}
-  .drop:hover,.drop.drag{border-color:var(--teal);background:rgba(79,209,197,.07)}
-  .drop.has{border-style:solid;border-color:rgba(79,209,197,.5)}
-  .drop .dtag{font-size:11px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
-  .drop .dmsg{font-size:12.5px;color:var(--muted)}
-  .drop .thumb{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
-  .drop.has .thumb{display:block}
-  .drop.has .dtag,.drop.has .dmsg{position:relative;z-index:2;background:rgba(0,0,0,.55);padding:3px 8px;border-radius:8px}
-  .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
-  .fine{color:var(--muted);font-size:11.5px;margin:16px 0 0;line-height:1.5}
-  .startwrap{margin-top:18px;display:flex;gap:10px;align-items:center}
-  .startwrap .primary{flex:1;padding:14px}
-
-  #toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);background:var(--panel);
-    border:1px solid var(--line);border-radius:12px;padding:10px 16px;font-size:13px;
-    opacity:0;transition:.25s;pointer-events:none;z-index:30}
-  #toast.show{opacity:1;transform:translate(-50%,0)}
-
-  .keycap{display:inline-block;border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;
-    padding:1px 6px;font-size:11px;color:var(--ink);background:rgba(255,255,255,.05);margin:0 1px}
-  #help .panel{width:min(520px,100%)}
-  #help ul{margin:12px 0 0;padding-left:18px;color:var(--muted);font-size:13px;line-height:1.9}
-  #help b{color:var(--ink)}
-
-  #replayLayer{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
-  [hidden]{display:none!important}
-  #replayReadout{pointer-events:auto;align-self:center;width:min(620px,100%);box-sizing:border-box;
-    border:1px solid rgba(79,209,197,.4);border-radius:16px;padding:13px 18px;
-    background:rgba(8,16,26,.95);box-shadow:0 8px 30px #0005;}
-  .replay-heading,.replay-main{display:flex;justify-content:space-between;gap:12px;align-items:center}
-  .replay-heading{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--teal);margin-bottom:7px}
-  #replayPosition{color:var(--muted);font-variant-numeric:tabular-nums;letter-spacing:0}
-  #replayEvent{font-size:18px;font-weight:650} #replayFace{font-size:12px;white-space:nowrap;color:#e1e9f3}
-  #replayDetail{font-size:12px;line-height:1.5;color:#b4c4d7;margin:6px 0 10px}
-  .replay-key{display:flex;flex-wrap:wrap;gap:5px 15px;color:var(--muted);font-size:10px}
-  #btnReplayAgain{margin-top:10px;padding:6px 12px;color:var(--teal)}
-  .timeline-track{position:relative;flex:1;min-width:70px;display:flex;align-items:center}
-  .timeline-track input{width:100%}
-  #eventTicks{position:absolute;left:8px;right:8px;top:-2px;height:4px;pointer-events:none}
-  #eventTicks i{position:absolute;width:3px;height:4px;background:#ffcb6b;border-radius:1px}
-  #eventTicks i.spin{background:var(--teal)}
-  #eventSelect{color:var(--ink);background:#111b29;border:1px solid var(--line);border-radius:8px;
-    font:inherit;font-size:11px;max-width:125px;padding:6px}
-  body.reviewing .hint,body.reviewing .brand p{display:none}
-  .player button.on{background:#173d40;color:#a5fff1}
-  .status .legend{white-space:nowrap}
-  button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
-  @media(pointer:coarse){
-    :root{--panel:rgba(16,22,34,.96)}
-    .brand,button,.status,.hint,.player,.toast{backdrop-filter:none}
-  }
-  @media(max-width:700px){
-    #hud{padding:9px}.topbar{gap:7px}.brand{padding:8px;max-width:40%}.brand p{display:none}
-    .tools{gap:4px}.tools button{padding:7px 8px;font-size:12px}.brand h1{font-size:12px}
-    .player{flex-wrap:wrap;gap:4px}.player button{padding:7px;font-size:11px}
-    .timeline-track{order:2;flex-basis:60%}.player .pcount{display:none}#eventSelect{margin-left:auto;max-width:100px}
-    .status{gap:10px;padding:8px;font-size:11px}.status .k{font-size:8px}.status .legend i{margin-right:3px}
-    .hint{display:none}#replayReadout{padding:10px 12px}#replayEvent{font-size:15px}
-    .replay-main{align-items:flex-start}#replayFace{font-size:10px}.replay-key{font-size:9px;gap:4px 10px}
-    #replayDetail{font-size:11px;margin-bottom:7px}.footer{gap:7px}
-  }
-  @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
-
-  #markerPlacementTip{position:fixed;left:50%;top:96px;transform:translateX(-50%);z-index:13;
-    max-width:calc(100% - 20px);box-sizing:border-box;display:flex;align-items:center;gap:12px;
-    border:1px solid var(--teal);border-radius:12px;background:#0b1523f5;padding:8px 12px;font-size:12px}
-  #markerPlacementTip button{padding:5px 9px;font-size:11px}
-  #markerPanel{position:fixed;right:14px;top:85px;z-index:12;width:285px;max-height:65vh;overflow:auto;
-    box-sizing:border-box;padding:16px;border:1px solid #446071;border-radius:15px;background:#0b1523f5;box-shadow:0 12px 30px #0007}
-  .marker-title{display:flex;justify-content:space-between;align-items:center}.marker-title button{padding:3px 9px}
-  #markerPanel p{font-size:12px;line-height:1.5;color:#b4c4d7;margin:10px 0}
-  .marker-fields{display:flex;gap:12px}.marker-fields label{flex:1;min-width:0}
-  #markerPanel label{font-size:11px;color:var(--muted);display:block}
-  #markerPanel select,#markerPanel input{box-sizing:border-box;width:100%;margin:5px 0 10px;background:#172638;color:var(--ink);
-    border:1px solid #456075;border-radius:7px;min-height:34px;padding:6px;font:inherit;font-size:13px}
-  #markerPanel input[type=color]{padding:3px;cursor:pointer}
-  #btnPlaceMarker{width:100%;font-size:12px;white-space:normal}
-  #markerList{padding:0;list-style:none;margin:12px 0 0}#markerList li{display:flex;gap:5px;margin-top:6px}
-  #markerList li button:first-child{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;text-align:left;font-size:11px}
-  #markerList li button{padding:7px}
-  @media(pointer:coarse){
-    :root{--panel:rgba(16,22,34,.96)}
-    .brand,button,.status,.hint,.player,.toast{backdrop-filter:none}
-  }
-  @media(max-width:700px){#markerPanel{right:9px;top:96px;width:min(285px,calc(100% - 18px));max-height:55vh}}
-</style>
+<link rel="stylesheet" href="companion.css" />
 </head>
 <body>
 <canvas id="stage" aria-label="Maze map"></canvas>
 <canvas id="replayLayer" aria-hidden="true"></canvas>
 
 <div id="hud">
-  <div class="topbar">
-    <div class="brand">
-      <h1>One Card Maze · <b>Infinite Walker</b></h1>
-      <p>Your card stays bright. Neighbours stay quiet and brighten as you approach their shared edge.</p>
-    </div>
-    <div class="tools">
-      <button id="btnUpload">Images</button>
-      <button id="btnSession" aria-expanded="false" aria-controls="sessionPanel">Recording</button>
-      <button id="btnTrail" class="on">Trail</button>
-      <button id="btnMarkers" aria-expanded="false" aria-controls="markerPanel">Markers</button>
-      <button id="btnSpinL" title="Rotate the card left (Q)">⟲</button>
-      <button id="btnSpinR" title="Rotate the card right (E)">⟳</button>
-      <button id="btnReset">Reset</button>
-      <button id="btnZoomOut">−</button>
-      <button id="btnZoomIn">+</button>
-      <button id="btnFit">Fit</button>
-      <button id="btnHelp">?</button>
-    </div>
-  </div>
   <div class="footer">
-    <section id="replayReadout" hidden aria-label="Replay status">
-      <div class="replay-heading"><span id="replayDirection">Route review</span><span id="replayPosition"></span></div>
-      <div class="replay-main"><strong id="replayEvent" aria-live="polite">Ready to review</strong><span id="replayFace"></span></div>
-      <p id="replayDetail"></p>
-      <div class="replay-key"><span>Faint: full route</span><span>Colour: reviewed in this direction</span><span>White: current visit</span></div>
-      <button id="btnReplayAgain" hidden>Replay again</button>
-    </section>
+    <div class="rotation-controls" aria-label="Rotate card">
+      <button id="btnSpinL" class="rotate" aria-label="Rotate left (Q)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11a9 9 0 1 1 2.64 6.36M3 4v7h7" /></svg><span>Rotate left</span><kbd>Q</kbd></button>
+      <button id="btnSpinR" class="rotate" aria-label="Rotate right (E)"><svg viewBox="0 0 24 24" aria-hidden="true"><g transform="translate(24 0) scale(-1 1)"><path d="M3 11a9 9 0 1 1 2.64 6.36M3 4v7h7" /></g></svg><span>Rotate right</span><kbd>E</kbd></button>
+    </div>
     <div class="player" id="player" hidden>
-      <button id="btnUndo" title="Undo — step back along the walk (Z)">↶</button>
-      <button id="btnBack" aria-label="Reverse replay" title="Reverse replay (Shift+Space)">◀ Reverse</button>
-      <button id="btnFwd" aria-label="Forward replay" title="Forward replay (Space)">▶ Forward</button>
-      <button id="btnSpeed" title="Replay speed (0.1× / 0.2× / 0.5× / 1× / 2× / 4×)">0.2×</button>
-      <button id="btnPrevEvent" aria-label="Previous event" title="Previous flip or spin">|‹</button>
-      <button id="btnNextEvent" aria-label="Next event" title="Next flip or spin">›|</button>
-      <div class="timeline-track"><div id="eventTicks" aria-hidden="true"></div><input id="scrub" type="range" min="0" max="0" step="0.01" value="0" aria-label="Recorded route position" /></div>
-      <select id="eventSelect" aria-label="Jump to route event"><option value="">Events</option></select>
-      <span class="pcount" id="pcount">0</span>
+      <button id="btnUndo" aria-label="Undo last step (Z)">Undo</button>
+      <button id="btnBack" aria-label="Reverse replay">Reverse</button>
+      <button id="btnFwd" aria-label="Forward replay">Replay</button>
+      <div class="timeline-track"><input id="scrub" type="range" min="0" max="100" step="0.01" value="0" aria-label="Recorded route position" /></div>
+      <button id="btnSpeed" aria-label="Change replay speed">0.2×</button>
+      <span id="pcount" hidden></span>
     </div>
-    <div class="bottom">
-      <div class="status" id="status">
-        <div><span class="k">Side</span><span class="v side">—</span></div>
-        <div><span class="k">Up</span><span class="v ori">↑</span></div>
-        <div><span class="k">Trace arrows</span><span class="v legend" title="Each arrow records which way was up at that visit. It stays attached to the card; it does not show walking direction.">●↑ past up · › travel</span></div>
-        <div><span class="k">Zoom</span><span class="v zoom">—</span></div>
-        <div><span class="k">Walked</span><span class="v dist">0</span></div>
-      </div>
-      <div class="hint" id="hint">Loading…</div>
-    </div>
+    <div id="replayCompletion" role="status" hidden>Replay complete <button id="btnReplayAgain">Play again</button></div>
+    <nav class="quiet-footer" aria-label="Game tools">
+      <span>Unofficial One Card Maze helper</span><span aria-hidden="true">·</span>
+      <button id="btnHelp">About</button>
+    </nav>
   </div>
 </div>
+<button id="btnMore" class="canvas-tools" aria-expanded="false" aria-controls="moreMenu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h7m4 0h5M4 17h3m4 0h9"/><circle cx="13" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>Tools</button>
+<section id="moreMenu" hidden aria-label="Card and game tools">
+  <button id="btnUpload">Import card</button>
+  <button id="btnMarkers" aria-expanded="false" aria-controls="markerPanel">Markers</button>
+  <button id="btnSession" aria-expanded="false" aria-controls="sessionPanel">Save / load recording</button>
+  <button id="btnTrail" class="on" aria-pressed="true">Show trail</button>
+  <button id="btnFit">Fit card</button>
+  <div class="zoom-controls"><button id="btnZoomOut" aria-label="Zoom out">−</button><span>Zoom</span><button id="btnZoomIn" aria-label="Zoom in">+</button></div>
+  <details><summary>Replay events</summary><div class="event-controls"><button id="btnPrevEvent" aria-label="Previous event">Previous</button><button id="btnNextEvent" aria-label="Next event">Next</button><select id="eventSelect" aria-label="Jump to route event"><option value="">Events</option></select><span id="eventTicks" hidden></span></div></details>
+  <button id="btnReset">Start over</button><button id="btnPractice">Load practice demo</button>
+</section>
 
 <div id="markerPlacementTip" hidden role="status">Click / tap the map to place a marker <button id="btnCancelMarker">Cancel</button></div>
 <section id="markerPanel" hidden aria-label="Markers">
@@ -244,17 +64,10 @@
   <ul id="markerList" aria-label="Your markers"></ul>
 </section>
 
-<div class="overlay" id="loader">
+<div class="overlay hidden" id="loader" role="dialog" aria-modal="true" aria-labelledby="importTitle">
   <div class="panel">
-    <h1>One Card Maze <span>· Infinite Walker</span></h1>
-    <p class="lead">
-      Upload the <b>front</b> and <b>back</b> of a maze card. The walker starts anywhere you click and
-      roams freely. The card you're standing on is held in the <b>middle</b> of the screen with the
-      eight cards around it: the <b>other side</b> above, below, left and right, and the
-      <b>same side turned 180&deg;</b> in the four corners — the two faces
-      behave as one map, so you keep walking instead of turning the card over. Step over an edge and
-      the view slides the next card into the middle.
-    </p>
+    <button class="panel-close" id="btnLoaderClose" aria-label="Close import">×</button><h1 id="importTitle">Bring your own card.</h1>
+    <p class="lead">Choose the front and back of your card. Images stay on this device.</p>
     <div class="drops">
       <label class="drop" id="dropFront">
         <input id="fileFront" type="file" accept="image/*" hidden />
@@ -268,35 +81,30 @@
       </label>
     </div>
     <div class="row">
-      <button id="btnDemo">Load demo card</button>
+      <button id="btnDemo">Use practice demo</button>
       <button id="btnImportWelcome">Import recording</button>
       <button id="btnForget">Forget saved images</button>
     </div>
-    <div class="startwrap"><button id="btnStart" class="primary" disabled>Start walking</button></div>
+    <div class="startwrap"><button id="btnStart" class="primary" disabled>Use this card</button></div>
     <p class="fine">Everything runs in your browser. Your images are saved locally on this device and never uploaded anywhere.</p>
   </div>
 </div>
 
-<div class="overlay hidden" id="help">
-  <div class="panel">
-    <h1>How to play</h1>
-    <ul>
-      <li><b>Set your start</b> — click / tap anywhere on the card once.</li>
-      <li><b>Walk</b> — <span class="keycap">W</span><span class="keycap">A</span><span class="keycap">S</span><span class="keycap">D</span> or arrow keys.</li>
-      <li><b>Go somewhere</b> — click / tap a spot and the walker walks there.</li>
-      <li><b>Cross any edge</b> — all eight cards around you are drawn, so you can see where every edge leads before you get there. <b>Left, right, up and down</b> show the <b>other side</b>; the four <b>corners</b> show the <b>same side turned 180°</b> (a diagonal step crosses two folds). Step over an edge and the view <b>slides the card you land on into the middle</b>; keep going and you're simply on the other face.</li>
-      <li><b>Watch your "up"</b> — crossing a <b>side</b> edge keeps you the same way up, but crossing a <b>top or bottom</b> edge tumbles the card, so you come out turned around 180°.</li>
-      <li><b>Rotate the card</b> — <span class="keycap">Q</span> / <span class="keycap">E</span> or the <b>⟲ / ⟳</b> buttons rotate the whole card freely in 90° steps.</li>
-      <li><b>Zoom</b> — mouse wheel / pinch, or the <b>+ / −</b> buttons.</li>
-      <li><b>Pan</b> — drag anywhere to look around; moving again brings your card back to the middle.</li>
-      <li><b>Markers</b> — choose any shape, colour, and optional label, then click the map to place it. Markers repeat on every copy of that face and stay independent of walking, rotation, reset, and replay. Select a marker in the list to edit or remove it. There are no required starts, destinations, or routes.</li>
-      <li><b>Trail</b> — solid ink records where you walked on every copy of a face. The outlined <b>arrow stamps</b> show which way was up at that visit, not your walking direction. They stay fixed to the card as you continue walking or zoom. An arrow pointing toward the top of your screen means you visited in the current orientation. Several arrowheads in one stamp record several orientations at that place. Small <b>open chevrons ›</b> on the line show the original walking direction; opposing tips mean the corridor was walked both ways.</li>
-      <li><b>Undo &amp; replay</b> — once you've walked a little a <b>transport bar</b> appears at the bottom. <b>↶</b> steps back (hold it, or <span class="keycap">Z</span>, to wind smoothly), <b>◀</b> / <b>▶</b> replay your whole walk backwards or forwards (<span class="keycap">Space</span> / <span class="keycap">Shift</span>+<span class="keycap">Space</span>), the speed button cycles how fast that playback runs (<b>0.1×</b> / <b>0.2×</b> / 0.5× / 1× / 2× / 4× — it starts slow, at 0.2×), and the <b>slider</b> scrubs anywhere along it. <b>|‹ / ›|</b> jump between flips and spins. The event menu jumps directly to a numbered event. Flip and spin events pause before and after the transition; the current face and up direction appear in the replay panel. The replay <b>turns the card too</b>, so you see the spins you made — and spins you made without walking collapse to the shortest single turn (three to the left replay as one to the right). Trail colours record the card’s up direction when drawn: gold ↑, blue →, red ↓, violet ←. They do not mean front/back or playback progress. Winding back is a <b>preview</b>: the complete route stays faintly visible and a white segment highlights the current visit, and the moment you <b>walk again</b> the part you wound past is dropped.</li>
-      <li><b>Reset</b> — <span class="keycap">R</span> clears the walker and lets you pick a new start.</li>
-    </ul>
-    <div class="row"><button class="primary" id="btnHelpClose" style="flex:1;padding:12px">Got it</button></div>
+<dialog id="help" aria-labelledby="aboutTitle">
+  <div class="intro-note">
+    <button class="panel-close" id="btnHelpClose" aria-label="Close introduction">×</button>
+    <h1 id="aboutTitle">Unofficial OneCardMaze helper</h1>
+    <p>One Card Maze is a maze game played by rotating and flipping a single card.</p>
+    <p>This helper is fan-made. It isn't an official website, and it doesn't include any official mazes.</p>
+    <div class="intro-actions"><button id="btnIntroDemo" class="primary">Play the demo</button><button id="btnIntroImport">Import my card</button></div>
+    <nav class="official-links" aria-label="Official game links"><a href="https://www.onecardmaze.com/" target="_blank" rel="noopener">Visit the official site ↗</a><a href="https://www.onecardmaze.com/downloads" target="_blank" rel="noopener">Get the real demo ↗</a><a href="https://www.onecardmaze.com/shop" target="_blank" rel="noopener">Buy the game ↗</a></nav>
+    <details id="introStory" open><summary>Why I made this</summary>
+      <p>I've loved this game since its early days. But after making my own physical cards, I kept losing track of where I was and where I'd already been. So I made this little tool for myself, and for anyone else who has the same problem.</p>
+      <p>I deliberately haven't included any of the game's mazes. Please get those from the creators. The demo here is just a simple practice card I made for trying out the tool.</p>
+    </details>
+    <p class="fine">Free &amp; open source · <a href="https://github.com/onecardmaze-tools/onecardmaze-tools.github.io" target="_blank" rel="noopener" class="source-link"><svg class="github-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 19 4.77 5.07 5.07 0 0 0 18.91 1S17.73.65 15 2.48a13.38 13.38 0 0 0-7 0C5.27.65 4.09 1 4.09 1A5.07 5.07 0 0 0 4 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 8 18.13V22"/></svg>Source code</a> · Game name and artwork belong to their owners.</p>
   </div>
-</div>
+</dialog>
 
 <div class="overlay hidden" id="err">
   <div class="panel">
@@ -307,16 +115,13 @@
 
 <div id="toast"></div>
 
-<section id="sessionPanel" hidden role="dialog" aria-label="Recording" style="position:fixed;right:14px;top:80px;z-index:20;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;width:min(380px,calc(100vw - 28px));max-height:75vh;overflow:auto">
+<section id="sessionPanel" hidden role="dialog" aria-label="Recording" >
   <div style="display:flex;justify-content:space-between;align-items:center"><strong>Recording</strong><button id="btnSessionClose" aria-label="Close recording">×</button></div>
-  <p>One file with both card images, your complete route, spins, markers and current view. Keep it as a backup or share it for testing.</p>
+  <p>One file with both card images, your complete route, spins, markers and current view. Keep it as a backup. Sharing a recording also shares the card images it contains.</p>
   <button id="btnExportSession">Export recording</button>
   <button id="btnImportSession">Import recording</button>
   <input id="fileSession" type="file" accept=".json,.ocm.json,application/json" hidden />
   <p class="fine">Import replaces the current session. Export first if you want to keep it. Files stay on your device until you choose to share them.</p>
-  <hr style="border:0;border-top:1px solid var(--line)">
-  <button id="btnMeasure">Measure performance · 15s</button>
-  <p id="measureStatus" role="status" aria-live="polite">Optional: play or rotate normally during the sample. Results are included in your next export. This measures frame timing and long tasks, not CPU/GPU power.</p>
 </section>
 <script src="session-codec.js?v=1"></script>
 <script src="replay-core.js?v=4"></script>
@@ -378,8 +183,7 @@ const CFG = {
    world direction the card's "up" pointed to at that orientation. */
 const TRAIL_COLORS = ["#ffcc4d", "#5aa9ff", "#ff6b6b", "#b06bff"];   // up, right, down, left
 
-const DEMO_BASE = "https://singingsimon.github.io/MAZERULES/cards/Rules/";
-const BG = [0.039, 0.055, 0.086];                      // #0a0e16
+const BG = [0.975, 0.976, 0.957]; // Pale paper; updated only when artwork changes.
 const ORI_ARROWS = ["↑", "→", "↓", "←"];
 
 const S = {
@@ -444,9 +248,7 @@ varying OCM_PRECISION vec2 vUv;
 uniform vec2 uView;
 uniform vec3 uBg;
 void main() {
-  vec2 dd = vUv - 0.5;
-  float rr = length(dd * vec2(uView.x / max(uView.y, 1.0), 1.0));
-  gl_FragColor = vec4(uBg * (1.0 - 0.45 * smoothstep(0.15, 0.95, rr)), 1.0);
+  gl_FragColor = vec4(uBg, 1.0);
 }`;
 const VS = `
 attribute vec2 aPos;
@@ -480,6 +282,7 @@ uniform vec4 uCSeamScale;
 uniform vec4 uCSeamBias;
 uniform vec4 uBorderEnabled;
 uniform vec2 uColorMix;
+uniform vec3 uBg;
 uniform float uCAmt;
 uniform float uSeamDark;
 uniform sampler2D uArt;
@@ -498,13 +301,12 @@ void main() {
   vec4 borders = (1.0-smoothstep(vec4(1.1), vec4(1.8), edgePx)) * uBorderEnabled;
   float border = max(max(borders.x, borders.y), max(borders.z, borders.w));
   art = mix(art, vec3(.012,.018,.026), border*.96);
-  float luma = dot(art, vec3(.2126, .7152, .0722));
-  vec3 col = art * uColorMix.x + vec3(luma * uColorMix.y);
+  vec3 col = art * uColorMix.x + uBg * uColorMix.y;
   gl_FragColor = vec4(col, edgeMask(edge, uCOutScale, uCOutBias)*uCAmt);
 }`;
 const UNIFORMS = ["uView","uCam","uZoom","uRotation","uCard",
   "uCIdx","uCOutScale","uCOutBias","uCSeamScale","uCSeamBias",
-  "uBorderEnabled","uColorMix","uEdgePxScale","uCAmt","uSeamDark","uArt"];
+  "uBorderEnabled","uColorMix","uBg","uEdgePxScale","uCAmt","uSeamDark","uArt"];
 let prog = null, bgProg = null, quadBuf = null, cardFloatPrecision = 0;
 const U = {}, BU = {};
 const NCARD = 18;
@@ -613,6 +415,31 @@ function loadImage(src) {
   });
 }
 
+// Sample a tiny copy once per card change. Ignore neutral pixels and use a
+// weighted circular hue so opposing colors fall back to neutral paper.
+function updateBackground(front, back) {
+  let hue=45, saturation=0;
+  try {
+    const sample=document.createElement('canvas'); sample.width=32;sample.height=64;
+    const g=sample.getContext('2d');g.drawImage(front,0,0,32,32);g.drawImage(back,0,32,32,32);
+    const data=g.getImageData(0,0,32,64).data;let x=0,y=0,weight=0;
+    for(let i=0;i<data.length;i+=4){
+      const r=data[i]/255,v=data[i+1]/255,b=data[i+2]/255;
+      const max=Math.max(r,v,b),delta=max-Math.min(r,v,b);
+      if(delta<.12||max<.18||data[i+3]<128)continue;
+      const h=(max===r?((v-b)/delta)%6:max===v?(b-r)/delta+2:(r-v)/delta+4)*Math.PI/3;
+      x+=Math.cos(h)*delta;y+=Math.sin(h)*delta;weight+=delta;
+    }
+    if(weight&&Math.hypot(x,y)/weight>.12){hue=(Math.atan2(y,x)*180/Math.PI+360)%360;saturation=.23;}
+  } catch {} // Neutral paper also works for unreadable / tainted artwork.
+  const light=.97, a=saturation*Math.min(light,1-light);
+  for(let i=0;i<3;i++){
+    const n=[0,8,4][i],k=(n+hue/30)%12;
+    BG[i]=light-a*Math.max(-1,Math.min(k-3,9-k,1));
+  }
+  document.documentElement?.style.setProperty('--bg','rgb('+BG.map(v=>Math.round(v*255)).join(',')+')');
+}
+
 function applyImages(front, back) {
   S.W = front.naturalWidth || front.width;
   S.H = front.naturalHeight || front.height;
@@ -624,9 +451,10 @@ function applyImages(front, back) {
   artCtx.drawImage(front, 0, 0, S.W, S.H);
   artCtx.drawImage(back, 0, S.H, S.W, S.H);
 
+  updateBackground(front, back);
   uploadArt();
 
-  S.ready = true;
+  S.ready = true; S.demo = false;
   S.persistMarkers = false;
   S.markers = []; S.nextMarkerId = 1; S.selectedMarker = null; setMarkerMode(false); syncMarkers();
   S.cam = { x: S.W / 2, y: S.H / 2 };
@@ -646,7 +474,7 @@ function fitView() {
   // fit the card plus a slice of each neighbour, so the other side is visible
   // above, below, left and right at the default zoom
   const grow = 1 + CFG.fitArmFrac * 2;
-  const fit = Math.min(view.w / (S.W * grow), view.h / (S.H * grow));
+  const fit = Math.min(view.w / (S.W * grow), Math.max(180, view.h - 240) / (S.H * grow));
   S.zoom = clamp(fit, .02, 40);
   S.minZoom = S.zoom * 0.45; S.maxZoom = S.zoom * 14;
   invalidate();
@@ -814,13 +642,9 @@ function eventName(e, dir) {
   return e.fromFace === e.toFace ? "Double fold · same face" : "Flip · " +
     ((dir > 0 ? e.fromFace : e.toFace) ? "back → front" : "front → back");
 }
-function setReplayTitle(text) {
-  const el = $("replayEvent");
-  if (el.textContent !== text) el.textContent = text;
-}
 function syncReviewHUD() {
   const show = S.review && S.trail.length > 1;
-  $("replayReadout").hidden = !show;
+  $("replayCompletion").hidden = !(show && S.reviewDone);
   document.body.classList.toggle("reviewing", show);
   if (S.trail.length > 1 && menuVersion !== S.replayVersion) {
     const model=replayModel(),events=model.events,select=$("eventSelect"),ticks=$("eventTicks");
@@ -847,42 +671,10 @@ function syncReviewHUD() {
   }
   backBtn.setAttribute("aria-pressed", String(S.play < 0));
   fwdBtn.setAttribute("aria-pressed", String(S.play > 0));
-  backBtn.textContent = S.play < 0 ? "Ⅱ Reverse" : "◀ Reverse";
-  fwdBtn.textContent = S.play > 0 ? "Ⅱ Forward" : "▶ Forward";
-  if (!show) return;
-  $("replayDirection").textContent = (S.reviewDir < 0 ? "Reverse replay" : "Forward replay") +
-    (S.reviewDone ? " · complete" : S.play ? " · playing" : " · paused");
-  $("replayFace").textContent = currentFace() + " · Card up " + ORI_ARROWS[oriIndex()];
-  const model = replayModel(), total = model.distances[model.distances.length - 1] || 0;
-  const at = ReplayCore.distanceAt(model, S.cursor);
-  const reviewed = S.reviewDir > 0 ? at : total - at;
-  $("replayPosition").textContent = Math.round(total ? reviewed / total * 100 : 0) + "% reviewed";
-  const phase = S.phase;
-  if (S.reviewDone) {
-    setReplayTitle("Replay complete");
-    $("replayDetail").textContent = (S.reviewDir < 0 ? "Returned to the recorded start. " : "Reached the recorded end. ") +
-      "The full route is preserved. Replay it again or explore freely.";
-  } else if (phase) {
-    const e = phase.event, spin = e.type === "spin";
-    const pre = spin ? CFG.spinArrive : CFG.flipArrive;
-    const act = spin ? CFG.spinDuration : CFG.flipDuration;
-    const step = phase.elapsed < pre ? "Arrive" : phase.elapsed < pre + act ? "Transition" : "Settle";
-    setReplayTitle((e.id + 1) + ". " + eventName(e, S.reviewDir));
-    $("replayDetail").textContent = step + " · " + (spin ?
-      (step === "Arrive" ? "Hold at the recorded turn." : step === "Transition" ? "Turning around the card centre; walking is paused." :
-       "The turn is complete. The dashed white segment previews the next part of the recorded route.") :
-      "Paired rings mark the connected exit and entry. " + (step === "Settle" ? "Let the new face settle before walking." : "Walking pauses while the view crosses the fold."));
-  } else if (S.reviewEvent && !S.play) {
-    setReplayTitle((S.reviewEvent.id + 1) + ". " + eventName(S.reviewEvent, S.reviewDir));
-    $("replayDetail").textContent = "Event position · Play in either direction to review the transition. The recorded route is unchanged.";
-  } else {
-    setReplayTitle(S.play ? "Walking the recorded route" : "Route preview");
-    $("replayDetail").textContent = S.reviewDir < 0 ?
-      "Reviewing from end to start. The coloured progress grows backwards; the faint full route stays in place." :
-      "Reviewing in recording order. The white segment identifies this visit, including repeated corridors.";
-  }
-  $("btnReplayAgain").hidden = !S.reviewDone;
+  backBtn.textContent = S.play < 0 ? "Pause" : "Reverse";
+  fwdBtn.textContent = S.play > 0 ? "Pause" : "Replay";
 }
+
 function seekEvent(id) {
   const e = replayModel().events[id]; if (!e) return;
   S.play = 0; setCursor(e.at); S.reviewEvent = e;
@@ -1430,15 +1222,8 @@ function update(dt) {
   let moving = false;
 
   if (S.started) {
-    let dx = 0, dy = 0;
-    const K = S.keys;
-    if (K["a"] || K["arrowleft"]) dx -= 1;
-    if (K["d"] || K["arrowright"]) dx += 1;
-    if (K["w"] || K["arrowup"]) dy -= 1;
-    if (K["s"] || K["arrowdown"]) dy += 1;
-
     // A movement input stops any playback; walking again commits a rewound preview.
-    if (dx || dy || w.tx != null) {
+    if (w.tx != null) {
       if (S.review && S.cursor < S.trail.length - 1) commitWalk();
       exitReview(); S.manualPivot=null;
     }
@@ -1459,12 +1244,6 @@ function update(dt) {
       placeWalker(S.cursor);
       syncTimeline(false);
       moving = true;
-    } else if (dx || dy) {
-      const m = Math.hypot(dx, dy);
-      const nx = w.x + dx / m * speed * dt, ny = w.y + dy / m * speed * dt;
-      S.travelled += Math.hypot(nx - w.x, ny - w.y);
-      w.x = nx; w.y = ny; w.tx = null; w.ty = null;
-      S.follow = true; moving = walked = true;
     } else if (w.tx != null) {
       const vx = w.tx - w.x, vy = w.ty - w.y, dist = Math.hypot(vx, vy);
       if (dist <= speed * dt) { S.travelled += dist; w.x = w.tx; w.y = w.ty; w.tx = null; w.ty = null; moving = dist > 1e-7; }
@@ -1659,6 +1438,7 @@ function render() {
     gl.uniform2f(U.uCard,S.W,S.H);
     gl.uniform4f(U.uEdgePxScale,S.W*S.zoom,S.W*S.zoom,S.H*S.zoom,S.H*S.zoom);
     gl.uniform1f(U.uSeamDark,CFG.seamDark);
+    gl.uniform3fv(U.uBg,BG);
     gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,artTex);gl.uniform1i(U.uArt,0);
     if(!opaqueViewport) {
       gl.enable(gl.BLEND);
@@ -1673,8 +1453,8 @@ function render() {
       gl.uniform4f(U.uBorderEnabled, cardSeam[offset]>SEAM_BORDER_EPS ? 1 : 0,
         cardSeam[offset+1]>SEAM_BORDER_EPS ? 1 : 0, cardSeam[offset+2]>SEAM_BORDER_EPS ? 1 : 0,
         cardSeam[offset+3]>SEAM_BORDER_EPS ? 1 : 0);
-      const brightness = cardBright[n], saturation = .4 + .6 * brightness;
-      gl.uniform2f(U.uColorMix, brightness * saturation, brightness * (1-saturation));
+      const brightness = cardBright[n];
+      gl.uniform2f(U.uColorMix, brightness, 1-brightness);
       gl.uniform1f(U.uCAmt,cardAmt[n]);
       gl.drawArrays(gl.TRIANGLES,0,6);
     }
@@ -1729,20 +1509,7 @@ function currentFace() {
   const j = Math.floor((S.started ? S.walker.y : S.cam.y) / S.H);
   return faceIdx(i, j) === 0 ? "FRONT" : "BACK";
 }
-const elStatus = $("status");
-const elSide = elStatus.querySelector(".side");
-const elOri = elStatus.querySelector(".ori");
-const elZoom = elStatus.querySelector(".zoom");
-const elDist = elStatus.querySelector(".dist");
-function setText(el,value) {if(el.textContent!==value)el.textContent=value;}
-function updateHUD() {
-  const side=currentFace(),name='status side-'+side;
-  if(elStatus.className!==name)elStatus.className=name;
-  setText(elSide,side);setText(elOri,ORI_ARROWS[oriIndex()]);
-  setText(elZoom,Math.round(S.zoom*100)+'%');
-  const model=replayModel(),d=ReplayCore.distanceAt(model,S.cursor);
-  setText(elDist,d<1000?Math.round(d)+'px':(d/S.H).toFixed(1)+'×H');
-}
+function updateHUD() {}
 
 /* ============================================================
    MAIN LOOP — draws on demand; idles when nothing is moving
@@ -1794,7 +1561,7 @@ function tap(wpt) {
     S.follow = true; clearWalk();
     S.trail.push({ x: wpt.x, y: wpt.y, r: oriIndex() });
     invalidateReplay();
-    setHint("<b>Walking.</b> WASD / arrows, or click a spot to walk there. The other side opens up above, below, left and right; the corners show this side turned 180°. Undo &amp; replay appear at the bottom once you've walked a little.");
+    setHint("Click a spot to walk there.");
   } else { S.walker.tx = wpt.x; S.walker.ty = wpt.y; S.follow = true; }
 }
 
@@ -1852,9 +1619,10 @@ window.addEventListener("keydown", (e) => {
   const tag = e.target && e.target.tagName;
   if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA" ||
       (tag === "BUTTON" && (k === " " || k === "enter" || k.startsWith("arrow")))) return;
-  if (k.startsWith("arrow") || k === " ") e.preventDefault();
+  if (k === " ") e.preventDefault();
+  if (help.open || !loader.classList.contains("hidden")) return;
   if (e.metaKey || e.ctrlKey) { if (k === "z") undoOnce(); return; }
-  S.keys[k] = true;
+  if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(k)) return;
   invalidate();
   if (k === "z") { if (!e.repeat) undoOnce(); S.undoHeld = true; return; }
   if (e.repeat) return;
@@ -1904,7 +1672,7 @@ c.addEventListener("webglcontextrestored", () => {
 const loader = $("loader"), help = $("help");
 let pending = { front: null, back: null };   // { img, blob }
 
-function setHint(html) { $("hint").innerHTML = html; }
+function setHint() {}
 function toast(msg) {
   const el = $("toast");
   el.textContent = msg; el.classList.add("show");
@@ -1954,19 +1722,26 @@ $("fileBack").addEventListener("change", (e) => handleFile("back", e.target.file
 });
 
 async function loadDemo(autoStart) {
-  try {
-    toast("Loading demo card…");
-    const [f, b] = await Promise.all([loadImage(DEMO_BASE + "front.png"), loadImage(DEMO_BASE + "back.png")]);
-    pending.front = { img: f, blob: null };
-    pending.back = { img: b, blob: null };
-    markDrop("front", DEMO_BASE + "front.png");
-    markDrop("back", DEMO_BASE + "back.png");
-    applyImages(f, b);
-    if (autoStart) startNow();
-    else toast("Demo card ready — set your start");
-  } catch { toast("Demo unavailable (offline?)"); }
+  // Original practice artwork, generated locally. Never fetch official mazes.
+  const make = back => {
+    const cv = document.createElement("canvas"); cv.width=420;cv.height=560;
+    const g=cv.getContext("2d");g.fillStyle=back?"#e8eddb":"#f3ead3";g.fillRect(0,0,420,560);
+    g.strokeStyle="#626952";g.lineWidth=5;g.lineCap="round";g.lineJoin="round";
+    g.strokeRect(12,12,396,536);
+    const walls=back?[[12,150,150,150,150,310,290,310],[150,12,150,80,330,80,330,220,408,220],[12,400,220,400,220,548],[290,310,290,470,408,470]]:
+      [[12,140,150,140,150,290,280,290,280,140,408,140],[85,12,85,70,215,70,215,210],[12,360,110,360,110,470,245,470,245,548],[215,360,340,360,340,430,408,430]];
+    for(const pts of walls){g.beginPath();g.moveTo(pts[0],pts[1]);for(let i=2;i<pts.length;i+=2)g.lineTo(pts[i],pts[i+1]);g.stroke();}
+    g.fillStyle="#677050";g.font="20px system-ui";g.fillText(back?"Practice · back":"Practice · front",28,530);
+
+    return cv;
+  };
+  const f=make(false),b=make(true);
+  pending={front:null,back:null};
+  for(const side of ["Front","Back"]){$("drop"+side).classList.remove("has");$("thumb"+side).removeAttribute("src");}
+  applyImages(f,b);S.demo=true;
+  if(autoStart) startNow();
 }
-$("btnDemo").addEventListener("click", () => loadDemo(false));
+$("btnDemo").addEventListener("click", () => loadDemo(true));
 
 function startNow() {
   loader.classList.add("hidden");
@@ -1976,7 +1751,7 @@ function startNow() {
   S.follow = true; clearWalk();
   S.trail.push({ x: S.walker.x, y: S.walker.y, r: oriIndex() });
   invalidateReplay(); invalidate();
-  setHint("<b>Walking.</b> WASD / arrows, or click a spot to walk there. The other side opens up above, below, left and right; the corners show this side turned 180°. Undo &amp; replay appear at the bottom once you've walked a little.");
+  setHint("Click a spot to walk there.");
 }
 
 $("btnForget").addEventListener("click", async () => {
@@ -2049,7 +1824,7 @@ async function importSessionFile(file){
   // Keep imported sessions self-contained; do not mix their markers with the
   // previously saved card. A page reload still restores that saved card.
   S.persistMarkers=false;lastMeasurement=null;
-  $('measureStatus').textContent='Recording imported. Performance samples will describe this device; previous-device diagnostics remain in the original file.';
+
   setHint('Recording restored. Replay it, or continue walking from the playhead.');
   return data;
 }
@@ -2089,10 +1864,10 @@ function finishMeasurement(reason){
     routeAtStart:m.routeAtStart,routeAtEnd:{vertices:S.trail.length,spins:S.spins.length},
     notes:'Foreground requestAnimationFrame intervals, not confirmed presented frames or GPU/CPU power. Sampling itself schedules RAF for 15 seconds. No key contents recorded.'};
   const stats=lastMeasurement.rafIntervals;
-  $('measureStatus').textContent=stats?'Sample saved ('+reason+'). Frame intervals: median '+stats.medianMs+' ms, p95 '+stats.p95Ms+' ms, worst '+stats.maxMs+' ms. Export includes these results.':'Sample ended before frames could be measured.';
-  $('btnMeasure').textContent='Measure performance · 15s';
+  if ($('measureStatus')) $('measureStatus').textContent=stats?'Sample saved ('+reason+'). Frame intervals: median '+stats.medianMs+' ms, p95 '+stats.p95Ms+' ms, worst '+stats.maxMs+' ms. Export includes these results.':'Sample ended before frames could be measured.';
+  if ($('btnMeasure')) $('btnMeasure').textContent='Measure performance · 15s';
 }
-$('btnMeasure').addEventListener('click',()=>{
+$('btnMeasure')?.addEventListener('click',()=>{
   if(measurement){finishMeasurement('stopped');return;}
   if(!S.ready){toast('Load a card first');return;}
   const m={start:performance.now(),startedAt:new Date().toISOString(),environment:environmentSnapshot(),routeAtStart:{vertices:S.trail.length,spins:S.spins.length},intervals:[],tasks:[],last:null,observer:null};
@@ -2109,15 +1884,20 @@ $('btnMeasure').addEventListener('click',()=>{
 
 
 
-$("btnUpload").addEventListener("click", () => loader.classList.remove("hidden"));
+$("btnUpload").addEventListener("click", () => window.MazeUI.openImport());
 $("btnHelp").addEventListener("click", toggleHelp);
 $("btnHelpClose").addEventListener("click", toggleHelp);
-function toggleHelp() { help.classList.toggle("hidden"); invalidate(); }
+function toggleHelp() {
+  if(help.open) help.close();
+  else { S.walker.tx=S.walker.ty=null; S.undoHeld=false; help.showModal(); }
+  S.play=0; syncTimeline(); invalidate();
+}
 
 $("btnTrail").addEventListener("click", toggleTrail);
 function toggleTrail() {
   S.trailOn = !S.trailOn;
   $("btnTrail").classList.toggle("on", S.trailOn);
+  $("btnTrail").setAttribute("aria-pressed", String(S.trailOn));
   // switching it back on redraws whatever the walk recorded while it was off
   if (S.trailOn && S.trail.length) refreshTrace();
   invalidate();
@@ -2196,12 +1976,12 @@ updateHUD();
 
 /* expose for headless probes */
 window.OCM = { S, CFG, gl, foreground, render, update, applyImages, w2s, s2w, resize,
-  artCv, uploadArt, fitView, camTarget, traceLayout, captureSession, restoreSessionState, importSessionFile,
+  artCv, uploadArt, fitView, loadDemo, camTarget, traceLayout, captureSession, restoreSessionState, importSessionFile,
   camGoal: () => S.camGoal, trailAt, walkedTo, setCursor, play, undoOnce, commitWalk,
   refreshTrace, clearWalk, syncTimeline, recordPosition, addMarker, restoreMarkers, markerCopies, replayModel, advanceReplay, cardLight, cardCenter, spin, startNow, tap, seekEvent, orientationAt };
 
 (async () => {
-  if (new URLSearchParams(location.search).has("demo")) { loadDemo(true); return; }
+  if (new URLSearchParams(location.search).has("demo")) { await loadDemo(true); return; }
   try {
     const [fb, bb, markers] = await Promise.all([idbGet("front"), idbGet("back"), idbGet("markers")]);
     if (fb && bb) {
@@ -2213,13 +1993,16 @@ window.OCM = { S, CFG, gl, foreground, render, update, applyImages, w2s, s2w, re
       applyImages(fi, bi);
       S.persistMarkers = true;
       restoreMarkers(markers);
-      setHint("<b>Saved card restored.</b> Hit Start, then click to place your walker.");
+      startNow();
+      return;
     }
   } catch {}
+  await loadDemo(true);
 })();
 
 scheduleFrame();
 })();
 </script>
+<script src="companion-ui.js" defer></script>
 </body>
 </html>

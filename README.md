@@ -1,4 +1,4 @@
-# One Card Maze Helper · Infinite Walker
+# One Card Maze Helper · Unofficial
 
 **[Play online at onecardmaze-tools.github.io](https://onecardmaze-tools.github.io/)**
 
@@ -12,20 +12,21 @@ collisions, or game rules.
 
 ## Walk and plan
 
-1. Open **Images** and upload the two faces, or choose **Load demo card** to fetch
-   the official online rules card from its original source.
-2. Choose **Start walking**. Click/tap a location to walk there, or use WASD / arrows.
-3. **Q / E**, or **⟲ / ⟳**, rotate the map in 90° steps.
-4. Drag to pan, wheel/pinch or **+ / −** to zoom, and **Fit** to reframe.
-5. **Trail / T** toggles the route. **Reset / R** clears it and lets you pick a start.
+1. The page opens straight into a small, original practice demo, with a personal introduction over it. Close the introduction to play, or choose **Import my card** to use your own images.
+2. Click/tap a location to walk there. **Q / E** or the large **Rotate left / Rotate right** buttons turn the card in 90° steps. WASD and arrow-key movement are intentionally disabled.
+3. Drag to pan and wheel/pinch to zoom. **Tools → Fit card** reframes the card; **Tools** also holds markers, recording import/export, trail visibility and reset.
+4. Once you have walked, the compact transport provides undo, reverse replay, forward replay, a timeline and speed. Event jumps live under **Tools → Replay events**.
+5. **About** reopens the personal introduction, unofficial attribution and links to the official game, demo and store.
+
+The interface is English, bright and deliberately quiet, with a light doodle feel. Its pale background takes a low-saturation hue from both card images, sampled only when the card changes. Neutral or conflicting palettes use neutral paper. No game artwork is bundled or fetched by the practice demo.
 
 The current card and its **eight neighbours** remain visible. Crossing any edge
 shows the opposite face. Crossing a horizontal edge also turns the sheet through
 180°; diagonal copies show the same face turned through 180°. These are repeated
 views of **one two-sided card**, not nine independent maps. Route marks use the
-same folding transform as the artwork on every copy. A fine teal outline locates
+same folding transform as the artwork on every copy. A fine muted outline locates
 the current card without hiding the neighbouring connections. The current face
-stays fully lit; the four side neighbours are dimmed to 38% and the diagonal
+stays fully lit; the four side neighbours are faded toward the pale background to 38% and the diagonal
 copies to 24%. Approaching a shared edge gradually reveals the corresponding
 side neighbour (up to 78%); corners brighten more quietly (up to 54%). These
 changes ease in and out, including when focus passes to the next card. Markers
@@ -39,13 +40,13 @@ and its markers. Demo markers last for the current session.
 
 ## Export, import and share a recording
 
-Open **Recording → Export recording** to download one `.ocm.json` file containing
+Open **Tools → Save / load recording → Export recording** to download one `.ocm.json` file containing
 both faces as lossless PNGs of the active card, the complete route, spin events,
 markers, playhead, zoom and camera. The back face uses the same dimensions as the
 front, as displayed in the app. No remote artwork URL is needed to restore it.
 Exporting during review preserves the entire future route. Animation/movement
 pauses when a file is imported; replay or continue walking from that playhead.
-Import is available from the initial image loader as well as **Recording**.
+Import is available from the initial image loader as well as **Save / load recording**.
 
 Import replaces the current on-screen session, so export it first to keep it.
 Imported sessions last until reload and do not overwrite the previous IndexedDB
@@ -53,15 +54,7 @@ card or its markers. Save changes with another export. Files are local downloads
 sharing one also shares the embedded card images and optional diagnostic summary.
 Nothing is automatically uploaded or committed to this public repository.
 
-For a real-device sample, choose **Measure performance · 15s**, then walk, replay
-or use Q/E as usual with the tab visible. The next export includes that device's
-viewport, pixel ratio, browser version, frame-interval summary and long-task
-summary when supported. A hidden tab ends sampling. Sampling has no ongoing RAF
-or observer after it ends. These are foreground RAF timings, not a confirmed
-presented-FPS counter, a formal INP score, or CPU/GPU/battery readings. Original
-key timings and pauses are not recorded; route replay follows the selected replay
-speed. Use a Chrome performance trace / native instrumentation for those deeper
-measurements on the affected machine.
+Performance sampling is no longer exposed in the player UI. Development benchmarks and renderer checks remain in `tests/` and `benchmarks/`.
 
 ## Review a route
 
@@ -69,19 +62,16 @@ After walking, the transport bar provides:
 
 | Control | Behaviour |
 | --- | --- |
-| **Forward / Space** | Review in recording order; press again to pause |
+| **Replay / Space** | Review in recording order; press again to pause |
 | **Reverse / Shift+Space** | Review from end to start; press again to pause |
 | **Speed** | Cycle 0.1×, 0.2×, 0.5×, 1×, 2×, 4× (default 0.2×) |
 | **Timeline** | Preview any recorded position without changing the route |
-| **\|‹ / ›\|** | Jump to the previous/next flip or spin in recording order |
-| **Event menu** | Jump directly to a numbered event |
-| **↶ / Z** | Step back; hold to rewind |
-| **Replay again** | Restart the selected direction after playback completes |
+| **Tools → Replay events → Previous / Next** | Jump to the previous/next flip or spin in recording order |
+| **Tools → Replay events** | Jump directly to a numbered event |
+| **Undo / Z** | Step back; hold to rewind |
+| **Play again** | Restart the selected direction after playback completes |
 
-The review panel states the direction, current event, card face, and up direction.
-Its percentage means **distance reviewed in the chosen direction**; the transport
-percentage always means **position in the original recording**. In reverse these
-percentages therefore move in opposite directions.
+The game stays visible during replay; there is no explanatory overlay. A short completion message appears at the end. The timeline always represents position in the original recording.
 
 ### Three route layers
 
@@ -146,7 +136,7 @@ arrival and settling time.
 
 ## Free-form markers
 
-Open **Markers**, choose a **circle, diamond, square, triangle, or star**, pick any
+Open **Tools → Markers**, choose a **circle, diamond, square, triangle, or star**, pick any
 colour, optionally enter a label, then click **Place marker** and click the map.
 You can place a marker before or after starting a walk, or while reviewing.
 
@@ -161,7 +151,7 @@ at once, or remove it with **×**. **Reset** clears only the walk, preserving
 markers. Markers are stored only in your browser with the uploaded images.
 
 Completion explicitly says **Replay complete** and whether it reached the recorded
-start or end. It preserves the full route and offers **Replay again**; it does not
+start or end. It preserves the full route and offers **Play again**; it does not
 assign game outcomes.
 
 ### Recording versus preview
@@ -208,10 +198,11 @@ python3 -m http.server 8000
 # Open http://localhost:8000
 ```
 
-Append `?demo` to load the rules card automatically (requires Internet access).
+Append `?demo` to open the original practice card directly without the introduction. The demo works offline and never requests official artwork.
 
 ## Development and checks
 
+- `companion.css` and `companion-ui.js`: bright UI, introduction, accessible imports and quiet menus.
 - `index.html`: controls, card-quad WebGL artwork, event state machine, camera,
   free-form markers and local image/marker storage.
 - `gpu-renderer.js`: retained GPU paths with analytic antialiasing, small glyph
@@ -258,5 +249,6 @@ Application code is available under the [MIT License](LICENSE).
 
 One Card Maze is a game by Simon Filice and Andrew Dobson. This unofficial tool
 ships no game artwork. Game names and third-party artwork belong to their owners;
-the code license does not grant rights to them. The optional demo loads the rules
-card directly from its original online source.
+the code license does not grant rights to them. The practice demo is an original,
+locally generated sketch for learning the tool, not an official game maze. Get
+real mazes, demos and purchases from [the creators](https://www.onecardmaze.com/).

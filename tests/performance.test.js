@@ -10,7 +10,10 @@ assert.equal(counts.domWrites,sleeping.domWrites,'Zero idle HUD writes');
 app.tap({x:375,y:525});h.tick();
 h.listeners.keydown({key:'d',target:{tagName:'DIV'},preventDefault(){}});
 for(let k=0;k<12;k++)h.tick();
-const x=S.walker.x;assert(x>375,'Keyboard movement wakes the sleeping scheduler');
+assert.equal(S.walker.x,375,'Removed keyboard movement leaves the walker still');
+app.tap({x:475,y:525});
+for(let k=0;k<12;k++)h.tick();
+const x=S.walker.x;assert(x>375,'Click movement wakes the sleeping scheduler');
 h.listeners.keyup({key:'d'});for(let k=0;k<400;k++)h.tick();
 assert.equal(h.pending(),0,'Releasing input and finishing fades returns to sleep');
 // Overlay-only changes must not submit another full-screen artwork draw.

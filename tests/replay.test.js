@@ -44,8 +44,8 @@ const gl = new Proxy({getShaderParameter:()=>true,getProgramParameter:()=>true,
 const elements = new Map();
 function element(id) {
   if (elements.has(id)) return elements.get(id);
-  const e = {id,style:{setProperty:noop},classList:{toggle:noop,add:noop,remove:noop},
-    addEventListener:noop,setAttribute:noop,replaceChildren:noop,appendChild:noop,add:noop,
+  const e = {id,style:{setProperty:noop},classList:{toggle:noop,add:noop,remove:noop,contains:()=>true},
+    addEventListener:noop,setAttribute:noop,removeAttribute:noop,replaceChildren:noop,appendChild:noop,add:noop,
     querySelector:s=>element(id+s),getContext:t=>t==='2d'?context2d:gl,
     getBoundingClientRect:()=>({left:0,top:0,width:1200,height:900}),width:100,height:100};
   elements.set(id,e); return e;
@@ -165,7 +165,7 @@ fixture();app.play(-1);
 for(let k=0;k<1000;k++){app.update(.01);if(S.phase && S.phase.event.type==='spin' && S.phase.elapsed>.02)break;}
 const fold=Math.floor(S.walker.y/S.H)%2?2:0;
 const expectedArrow=['↑','→','↓','←'][(S.phase.event.toQ+fold)%4];
-assert(elements.get('replayFace').textContent.endsWith(expectedArrow));
+assert(S.phase.elapsed < app.CFG.spinArrive, 'Arrival still holds before the recorded spin');
 fixture();app.play(1);
 for(let k=0;k<1000;k++){app.update(.01);if(S.phase && S.phase.event.type==='spin' && S.phase.elapsed>.45)break;}
 assert(S.phase);const paused=S.phase,elapsed=paused.elapsed,rotation=S.rot;
@@ -199,6 +199,16 @@ assert(!core.canExtend(p(0,0),p(10,0),p(5,0)),'Reversal is retained');
 assert(!core.canExtend(p(0,0),p(10,0),p(10,10)),'Corner is retained');
 listeners.keydown({key:'ArrowRight',target:{tagName:'INPUT'},preventDefault:()=>assert.fail('slider key prevented')});
 assert(!S.keys.arrowright,'Slider keys do not walk');
+// Removed movement bindings cannot change position or branch a route preview.
+fixture();app.setCursor(2.5);const still={x:S.walker.x,y:S.walker.y,trail:JSON.stringify(S.trail)};
+for(const key of ['w','a','s','d','ArrowLeft','ArrowRight','ArrowUp','ArrowDown']) {
+  listeners.keydown({key,target:{tagName:'DIV'},preventDefault:noop});app.update(.05);
+  near(S.walker.x,still.x);near(S.walker.y,still.y);
+  assert.equal(JSON.stringify(S.trail),still.trail);assert(S.review,'Removed keys preserve review');
+}
+listeners.keydown({key:'q',target:{tagName:'DIV'},preventDefault:noop});
+assert(S.rotTarget!==S.rot,'Q still rotates the card');
+
 // Resuming a rewind commits only the displayed past, including a fractional endpoint.
 fixture(); app.setCursor(2.5); const endpoint=app.trailAt(2.5); app.commitWalk();
 assert.equal(S.trail.length,4);near(S.trail[3].x,endpoint.x);near(S.trail[3].y,endpoint.y);

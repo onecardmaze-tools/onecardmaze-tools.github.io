@@ -11,8 +11,8 @@ module.exports=function harness(canvasModule,options={}) {
   function make(id) {
     const cv=canvasModule&&canvasModule.createCanvas(1200,900);
     const ctx=canvasModule?cv.getContext('2d'):new Proxy({measureText:()=>({width:20}),clearRect(){if(id==='traceLayer')counts.staticClears++;}},{get:(t,k)=>k in t?t[k]:noop});
-    const e={id,style:{setProperty:noop},classList:{toggle:noop,add:noop,remove:noop},
-      addEventListener:(name,fn)=>{listeners[id+':'+name]=fn;},setAttribute:noop,replaceChildren:noop,appendChild:noop,add:noop,
+    const e={id,style:{setProperty:noop},classList:{toggle:noop,add:noop,remove:noop,contains:()=>true},
+      addEventListener:(name,fn)=>{listeners[id+':'+name]=fn;},setAttribute:noop,removeAttribute:noop,replaceChildren:noop,appendChild:noop,add:noop,
       querySelector:s=>element(id+s),getContext:t=>t==='2d'?ctx:gl,
       getBoundingClientRect:()=>({left:0,top:0,width:1200,height:900})};
     for(const key of ['width','height']) {let size=1200;Object.defineProperty(e,key,{get:()=>cv?cv[key]:size,set:v=>{size=v;if(cv)cv[key]=v;}});}
