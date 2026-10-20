@@ -12,13 +12,13 @@ collisions, or game rules.
 
 ## Walk and plan
 
-1. The page opens straight into a small, original practice demo, with a personal introduction over it. The original practice maze uses the official Rules demo’s 755 × 1055 portrait proportions. One winding route joins both faces through three matching edge openings, with two small dead ends and short hints encountered along the walk. Some hints turn upright when the player rotates. The finish links to the free official demo. The practice card starts at a closer, readable scale on phones and keeps the active walker above the bottom controls; uploaded cards retain their existing fit. Close the introduction to play, or choose **Import my card** to use your own images.
+1. The page opens into the original, user-supplied practice maze, with a personal introduction over it. Its two 1061 × 1483 PNG faces are bundled unchanged in `assets/demo/`. The walker starts at the printed START ring. Follow the light path, match the edge letters and rotate at the spin signs; the tool records the route but does not enforce maze rules. The practice card starts at a closer scale on phones; uploaded cards retain their existing fit. Close the introduction to play, or choose **Import my card** to use your own images. The official free-demo link remains available below the game.
 2. Click/tap a location to walk there. **Q / E** or the large **Rotate left / Rotate right** buttons turn the card in 90° steps. WASD and arrow-key movement are intentionally disabled.
 3. Drag to pan and wheel/pinch to zoom. **Tools → Fit card** reframes the card; **Tools** also holds markers, recording import/export, trail visibility and reset.
 4. Once you have walked, the compact transport provides undo, reverse replay, forward replay, a timeline and speed. Event jumps live under **Tools → Replay events**.
 5. **About** reopens the personal introduction, unofficial attribution and links to the official game, demo and store.
 
-The interface is English, bright and deliberately quiet, with a light doodle feel. Its pale background takes a low-saturation hue from both card images, sampled only when the card changes. Neutral or conflicting palettes use neutral paper. No game artwork is bundled or fetched by the practice demo.
+The interface is English, bright and deliberately quiet, with a light doodle feel. Its pale background takes a low-saturation hue from both card images, sampled only when the card changes. Neutral or conflicting palettes use neutral paper. No official game artwork is bundled or fetched by the practice demo.
 
 The current card and its **eight neighbours** remain visible. Crossing any edge
 shows the opposite face. Crossing a horizontal edge also turns the sheet through
@@ -198,7 +198,7 @@ python3 -m http.server 8000
 # Open http://localhost:8000
 ```
 
-Append `?demo` to open the original practice card directly without the introduction. The demo works offline and never requests official artwork.
+Append `?demo` to open the original practice card directly without the introduction. The bundled demo never requests official artwork. After the site and both local PNG assets are available, the demo needs no external image service.
 
 ## Development and checks
 
@@ -249,6 +249,6 @@ Application code is available under the [MIT License](LICENSE).
 
 One Card Maze is a game by Simon Filice and Andrew Dobson. This unofficial tool
 ships no game artwork. Game names and third-party artwork belong to their owners;
-the code license does not grant rights to them. The practice demo is an original,
-locally generated sketch for learning the tool, not an official game maze. Get
+the code license does not grant rights to them. The practice demo uses original supplied artwork,
+not an official game maze. Get
 real mazes, demos and purchases from [the creators](https://www.onecardmaze.com/).

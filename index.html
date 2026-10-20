@@ -4,14 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>One Card Maze Helper · Unofficial</title>
-<meta name="app-version" content="2026-10-19-pocket-demo" />
+<meta name="app-version" content="2026-10-20-supplied-demo" />
 <meta name="description" content="Free, open-source One Card Maze helper. Upload both sides of your maze card, explore connected edges, track your path, and replay your walk in your browser." />
 <link rel="canonical" href="https://onecardmaze-tools.github.io/" />
 <meta property="og:title" content="One Card Maze Helper · Unofficial" />
 <meta property="og:description" content="Explore both sides of your One Card Maze card with path tracking, rotation, undo, and replay. Free and open source." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://onecardmaze-tools.github.io/" />
-<link rel="stylesheet" href="companion.css?v=practice-2" />
+<link rel="stylesheet" href="companion.css?v=practice-artwork-3" />
 </head>
 <body>
 <canvas id="stage" aria-label="Maze map"></canvas>
@@ -1729,92 +1729,24 @@ $("fileBack").addEventListener("change", (e) => handleFile("back", e.target.file
   });
 });
 
-// Original pocket-maze lesson. The official Rules reference is 755 × 1055;
-// only its portrait proportions and learn-by-walking approach are borrowed.
-function makePracticeCard(back) {
-  const cv=document.createElement('canvas');cv.width=755;cv.height=1055;
-  const g=cv.getContext('2d');
-  const ground=back?'#e1e8dc':'#e8e9da',paper='#fcf8ed',ink='#626d55',muted='#7c856f';
-  g.fillStyle=ground;g.fillRect(0,0,755,1055);
-  // One continuous lesson through both physical faces, with three folded joins:
-  // F(right,430) ↔ B(left,430), B(bottom,450) ↔ F(bottom,305),
-  // F(top,460) ↔ B(top,295). Vertical folds retain the physical edge
-  // and mirror x; the artwork on the neighboring view turns through 180°.
-  const paths=back?[
-    [[0,430],[120,430],[170,520],[170,660],[315,660],[315,790],[535,790],[535,920],[450,1055]],
-    [[295,0],[295,125],[520,125],[610,215],[610,300],[430,300],[430,445],[525,465]],
-    [[170,660],[80,660],[80,805]]
-  ]:[
-    [[377.5,527.5],[245,527.5],[190,455],[190,340],[330,340],[330,210],[540,210],[635,300],[635,430],[755,430]],
-    [[305,1055],[305,935],[95,935],[95,765],[95,220],[95,90],[460,90],[460,0]],
-    [[330,340],[440,340],[490,400]]
-  ];
-  function line(points) {g.beginPath();g.moveTo(...points[0]);for(const p of points.slice(1))g.lineTo(...p);}
-  g.lineJoin='round';g.lineCap='round';
-  // Draw all casings before any interiors, so junctions stay open.
-  g.strokeStyle=ink;g.lineWidth=100;
-  for(const path of paths){line(path);g.stroke();}
-  const room=(x,y,w,h)=>{
-    const r=28;g.beginPath();g.moveTo(x+r,y);g.lineTo(x+w-r,y+2);
-    g.quadraticCurveTo(x+w,y+1,x+w,y+r);g.lineTo(x+w-2,y+h-r);
-    g.quadraticCurveTo(x+w,y+h,x+w-r,y+h);g.lineTo(x+r,y+h-2);
-    g.quadraticCurveTo(x,y+h,x,y+h-r);g.lineTo(x+1,y+r);g.quadraticCurveTo(x,y,x+r,y);
-    g.fillStyle=paper;g.fill();g.strokeStyle=ink;g.lineWidth=3;g.stroke();
-  };
-  // Small clearings are part of the path, not four explanatory panels.
-  if(back) room(345,365,375,255);
-  else room(269,470,221,122);
-  // Cut the corridor interiors through the clearing borders too.
-  g.strokeStyle=paper;g.lineWidth=92;
-  for(const path of paths){line(path);g.stroke();}
-  function note(lines,x,y,angle=0,size=31,hand=false){
-    g.save();g.translate(x,y);g.rotate(angle);g.fillStyle=ink;
-    g.font='400 '+size+'px '+(hand?'"Segoe Print", "Bradley Hand", cursive':'system-ui, sans-serif');
-    g.textAlign='center';g.textBaseline='middle';
-    g.fillStyle=ink;lines.forEach((text,i)=>g.fillText(text,0,i*size*1.22));g.restore();
-  }
-  function crossing(x,y,label){
-    g.save();g.translate(x,y);g.fillStyle=paper;g.strokeStyle=ink;g.lineWidth=2;
-    g.beginPath();g.arc(0,0,17,0,Math.PI*2);g.fill();g.stroke();
-    g.fillStyle=ink;g.font='500 19px system-ui';g.textAlign='center';g.textBaseline='middle';g.fillText(label,0,1);g.restore();
-  }
-  g.fillStyle=muted;g.font='400 20px system-ui';g.textAlign='left';g.fillText(back?'PRACTICE / BACK':'PRACTICE / FRONT',back?420:540,35);
-  if(!back){
-    note(['start here'],377,494,0,35,true);
-    note(['Tap the path.'],377,565,0,29);
-    note(['Your trail','stays here.'],175,400,-Math.PI/2,32);
-    note(['Rotate','right.'],611,320,-Math.PI/2,32);
-    // The returning path physically passes this landmark after the lower fold.
-    note(['Back on the front.'],220,950,Math.PI,27);
-    note(['9 views.','One card.'],74,520,-Math.PI/2,34);
-    note(['Same face,','same trail.'],113,760,Math.PI/2,30);
-    crossing(733,430,'A');crossing(305,1032,'B');crossing(460,23,'C');
-  }else{
-    note(['Other side.','Same card.'],150,550,-Math.PI/2,30);
-    note(['Rotate','left.'],294,730,-Math.PI/2,36);
-    note(['…and back again.'],435,145,0,28);
-    note(['made it.'],530,419,0,40,true);
-    note(['Now try Replay.'],530,477,0,29);
-    note(['The official demo is free.','Get it from the creators:'],530,540,0,23);
-    note(['onecardmaze.com/downloads'],530,600,0,20);
-    crossing(22,430,'A');crossing(450,1032,'B');crossing(295,23,'C');
-  }
-  // A quiet authorship mark, off the walking route.
-  g.fillStyle=muted;g.font='400 19px system-ui';g.textAlign='right';
-  g.fillText('Original maze · unofficial',721,65);
-  return cv;
-}
-
+// User-supplied original artwork, bundled with the site. No official mazes.
 async function loadDemo(autoStart) {
-  // Generated locally; no official artwork or remote requests.
-  const make=makePracticeCard;
-  const f=make(false),b=make(true);
-  pending={front:null,back:null};
-  for(const side of ["Front","Back"]){$("drop"+side).classList.remove("has");$("thumb"+side).removeAttribute("src");}
-  applyImages(f,b);S.demo=true;fitView();
-  c.setAttribute('aria-label','Original two-sided practice card. Tap to walk, Q and E to rotate. The nine images are repeated views of one card; trails repeat on every copy of the same face.');
-  if(autoStart) startNow();
-  updateHUD();
+  try {
+    const [front,back]=await Promise.all([
+      loadImage('assets/demo/front.png'),loadImage('assets/demo/back.png')
+    ]);
+    // Keep the current card intact until both images have decoded.
+    pending={front:null,back:null};
+    for(const side of ['Front','Back']){
+      $('drop'+side).classList.remove('has');$('thumb'+side).removeAttribute('src');
+    }
+    applyImages(front,back);S.demo=true;fitView();
+    c.setAttribute('aria-label','Original two-sided practice maze. Follow the light path, match the edge letters, and use Q and E or the rotation buttons at the spin signs. The tool records your route; maze rules are followed by the player.');
+    if(autoStart) startNow();
+    updateHUD();
+  } catch {
+    toast('Could not load the practice demo. Please try again.');
+  }
 }
 $("btnDemo").addEventListener("click", () => loadDemo(true));
 
@@ -1822,7 +1754,10 @@ function startNow() {
   loader.classList.add("hidden");
   S.started = true;
   setAnchor(0, 0);
-  S.walker.x = S.W / 2; S.walker.y = S.H / 2; S.walker.tx = null; S.walker.ty = null;
+  // Center of the START ring in the supplied 1061 × 1483 front image.
+  S.walker.x = S.demo ? S.W * (522 / 1061) : S.W / 2;
+  S.walker.y = S.demo ? S.H * (750 / 1483) : S.H / 2;
+  S.walker.tx = null; S.walker.ty = null;
   S.follow = true; clearWalk();
   S.trail.push({ x: S.walker.x, y: S.walker.y, r: oriIndex() });
   invalidateReplay(); invalidate();
@@ -2051,7 +1986,7 @@ updateHUD();
 
 /* expose for headless probes */
 window.OCM = { S, CFG, gl, foreground, render, update, applyImages, w2s, s2w, resize,
-  artCv, uploadArt, fitView, loadDemo, makePracticeCard, camTarget, traceLayout, captureSession, restoreSessionState, importSessionFile,
+  artCv, uploadArt, fitView, loadDemo, camTarget, traceLayout, captureSession, restoreSessionState, importSessionFile,
   camGoal: () => S.camGoal, trailAt, walkedTo, setCursor, play, undoOnce, commitWalk,
   refreshTrace, clearWalk, syncTimeline, recordPosition, addMarker, restoreMarkers, markerCopies, replayModel, advanceReplay, cardLight, cardCenter, spin, startNow, tap, seekEvent, orientationAt };
 
@@ -2078,6 +2013,6 @@ window.OCM = { S, CFG, gl, foreground, render, update, applyImages, w2s, s2w, re
 scheduleFrame();
 })();
 </script>
-<script src="companion-ui.js?v=practice-2" defer></script>
+<script src="companion-ui.js?v=practice-artwork-3" defer></script>
 </body>
 </html>
