@@ -1,0 +1,28 @@
+[
+  {
+    "trace": "benchmarks/rendering-production-2026-10-20/empty-rotate-presentation-events.json.gz",
+    "measuredMs": 29982.451,
+    "method": "Chromium presentation-feedback counters, complete tracker intervals inside OCM measurement marks; JSAnimation and RAF overlap and must not be added together.",
+    "trackers": {
+      "JSAnimation": {
+        "expected": 13,
+        "droppedV3": 0,
+        "droppedV4": 0,
+        "intervals": 13,
+        "producedV3": 13,
+        "dropPercentV3": 0.0,
+        "dropPercentV4": 0.0
+      },
+      "RAF": {
+        "expected": 13,
+        "droppedV3": 0,
+        "droppedV4": 0,
+        "intervals": 13,
+        "producedV3": 13,
+        "dropPercentV3": 0.0,
+        "dropPercentV4": 0.0
+      }
+    },
+    "droppedIntervals": []
+  }
+]

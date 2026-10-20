@@ -6,7 +6,7 @@ module.exports=function harness(canvasModule,options={}) {
   const noop=()=>{},elements=new Map(),listeners={},frames=new Map();
   let serial=0,clock=0;const counts={glDraws:0,rafCalls:0,domWrites:0,staticClears:0};
   const gl=new Proxy({getShaderParameter:()=>true,getProgramParameter:()=>true,
-    getUniformLocation:()=>({}),createTexture:()=>({}),createBuffer:()=>({}),createProgram:()=>({}),createShader:()=>({}),
+    getShaderPrecisionFormat:()=>({precision:23}),getUniformLocation:()=>({}),createTexture:()=>({}),createBuffer:()=>({}),createProgram:()=>({}),createShader:()=>({}),
     drawArrays:()=>{counts.glDraws++;}}, {get:(t,k)=>k in t?t[k]:(k.toUpperCase()===k?1:noop)});
   function make(id) {
     const cv=canvasModule&&canvasModule.createCanvas(1200,900);
@@ -29,6 +29,8 @@ module.exports=function harness(canvasModule,options={}) {
     URLSearchParams,URL,location:{search:''},Float32Array,Uint8ClampedArray,
     Option:function(text,value){this.text=text;this.value=value;},
     Path2D:canvasModule?canvasModule.Path2D:function(){this.moveTo=noop;this.lineTo=noop;this.addPath=noop;}};
+  sandbox.GPURenderer={create(canvas){return {canvas,context:canvas.getContext('2d'),Path:sandbox.Path2D,
+    mode:'test-vector-adapter',flush:noop,resize:noop,clearRasterCache:noop};}};
   sandbox.window=sandbox;vm.createContext(sandbox);
   const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
   vm.runInContext([...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n'),sandbox);

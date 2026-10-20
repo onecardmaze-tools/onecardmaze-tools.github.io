@@ -1,0 +1,89 @@
+{
+  "root": "/private/tmp/ocm-no-msaa-20261020",
+  "results": [
+    {
+      "mode": "full",
+      "workload": "rotate",
+      "viewport": [
+        1504,
+        1492
+      ],
+      "dpr": 2,
+      "backing": [
+        3008,
+        2984
+      ],
+      "vertices": 48,
+      "projectedSegments": 235,
+      "canonicalStamps": 28,
+      "canonicalChevrons": 28,
+      "tiles": 9,
+      "zoom": 0.888095238095238,
+      "renderer": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) UHD Graphics 630, Unspecified Version)",
+      "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+      "traceSurface": {
+        "x": -750,
+        "y": -1050,
+        "width": 2250,
+        "height": 3150,
+        "rasterRatio": 1.6918190621911324,
+        "cssW": 1997.8495783245562,
+        "cssH": 2796.9894096543785,
+        "pixelW": 3380,
+        "pixelH": 4732,
+        "light": "-1,-1,0.50;-1,0,0.50;-1,1,0.50;0,-1,0.50;0,0,1.00;0,1,0.50;1,-1,0.50;1,0,0.50;1,1,0.50"
+      },
+      "cpuMs": {
+        "n": 120,
+        "median": 2.5,
+        "p95": 4,
+        "max": 4.699999988079071,
+        "mean": 2.5800000006953874
+      },
+      "rafMs": {
+        "n": 120,
+        "median": 16.699999999999818,
+        "p95": 17.40000000000009,
+        "max": 32.90000000000009,
+        "mean": 16.805833333333332
+      },
+      "glGpuMs": {
+        "n": 120,
+        "median": 8.39275,
+        "p95": 9.624334,
+        "max": 10.16175,
+        "mean": 8.424934958333331
+      },
+      "overlayGpuMs": {
+        "n": 120,
+        "median": 4.410166,
+        "p95": 6.635833,
+        "max": 7.537333,
+        "mean": 4.731114675
+      },
+      "overlayDisjoint": false,
+      "overlayBefore": {
+        "frames": 2,
+        "draws": 106,
+        "vertices": 99072,
+        "uploads": 85,
+        "cachedDraws": 30,
+        "cacheHits": 21,
+        "cacheMisses": 9
+      },
+      "overlayAfter": {
+        "frames": 142,
+        "draws": 6233,
+        "vertices": 6591384,
+        "uploads": 4252,
+        "cachedDraws": 2130,
+        "cacheHits": 1981,
+        "cacheMisses": 149
+      },
+      "disjoint": false,
+      "staticClears": 0,
+      "over25ms": 1,
+      "round": 0
+    }
+  ]
+}

@@ -1,0 +1,2597 @@
+{
+  "conditions": {
+    "width": 1504,
+    "height": 1492,
+    "dpr": 2,
+    "method": "Deterministic browser functional checks and screenshot coverage comparisons; not a performance benchmark"
+  },
+  "runs": [
+    {
+      "which": "baseline",
+      "root": "baseline-f49fc0d",
+      "scenes": [
+        {
+          "name": "dense-0",
+          "file": "baseline-dense-0.png",
+          "viewport": {
+            "width": 1504,
+            "height": 1492
+          },
+          "regions": []
+        },
+        {
+          "name": "dense-rotation",
+          "file": "baseline-dense-rotation.png",
+          "viewport": {
+            "width": 1504,
+            "height": 1492
+          },
+          "regions": []
+        },
+        {
+          "name": "negative-seams",
+          "file": "baseline-negative-seams.png",
+          "viewport": {
+            "width": 1504,
+            "height": 1492
+          },
+          "regions": []
+        },
+        {
+          "name": "markers-text",
+          "file": "baseline-markers-text.png",
+          "viewport": {
+            "width": 1504,
+            "height": 1492
+          },
+          "regions": [
+            {
+              "shape": "circle",
+              "x": 572.6980249526262,
+              "y": 564.7661871500483,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 626.3870740041128,
+              "y": 824.1056517513738,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 781.1583284909732,
+              "y": 609.1979258029597,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 834.8473775424598,
+              "y": 868.5373904042852,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 989.6186320293202,
+              "y": 653.6296644558713,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 1360.208673134502,
+              "y": 65.20569085420891,
+              "width": 110,
+              "height": 90
+            }
+          ]
+        },
+        {
+          "name": "zoom-in",
+          "file": "baseline-zoom-in.png",
+          "viewport": {
+            "width": 1504,
+            "height": 1492
+          },
+          "regions": [
+            {
+              "shape": "circle",
+              "x": 418.8732742417424,
+              "y": 409.28409569700653,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 518.6226334714481,
+              "y": 891.1131814040268,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 806.1735164725051,
+              "y": 491.834216036062,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 905.9228757022108,
+              "y": 973.6633017430822,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 1193.4737587032678,
+              "y": 574.3843363751174,
+              "width": 110,
+              "height": 90
+            }
+          ]
+        },
+        {
+          "name": "zoom-out",
+          "file": "baseline-zoom-out.png",
+          "viewport": {
+            "width": 1504,
+            "height": 1492
+          },
+          "regions": [
+            {
+              "shape": "circle",
+              "x": 611.2646123464978,
+              "y": 305.3567868592341,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "circle",
+              "x": 414.27000699193366,
+              "y": 1229.5960012735543,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "circle",
+              "x": 661.1472566113843,
+              "y": 654.1683897355472,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "circle",
+              "x": 1271.4354797852977,
+              "y": 446.0672192553513,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "circle",
+              "x": 1074.4408744307336,
+              "y": 1370.3064336696716,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 584.060241647487,
+              "y": 173.94885439368306,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 387.06563629292293,
+              "y": 1098.1880688080032,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 688.351627310395,
+              "y": 785.5763222010983,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 1244.2311090862872,
+              "y": 314.65928678980026,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 1047.2365037317231,
+              "y": 1238.8985012041205,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 505.6372735562897,
+              "y": 282.84311767585535,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 308.6426682017256,
+              "y": 1207.0823320901754,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 766.7745954015923,
+              "y": 676.682058918926,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 1165.8081409950898,
+              "y": 423.55355007197255,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 968.8135356405257,
+              "y": 1347.7927644862928,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 478.43290285727903,
+              "y": 151.43518521030433,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 281.43829750271493,
+              "y": 1075.6743996246246,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 793.978966100603,
+              "y": 808.089991384477,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 1138.6037702960791,
+              "y": 292.1456176064215,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 941.609164941515,
+              "y": 1216.3848320207417,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 400.0099347660817,
+              "y": 260.3294484924766,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 203.01532941151765,
+              "y": 1184.5686629067968,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 872.4019341918004,
+              "y": 699.1957281023048,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 1060.1808022048817,
+              "y": 401.0398808885938,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 863.1861968503176,
+              "y": 1325.279095302914,
+              "width": 110,
+              "height": 90
+            }
+          ]
+        },
+        {
+          "name": "resized",
+          "file": "baseline-resized.png",
+          "viewport": {
+            "width": 900,
+            "height": 720
+          },
+          "regions": [
+            {
+              "shape": "circle",
+              "x": 318.7682595497773,
+              "y": 227.3543407291238,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 358.0634616705705,
+              "y": 417.1657987349197,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 471.34108224674446,
+              "y": 259.87408510511534,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 510.6362843675376,
+              "y": 449.6855431109112,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 623.9139049437116,
+              "y": 292.3938294811069,
+              "width": 110,
+              "height": 90
+            }
+          ]
+        },
+        {
+          "name": "forward-replay",
+          "file": "baseline-forward-replay.png",
+          "viewport": {
+            "width": 1504,
+            "height": 1492
+          },
+          "regions": [
+            {
+              "shape": "circle",
+              "x": 920,
+              "y": 121.25,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 143,
+              "y": 826.85,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 836,
+              "y": 1400.15,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 227,
+              "y": 635.75,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 752,
+              "y": 121.25,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 311,
+              "y": 826.85,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 668.0000000000001,
+              "y": 1400.15,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 395,
+              "y": 635.75,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 584,
+              "y": 121.25,
+              "width": 110,
+              "height": 90
+            }
+          ]
+        },
+        {
+          "name": "reverse-replay",
+          "file": "baseline-reverse-replay.png",
+          "viewport": {
+            "width": 1504,
+            "height": 1492
+          },
+          "regions": [
+            {
+              "shape": "circle",
+              "x": 274.25000000000006,
+              "y": 914,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 1038.6499999999999,
+              "y": 137,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 465.34999999999985,
+              "y": 830,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 1229.75,
+              "y": 221,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 274.25000000000006,
+              "y": 746,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 1038.65,
+              "y": 305,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 465.34999999999985,
+              "y": 662.0000000000001,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 1229.75,
+              "y": 388.99999999999994,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 274.25000000000006,
+              "y": 578,
+              "width": 110,
+              "height": 90
+            }
+          ]
+        },
+        {
+          "name": "before-context-loss",
+          "file": "baseline-before-context-loss.png",
+          "viewport": {
+            "width": 1504,
+            "height": 1492
+          },
+          "regions": [
+            {
+              "shape": "circle",
+              "x": 274.25000000000006,
+              "y": 914,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 1038.6499999999999,
+              "y": 137,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 465.34999999999985,
+              "y": 830,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 1229.75,
+              "y": 221,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 274.25000000000006,
+              "y": 746,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 1038.65,
+              "y": 305,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 465.34999999999985,
+              "y": 662.0000000000001,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 1229.75,
+              "y": 388.99999999999994,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 274.25000000000006,
+              "y": 578,
+              "width": 110,
+              "height": 90
+            }
+          ]
+        },
+        {
+          "name": "after-context-loss",
+          "file": "baseline-after-context-loss.png",
+          "viewport": {
+            "width": 1504,
+            "height": 1492
+          },
+          "regions": [
+            {
+              "shape": "circle",
+              "x": 274.25000000000006,
+              "y": 914,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 1038.6499999999999,
+              "y": 137,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 465.34999999999985,
+              "y": 830,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 1229.75,
+              "y": 221,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 274.25000000000006,
+              "y": 746,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 1038.65,
+              "y": 305,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 465.34999999999985,
+              "y": 662.0000000000001,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 1229.75,
+              "y": 388.99999999999994,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 274.25000000000006,
+              "y": 578,
+              "width": 110,
+              "height": 90
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "checks": {
+        "gl": [
+          {
+            "canvas": "stage",
+            "antialias": false
+          }
+        ],
+        "replay": [
+          {
+            "dir": 1,
+            "ticks": 355,
+            "events": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "dir": -1,
+            "ticks": 355,
+            "events": [
+              3,
+              2,
+              1,
+              0
+            ]
+          }
+        ],
+        "contextRecovery": [],
+        "idle": {
+          "before": {
+            "n": 43,
+            "pending": 0
+          },
+          "after": {
+            "n": 43,
+            "pending": 0
+          }
+        }
+      }
+    },
+    {
+      "which": "current",
+      "root": ".",
+      "scenes": [
+        {
+          "name": "dense-0",
+          "file": "current-dense-0.png",
+          "viewport": {
+            "width": 1504,
+            "height": 1492
+          },
+          "regions": []
+        },
+        {
+          "name": "dense-rotation",
+          "file": "current-dense-rotation.png",
+          "viewport": {
+            "width": 1504,
+            "height": 1492
+          },
+          "regions": []
+        },
+        {
+          "name": "negative-seams",
+          "file": "current-negative-seams.png",
+          "viewport": {
+            "width": 1504,
+            "height": 1492
+          },
+          "regions": []
+        },
+        {
+          "name": "markers-text",
+          "file": "current-markers-text.png",
+          "viewport": {
+            "width": 1504,
+            "height": 1492
+          },
+          "regions": [
+            {
+              "shape": "circle",
+              "x": 572.6980249526262,
+              "y": 564.7661871500483,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 626.3870740041128,
+              "y": 824.1056517513738,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 781.1583284909732,
+              "y": 609.1979258029597,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 834.8473775424598,
+              "y": 868.5373904042852,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 989.6186320293202,
+              "y": 653.6296644558713,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 1360.208673134502,
+              "y": 65.20569085420891,
+              "width": 110,
+              "height": 90
+            }
+          ]
+        },
+        {
+          "name": "zoom-in",
+          "file": "current-zoom-in.png",
+          "viewport": {
+            "width": 1504,
+            "height": 1492
+          },
+          "regions": [
+            {
+              "shape": "circle",
+              "x": 418.8732742417424,
+              "y": 409.28409569700653,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 518.6226334714481,
+              "y": 891.1131814040268,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 806.1735164725051,
+              "y": 491.834216036062,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 905.9228757022108,
+              "y": 973.6633017430822,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 1193.4737587032678,
+              "y": 574.3843363751174,
+              "width": 110,
+              "height": 90
+            }
+          ]
+        },
+        {
+          "name": "zoom-out",
+          "file": "current-zoom-out.png",
+          "viewport": {
+            "width": 1504,
+            "height": 1492
+          },
+          "regions": [
+            {
+              "shape": "circle",
+              "x": 611.2646123464978,
+              "y": 305.3567868592341,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "circle",
+              "x": 414.27000699193366,
+              "y": 1229.5960012735543,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "circle",
+              "x": 661.1472566113843,
+              "y": 654.1683897355472,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "circle",
+              "x": 1271.4354797852977,
+              "y": 446.0672192553513,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "circle",
+              "x": 1074.4408744307336,
+              "y": 1370.3064336696716,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 584.060241647487,
+              "y": 173.94885439368306,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 387.06563629292293,
+              "y": 1098.1880688080032,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 688.351627310395,
+              "y": 785.5763222010983,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 1244.2311090862872,
+              "y": 314.65928678980026,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 1047.2365037317231,
+              "y": 1238.8985012041205,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 505.6372735562897,
+              "y": 282.84311767585535,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 308.6426682017256,
+              "y": 1207.0823320901754,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 766.7745954015923,
+              "y": 676.682058918926,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 1165.8081409950898,
+              "y": 423.55355007197255,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 968.8135356405257,
+              "y": 1347.7927644862928,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 478.43290285727903,
+              "y": 151.43518521030433,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 281.43829750271493,
+              "y": 1075.6743996246246,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 793.978966100603,
+              "y": 808.089991384477,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 1138.6037702960791,
+              "y": 292.1456176064215,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 941.609164941515,
+              "y": 1216.3848320207417,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 400.0099347660817,
+              "y": 260.3294484924766,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 203.01532941151765,
+              "y": 1184.5686629067968,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 872.4019341918004,
+              "y": 699.1957281023048,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 1060.1808022048817,
+              "y": 401.0398808885938,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 863.1861968503176,
+              "y": 1325.279095302914,
+              "width": 110,
+              "height": 90
+            }
+          ]
+        },
+        {
+          "name": "resized",
+          "file": "current-resized.png",
+          "viewport": {
+            "width": 900,
+            "height": 720
+          },
+          "regions": [
+            {
+              "shape": "circle",
+              "x": 318.7682595497773,
+              "y": 227.3543407291238,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 358.0634616705705,
+              "y": 417.1657987349197,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 471.34108224674446,
+              "y": 259.87408510511534,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 510.6362843675376,
+              "y": 449.6855431109112,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 623.9139049437116,
+              "y": 292.3938294811069,
+              "width": 110,
+              "height": 90
+            }
+          ]
+        },
+        {
+          "name": "forward-replay",
+          "file": "current-forward-replay.png",
+          "viewport": {
+            "width": 1504,
+            "height": 1492
+          },
+          "regions": [
+            {
+              "shape": "circle",
+              "x": 920,
+              "y": 121.25,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 143,
+              "y": 826.85,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 836,
+              "y": 1400.15,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 227,
+              "y": 635.75,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 752,
+              "y": 121.25,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 311,
+              "y": 826.85,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 668.0000000000001,
+              "y": 1400.15,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 395,
+              "y": 635.75,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 584,
+              "y": 121.25,
+              "width": 110,
+              "height": 90
+            }
+          ]
+        },
+        {
+          "name": "reverse-replay",
+          "file": "current-reverse-replay.png",
+          "viewport": {
+            "width": 1504,
+            "height": 1492
+          },
+          "regions": [
+            {
+              "shape": "circle",
+              "x": 274.25000000000006,
+              "y": 914,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 1038.6499999999999,
+              "y": 137,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 465.34999999999985,
+              "y": 830,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 1229.75,
+              "y": 221,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 274.25000000000006,
+              "y": 746,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 1038.65,
+              "y": 305,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 465.34999999999985,
+              "y": 662.0000000000001,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 1229.75,
+              "y": 388.99999999999994,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 274.25000000000006,
+              "y": 578,
+              "width": 110,
+              "height": 90
+            }
+          ]
+        },
+        {
+          "name": "before-context-loss",
+          "file": "current-before-context-loss.png",
+          "viewport": {
+            "width": 1504,
+            "height": 1492
+          },
+          "regions": [
+            {
+              "shape": "circle",
+              "x": 274.25000000000006,
+              "y": 914,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 1038.6499999999999,
+              "y": 137,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 465.34999999999985,
+              "y": 830,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 1229.75,
+              "y": 221,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 274.25000000000006,
+              "y": 746,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 1038.65,
+              "y": 305,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 465.34999999999985,
+              "y": 662.0000000000001,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 1229.75,
+              "y": 388.99999999999994,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 274.25000000000006,
+              "y": 578,
+              "width": 110,
+              "height": 90
+            }
+          ]
+        },
+        {
+          "name": "after-context-loss",
+          "file": "current-after-context-loss.png",
+          "viewport": {
+            "width": 1504,
+            "height": 1492
+          },
+          "regions": [
+            {
+              "shape": "circle",
+              "x": 274.25000000000006,
+              "y": 914,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 1038.6499999999999,
+              "y": 137,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "diamond",
+              "x": 465.34999999999985,
+              "y": 830,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 1229.75,
+              "y": 221,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "square",
+              "x": 274.25000000000006,
+              "y": 746,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 1038.65,
+              "y": 305,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "triangle",
+              "x": 465.34999999999985,
+              "y": 662.0000000000001,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 1229.75,
+              "y": 388.99999999999994,
+              "width": 110,
+              "height": 90
+            },
+            {
+              "shape": "star",
+              "x": 274.25000000000006,
+              "y": 578,
+              "width": 110,
+              "height": 90
+            }
+          ]
+        }
+      ],
+      "errors": [],
+      "checks": {
+        "gl": [
+          {
+            "canvas": "stage",
+            "antialias": false
+          },
+          {
+            "canvas": "replayLayer",
+            "antialias": false
+          }
+        ],
+        "replay": [
+          {
+            "dir": 1,
+            "ticks": 355,
+            "events": [
+              0,
+              1,
+              2,
+              3
+            ]
+          },
+          {
+            "dir": -1,
+            "ticks": 355,
+            "events": [
+              3,
+              2,
+              1,
+              0
+            ]
+          }
+        ],
+        "contextRecovery": [
+          0,
+          1
+        ],
+        "backend": {
+          "canvas": [
+            96,
+            96
+          ],
+          "antialias": false,
+          "samples": 0,
+          "opacity": {
+            "intersection": [
+              128,
+              68,
+              34,
+              128
+            ],
+            "isolated": [
+              128,
+              68,
+              34,
+              128
+            ],
+            "cap": [
+              128,
+              68,
+              34,
+              128
+            ],
+            "secondIntersection": [
+              191,
+              102,
+              51,
+              191
+            ]
+          },
+          "initialCoverage": {
+            "nonzero": 1761,
+            "intermediate": 252,
+            "solid": 1509,
+            "maxAlpha": 128
+          },
+          "uploads": {
+            "bufferData": 1,
+            "bufferSubData": 0
+          },
+          "transformations": [
+            {
+              "angle": 0,
+              "lineWidth": 6.5,
+              "scale": 1,
+              "nonzero": 1261,
+              "intermediate": 460,
+              "solid": 801,
+              "maxAlpha": 128
+            },
+            {
+              "angle": 0.37,
+              "lineWidth": 14.25,
+              "scale": 1,
+              "nonzero": 2541,
+              "intermediate": 324,
+              "solid": 2201,
+              "maxAlpha": 128
+            },
+            {
+              "angle": 1.2,
+              "lineWidth": 9,
+              "scale": 0.8,
+              "nonzero": 1073,
+              "intermediate": 248,
+              "solid": 817,
+              "maxAlpha": 128
+            }
+          ],
+          "cacheHitsAdded": 3
+        },
+        "idle": {
+          "before": {
+            "n": 85,
+            "pending": 0
+          },
+          "after": {
+            "n": 85,
+            "pending": 0
+          }
+        }
+      }
+    }
+  ],
+  "comparisons": [
+    {
+      "kind": "context-recovery",
+      "which": "baseline",
+      "width": 3008,
+      "height": 2984,
+      "blurredMeanError": 0,
+      "p99Error": 0,
+      "over30Fraction": 0,
+      "referenceInk": {
+        "ink": 10850,
+        "missed": 0,
+        "recall": 1
+      },
+      "currentInk": {
+        "ink": 10850,
+        "missed": 0,
+        "recall": 1
+      },
+      "regions": []
+    },
+    {
+      "kind": "context-recovery",
+      "which": "current",
+      "width": 3008,
+      "height": 2984,
+      "blurredMeanError": 0,
+      "p99Error": 0,
+      "over30Fraction": 0,
+      "referenceInk": {
+        "ink": 10833,
+        "missed": 0,
+        "recall": 1
+      },
+      "currentInk": {
+        "ink": 10833,
+        "missed": 0,
+        "recall": 1
+      },
+      "regions": []
+    },
+    {
+      "kind": "baseline",
+      "name": "dense-0",
+      "width": 3008,
+      "height": 2984,
+      "blurredMeanError": 0.139813293071791,
+      "p99Error": 5,
+      "over30Fraction": 0,
+      "referenceInk": {
+        "ink": 59509,
+        "missed": 0,
+        "recall": 1
+      },
+      "currentInk": {
+        "ink": 62906,
+        "missed": 0,
+        "recall": 1
+      },
+      "regions": []
+    },
+    {
+      "kind": "baseline",
+      "name": "dense-rotation",
+      "width": 3008,
+      "height": 2984,
+      "blurredMeanError": 0.12335767643023592,
+      "p99Error": 4,
+      "over30Fraction": 0,
+      "referenceInk": {
+        "ink": 39776,
+        "missed": 0,
+        "recall": 1
+      },
+      "currentInk": {
+        "ink": 42373,
+        "missed": 0,
+        "recall": 1
+      },
+      "regions": []
+    },
+    {
+      "kind": "baseline",
+      "name": "negative-seams",
+      "width": 3008,
+      "height": 2984,
+      "blurredMeanError": 0.09067835299288035,
+      "p99Error": 3,
+      "over30Fraction": 0,
+      "referenceInk": {
+        "ink": 28443,
+        "missed": 0,
+        "recall": 1
+      },
+      "currentInk": {
+        "ink": 30341,
+        "missed": 0,
+        "recall": 1
+      },
+      "regions": []
+    },
+    {
+      "kind": "baseline",
+      "name": "markers-text",
+      "width": 3008,
+      "height": 2984,
+      "blurredMeanError": 0.1115333483368929,
+      "p99Error": 3,
+      "over30Fraction": 0.00035788026004775604,
+      "referenceInk": {
+        "ink": 35012,
+        "missed": 0,
+        "recall": 1
+      },
+      "currentInk": {
+        "ink": 36900,
+        "missed": 0,
+        "recall": 1
+      },
+      "regions": [
+        {
+          "shape": "circle",
+          "ink": 599,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 79,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "diamond",
+          "ink": 446,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 100,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "square",
+          "ink": 830,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 119,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "triangle",
+          "ink": 1179,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 128,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "star",
+          "ink": 357,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 98,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "star",
+          "ink": 356,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 102,
+            "missed": 0,
+            "recall": 1
+          }
+        }
+      ]
+    },
+    {
+      "kind": "baseline",
+      "name": "zoom-in",
+      "width": 3008,
+      "height": 2984,
+      "blurredMeanError": 0.03461427989830391,
+      "p99Error": 0,
+      "over30Fraction": 0.00020616044905494177,
+      "referenceInk": {
+        "ink": 26338,
+        "missed": 0,
+        "recall": 1
+      },
+      "currentInk": {
+        "ink": 26313,
+        "missed": 0,
+        "recall": 1
+      },
+      "regions": [
+        {
+          "shape": "circle",
+          "ink": 599,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 72,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "diamond",
+          "ink": 446,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 96,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "square",
+          "ink": 830,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 120,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "triangle",
+          "ink": 885,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 108,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "star",
+          "ink": 354,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 92,
+            "missed": 0,
+            "recall": 1
+          }
+        }
+      ]
+    },
+    {
+      "kind": "baseline",
+      "name": "zoom-out",
+      "width": 3008,
+      "height": 2984,
+      "blurredMeanError": 0.1490686808318835,
+      "p99Error": 2,
+      "over30Fraction": 0.0012525809101671462,
+      "referenceInk": {
+        "ink": 39972,
+        "missed": 0,
+        "recall": 1
+      },
+      "currentInk": {
+        "ink": 40398,
+        "missed": 1,
+        "recall": 0.9999752462993218
+      },
+      "regions": [
+        {
+          "shape": "circle",
+          "ink": 824,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 77,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "circle",
+          "ink": 826,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 71,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "circle",
+          "ink": 710,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 81,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "circle",
+          "ink": 835,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 80,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "circle",
+          "ink": 824,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 80,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "diamond",
+          "ink": 446,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 84,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "diamond",
+          "ink": 446,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 95,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "diamond",
+          "ink": 445,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 102,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "diamond",
+          "ink": 449,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 97,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "diamond",
+          "ink": 447,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 97,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "square",
+          "ink": 925,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 111,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "square",
+          "ink": 928,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 111,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "square",
+          "ink": 1071,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 117,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "square",
+          "ink": 967,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 115,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "square",
+          "ink": 991,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 115,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "triangle",
+          "ink": 886,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 104,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "triangle",
+          "ink": 892,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 108,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "triangle",
+          "ink": 974,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 108,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "triangle",
+          "ink": 891,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 108,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "triangle",
+          "ink": 884,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 108,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "star",
+          "ink": 354,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 103,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "star",
+          "ink": 358,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 103,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "star",
+          "ink": 380,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 95,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "star",
+          "ink": 355,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 103,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "star",
+          "ink": 353,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 103,
+            "missed": 0,
+            "recall": 1
+          }
+        }
+      ]
+    },
+    {
+      "kind": "baseline",
+      "name": "resized",
+      "width": 1800,
+      "height": 1440,
+      "blurredMeanError": 0.1294752372568067,
+      "p99Error": 3,
+      "over30Fraction": 0.0007704434381579905,
+      "referenceInk": {
+        "ink": 13887,
+        "missed": 0,
+        "recall": 1
+      },
+      "currentInk": {
+        "ink": 13956,
+        "missed": 0,
+        "recall": 1
+      },
+      "regions": [
+        {
+          "shape": "circle",
+          "ink": 598,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 77,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "diamond",
+          "ink": 434,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 95,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "square",
+          "ink": 939,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 116,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "triangle",
+          "ink": 1109,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 109,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "star",
+          "ink": 355,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 95,
+            "missed": 0,
+            "recall": 1
+          }
+        }
+      ]
+    },
+    {
+      "kind": "baseline",
+      "name": "forward-replay",
+      "width": 3008,
+      "height": 2984,
+      "blurredMeanError": 0.04924944060754293,
+      "p99Error": 0,
+      "over30Fraction": 0.00046854647512486764,
+      "referenceInk": {
+        "ink": 12256,
+        "missed": 0,
+        "recall": 1
+      },
+      "currentInk": {
+        "ink": 12261,
+        "missed": 0,
+        "recall": 1
+      },
+      "regions": [
+        {
+          "shape": "circle",
+          "ink": 602,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 75,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "diamond",
+          "ink": 434,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 102,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "diamond",
+          "ink": 434,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 102,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "square",
+          "ink": 784,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 114,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "square",
+          "ink": 784,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 113,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "triangle",
+          "ink": 451,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 113,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "triangle",
+          "ink": 456,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 113,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "star",
+          "ink": 355,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 103,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "star",
+          "ink": 355,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 102,
+            "missed": 0,
+            "recall": 1
+          }
+        }
+      ]
+    },
+    {
+      "kind": "baseline",
+      "name": "reverse-replay",
+      "width": 3008,
+      "height": 2984,
+      "blurredMeanError": 0.057439186757970905,
+      "p99Error": 0,
+      "over30Fraction": 0.0005903685586573333,
+      "referenceInk": {
+        "ink": 10850,
+        "missed": 0,
+        "recall": 1
+      },
+      "currentInk": {
+        "ink": 10833,
+        "missed": 0,
+        "recall": 1
+      },
+      "regions": [
+        {
+          "shape": "circle",
+          "ink": 602,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 77,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "diamond",
+          "ink": 644,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 105,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "diamond",
+          "ink": 520,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 102,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "square",
+          "ink": 824,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 118,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "square",
+          "ink": 782,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 118,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "triangle",
+          "ink": 459,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 108,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "triangle",
+          "ink": 459,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 109,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "star",
+          "ink": 351,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 104,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "star",
+          "ink": 357,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 101,
+            "missed": 0,
+            "recall": 1
+          }
+        }
+      ]
+    },
+    {
+      "kind": "baseline",
+      "name": "before-context-loss",
+      "width": 3008,
+      "height": 2984,
+      "blurredMeanError": 0.057439186757970905,
+      "p99Error": 0,
+      "over30Fraction": 0.0005903685586573333,
+      "referenceInk": {
+        "ink": 10850,
+        "missed": 0,
+        "recall": 1
+      },
+      "currentInk": {
+        "ink": 10833,
+        "missed": 0,
+        "recall": 1
+      },
+      "regions": [
+        {
+          "shape": "circle",
+          "ink": 602,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 77,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "diamond",
+          "ink": 644,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 105,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "diamond",
+          "ink": 520,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 102,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "square",
+          "ink": 824,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 118,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "square",
+          "ink": 782,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 118,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "triangle",
+          "ink": 459,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 108,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "triangle",
+          "ink": 459,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 109,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "star",
+          "ink": 351,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 104,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "star",
+          "ink": 357,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 101,
+            "missed": 0,
+            "recall": 1
+          }
+        }
+      ]
+    },
+    {
+      "kind": "baseline",
+      "name": "after-context-loss",
+      "width": 3008,
+      "height": 2984,
+      "blurredMeanError": 0.057439186757970905,
+      "p99Error": 0,
+      "over30Fraction": 0.0005903685586573333,
+      "referenceInk": {
+        "ink": 10850,
+        "missed": 0,
+        "recall": 1
+      },
+      "currentInk": {
+        "ink": 10833,
+        "missed": 0,
+        "recall": 1
+      },
+      "regions": [
+        {
+          "shape": "circle",
+          "ink": 602,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 77,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "diamond",
+          "ink": 644,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 105,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "diamond",
+          "ink": 520,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 102,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "square",
+          "ink": 824,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 118,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "square",
+          "ink": 782,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 118,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "triangle",
+          "ink": 459,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 108,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "triangle",
+          "ink": 459,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 109,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "star",
+          "ink": 351,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 104,
+            "missed": 0,
+            "recall": 1
+          }
+        },
+        {
+          "shape": "star",
+          "ink": 357,
+          "missed": 0,
+          "recall": 1,
+          "label": {
+            "ink": 101,
+            "missed": 0,
+            "recall": 1
+          }
+        }
+      ]
+    }
+  ],
+  "passed": true
+}

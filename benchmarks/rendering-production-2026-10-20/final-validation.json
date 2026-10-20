@@ -1,0 +1,21 @@
+{
+  "appVersion": "2026-10-19-retained-gpu",
+  "sourceSha256": {
+    "index.html": "064371ad49057f6739d8e0473118e30644b5a653a09af63ec58a577c21777e53",
+    "gpu-renderer.js": "c0b315b828de5cfa978816bc1309a511f25714fb8543db32135c713af54c8070",
+    "trace-renderer.js": "7856f8a93adf44674af47a09d805e66aa8159a736356f72161b69d05636b0da2",
+    "replay-core.js": "f16063962a05c5634ac22a3403bdd55aa632553095b1ae940b13746903a1421a",
+    "session-codec.js": "c6142f01da2658ca100462f5376e6c5e0ca2b14f37aa1d79cf25cc7da08c3703"
+  },
+  "checks": {
+    "nodeTestFilesPassed": 11,
+    "nodeTestFilesFailed": 0,
+    "pythonTraceParser": "passed",
+    "browserRegression": "visual-regression.json",
+    "nativeStateMachine": "native-state-machine.json",
+    "nativePresentation": "native-presentation-summary.json",
+    "inlineScriptSyntax": "passed",
+    "gitDiffCheck": "passed"
+  },
+  "limits": "Measured near 60 Hz with occasional drops; no claim of three-workload zero-drop acceptance or measured low energy."
+}

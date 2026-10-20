@@ -1,0 +1,89 @@
+{
+  "root": "/private/tmp/ocm-no-stencil-20261020",
+  "results": [
+    {
+      "mode": "full",
+      "workload": "rotate",
+      "viewport": [
+        1504,
+        1492
+      ],
+      "dpr": 2,
+      "backing": [
+        3008,
+        2984
+      ],
+      "vertices": 48,
+      "projectedSegments": 235,
+      "canonicalStamps": 28,
+      "canonicalChevrons": 28,
+      "tiles": 9,
+      "zoom": 0.888095238095238,
+      "renderer": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) UHD Graphics 630, Unspecified Version)",
+      "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+      "traceSurface": {
+        "x": -750,
+        "y": -1050,
+        "width": 2250,
+        "height": 3150,
+        "rasterRatio": 1.6918190621911324,
+        "cssW": 1997.8495783245562,
+        "cssH": 2796.9894096543785,
+        "pixelW": 3380,
+        "pixelH": 4732,
+        "light": "-1,-1,0.50;-1,0,0.50;-1,1,0.50;0,-1,0.50;0,0,1.00;0,1,0.50;1,-1,0.50;1,0,0.50;1,1,0.50"
+      },
+      "cpuMs": {
+        "n": 120,
+        "median": 3.199999988079071,
+        "p95": 4.699999988079071,
+        "max": 6.399999976158142,
+        "mean": 3.312499998509884
+      },
+      "rafMs": {
+        "n": 120,
+        "median": 33.30000000000018,
+        "p95": 50.59999999999991,
+        "max": 66.70000000000005,
+        "mean": 34.1675
+      },
+      "glGpuMs": {
+        "n": 118,
+        "median": 8.308749,
+        "p95": 10.352167,
+        "max": 10.681,
+        "mean": 8.536964889830509
+      },
+      "overlayGpuMs": {
+        "n": 118,
+        "median": 14.53675,
+        "p95": 18.865833,
+        "max": 23.556167,
+        "mean": 14.677671118644067
+      },
+      "overlayDisjoint": false,
+      "overlayBefore": {
+        "frames": 2,
+        "draws": 106,
+        "vertices": 99072,
+        "uploads": 85,
+        "cachedDraws": 30,
+        "cacheHits": 21,
+        "cacheMisses": 9
+      },
+      "overlayAfter": {
+        "frames": 142,
+        "draws": 6233,
+        "vertices": 6591384,
+        "uploads": 4252,
+        "cachedDraws": 2130,
+        "cacheHits": 1981,
+        "cacheMisses": 149
+      },
+      "disjoint": false,
+      "staticClears": 0,
+      "over25ms": 111,
+      "round": 0
+    }
+  ]
+}

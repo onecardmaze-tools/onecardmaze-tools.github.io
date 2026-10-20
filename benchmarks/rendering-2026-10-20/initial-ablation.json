@@ -1,0 +1,378 @@
+[
+  {
+    "mode": "empty",
+    "viewport": [
+      1504,
+      1492
+    ],
+    "dpr": 2,
+    "vertices": 48,
+    "zoom": 0.888095238095238,
+    "renderer": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) UHD Graphics 630, Unspecified Version)",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+    "traceSurface": {
+      "x": -750,
+      "y": -1050,
+      "width": 2250,
+      "height": 3150,
+      "rasterRatio": 1.6918190621911324,
+      "cssW": 1997.8495783245562,
+      "cssH": 2796.9894096543785,
+      "pixelW": 3380,
+      "pixelH": 4732,
+      "light": "-1,-1,0.50;-1,0,0.50;-1,1,0.50;0,-1,0.50;0,0,1.00;0,1,0.50;1,-1,0.50;1,0,0.50;1,1,0.50"
+    },
+    "cpuMs": {
+      "n": 120,
+      "median": 0,
+      "p95": 0,
+      "max": 0,
+      "mean": 0
+    },
+    "rafMs": {
+      "n": 120,
+      "median": 16.699999999999818,
+      "p95": 18.09999999999991,
+      "max": 18.59999999999991,
+      "mean": 16.66
+    },
+    "glGpuMs": {
+      "n": 101,
+      "median": 0,
+      "p95": 0,
+      "max": 0,
+      "mean": 0
+    },
+    "disjoint": false,
+    "over25ms": 0
+  },
+  {
+    "mode": "full",
+    "viewport": [
+      1504,
+      1492
+    ],
+    "dpr": 2,
+    "vertices": 48,
+    "zoom": 0.888095238095238,
+    "renderer": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) UHD Graphics 630, Unspecified Version)",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+    "traceSurface": {
+      "x": -750,
+      "y": -1050,
+      "width": 2250,
+      "height": 3150,
+      "rasterRatio": 1.6918190621911324,
+      "cssW": 1997.8495783245562,
+      "cssH": 2796.9894096543785,
+      "pixelW": 3380,
+      "pixelH": 4732,
+      "light": "-1,-1,0.50;-1,0,0.50;-1,1,0.50;0,-1,0.50;0,0,1.00;0,1,0.50;1,-1,0.50;1,0,0.50;1,1,0.50"
+    },
+    "cpuMs": {
+      "n": 120,
+      "median": 0.699999988079071,
+      "p95": 1,
+      "max": 1.5,
+      "mean": 0.713333331545194
+    },
+    "rafMs": {
+      "n": 120,
+      "median": 32.100000000000364,
+      "p95": 34.600000000000364,
+      "max": 66.59999999999991,
+      "mean": 26.249999999999996
+    },
+    "glGpuMs": {
+      "n": 119,
+      "median": 14.009416,
+      "p95": 14.940166,
+      "max": 16.990583,
+      "mean": 14.1844125882353
+    },
+    "disjoint": false,
+    "over25ms": 66
+  },
+  {
+    "mode": "no-overlay",
+    "viewport": [
+      1504,
+      1492
+    ],
+    "dpr": 2,
+    "vertices": 48,
+    "zoom": 0.888095238095238,
+    "renderer": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) UHD Graphics 630, Unspecified Version)",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+    "traceSurface": {
+      "x": -750,
+      "y": -1050,
+      "width": 2250,
+      "height": 3150,
+      "rasterRatio": 1.6918190621911324,
+      "cssW": 1997.8495783245562,
+      "cssH": 2796.9894096543785,
+      "pixelW": 3380,
+      "pixelH": 4732,
+      "light": "-1,-1,0.50;-1,0,0.50;-1,1,0.50;0,-1,0.50;0,0,1.00;0,1,0.50;1,-1,0.50;1,0,0.50;1,1,0.50"
+    },
+    "cpuMs": {
+      "n": 120,
+      "median": 0.40000003576278687,
+      "p95": 0.5,
+      "max": 0.6000000238418579,
+      "mean": 0.4166666646798452
+    },
+    "rafMs": {
+      "n": 120,
+      "median": 17.299999999999955,
+      "p95": 34.09999999999991,
+      "max": 51.5,
+      "mean": 22.490000000000002
+    },
+    "glGpuMs": {
+      "n": 120,
+      "median": 14.054666,
+      "p95": 14.870332,
+      "max": 15.079834,
+      "mean": 14.092065449999996
+    },
+    "disjoint": false,
+    "over25ms": 41
+  },
+  {
+    "mode": "no-static",
+    "viewport": [
+      1504,
+      1492
+    ],
+    "dpr": 2,
+    "vertices": 48,
+    "zoom": 0.888095238095238,
+    "renderer": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) UHD Graphics 630, Unspecified Version)",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+    "traceSurface": {
+      "x": -750,
+      "y": -1050,
+      "width": 2250,
+      "height": 3150,
+      "rasterRatio": 1.6918190621911324,
+      "cssW": 1997.8495783245562,
+      "cssH": 2796.9894096543785,
+      "pixelW": 3380,
+      "pixelH": 4732,
+      "light": "-1,-1,0.50;-1,0,0.50;-1,1,0.50;0,-1,0.50;0,0,1.00;0,1,0.50;1,-1,0.50;1,0,0.50;1,1,0.50"
+    },
+    "cpuMs": {
+      "n": 120,
+      "median": 0.5,
+      "p95": 0.699999988079071,
+      "max": 0.800000011920929,
+      "mean": 0.4700000007947286
+    },
+    "rafMs": {
+      "n": 120,
+      "median": 16.700000000000045,
+      "p95": 33.59999999999991,
+      "max": 50.59999999999991,
+      "mean": 18.61916666666667
+    },
+    "glGpuMs": {
+      "n": 120,
+      "median": 14.523915,
+      "p95": 15.196666,
+      "max": 18.081583,
+      "mean": 14.477423100000001
+    },
+    "disjoint": false,
+    "over25ms": 12
+  },
+  {
+    "mode": "no-stamps",
+    "viewport": [
+      1504,
+      1492
+    ],
+    "dpr": 2,
+    "vertices": 48,
+    "zoom": 0.888095238095238,
+    "renderer": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) UHD Graphics 630, Unspecified Version)",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+    "traceSurface": {
+      "x": -750,
+      "y": -1050,
+      "width": 2250,
+      "height": 3150,
+      "rasterRatio": 1.6918190621911324,
+      "cssW": 1997.8495783245562,
+      "cssH": 2796.9894096543785,
+      "pixelW": 3380,
+      "pixelH": 4732,
+      "light": "-1,-1,0.50;-1,0,0.50;-1,1,0.50;0,-1,0.50;0,0,1.00;0,1,0.50;1,-1,0.50;1,0,0.50;1,1,0.50"
+    },
+    "cpuMs": {
+      "n": 120,
+      "median": 0.3999999761581421,
+      "p95": 0.5,
+      "max": 0.5,
+      "mean": 0.3725000003973643
+    },
+    "rafMs": {
+      "n": 120,
+      "median": 18.09999999999991,
+      "p95": 34.299999999999955,
+      "max": 51,
+      "mean": 24.582500000000003
+    },
+    "glGpuMs": {
+      "n": 120,
+      "median": 13.905333,
+      "p95": 14.769417,
+      "max": 15.081416,
+      "mean": 14.08494461666666
+    },
+    "disjoint": false,
+    "over25ms": 54
+  },
+  {
+    "mode": "no-art",
+    "viewport": [
+      1504,
+      1492
+    ],
+    "dpr": 2,
+    "vertices": 48,
+    "zoom": 0.888095238095238,
+    "renderer": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) UHD Graphics 630, Unspecified Version)",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+    "traceSurface": {
+      "x": -750,
+      "y": -1050,
+      "width": 2250,
+      "height": 3150,
+      "rasterRatio": 1.6918190621911324,
+      "cssW": 1997.8495783245562,
+      "cssH": 2796.9894096543785,
+      "pixelW": 3380,
+      "pixelH": 4732,
+      "light": "-1,-1,0.50;-1,0,0.50;-1,1,0.50;0,-1,0.50;0,0,1.00;0,1,0.50;1,-1,0.50;1,0,0.50;1,1,0.50"
+    },
+    "cpuMs": {
+      "n": 120,
+      "median": 0.5,
+      "p95": 0.6000000238418579,
+      "max": 0.699999988079071,
+      "mean": 0.4724999959270159
+    },
+    "rafMs": {
+      "n": 120,
+      "median": 16.600000000000364,
+      "p95": 18.09999999999991,
+      "max": 18.59999999999991,
+      "mean": 16.657500000000002
+    },
+    "glGpuMs": {
+      "n": 116,
+      "median": 0,
+      "p95": 0,
+      "max": 0,
+      "mean": 0
+    },
+    "disjoint": false,
+    "over25ms": 0
+  },
+  {
+    "mode": "art-only",
+    "viewport": [
+      1504,
+      1492
+    ],
+    "dpr": 2,
+    "vertices": 48,
+    "zoom": 0.888095238095238,
+    "renderer": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) UHD Graphics 630, Unspecified Version)",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+    "traceSurface": {
+      "x": -750,
+      "y": -1050,
+      "width": 2250,
+      "height": 3150,
+      "rasterRatio": 1.6918190621911324,
+      "cssW": 1997.8495783245562,
+      "cssH": 2796.9894096543785,
+      "pixelW": 3380,
+      "pixelH": 4732,
+      "light": "-1,-1,0.50;-1,0,0.50;-1,1,0.50;0,-1,0.50;0,0,1.00;0,1,0.50;1,-1,0.50;1,0,0.50;1,1,0.50"
+    },
+    "cpuMs": {
+      "n": 120,
+      "median": 0.09999996423721313,
+      "p95": 0.19999998807907104,
+      "max": 0.20000004768371582,
+      "mean": 0.09249999821186065
+    },
+    "rafMs": {
+      "n": 120,
+      "median": 16.799999999999727,
+      "p95": 18,
+      "max": 18.300000000000182,
+      "mean": 16.673333333333332
+    },
+    "glGpuMs": {
+      "n": 120,
+      "median": 13.95375,
+      "p95": 14.400749,
+      "max": 14.941665,
+      "mean": 13.975995341666668
+    },
+    "disjoint": false,
+    "over25ms": 0
+  },
+  {
+    "mode": "full",
+    "viewport": [
+      1504,
+      1492
+    ],
+    "dpr": 2,
+    "vertices": 48,
+    "zoom": 0.888095238095238,
+    "renderer": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) UHD Graphics 630, Unspecified Version)",
+    "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+    "traceSurface": {
+      "x": -750,
+      "y": -1050,
+      "width": 2250,
+      "height": 3150,
+      "rasterRatio": 1.6918190621911324,
+      "cssW": 1997.8495783245562,
+      "cssH": 2796.9894096543785,
+      "pixelW": 3380,
+      "pixelH": 4732,
+      "light": "-1,-1,0.50;-1,0,0.50;-1,1,0.50;0,-1,0.50;0,0,1.00;0,1,0.50;1,-1,0.50;1,0,0.50;1,1,0.50"
+    },
+    "cpuMs": {
+      "n": 120,
+      "median": 0.6000000238418579,
+      "p95": 0.800000011920929,
+      "max": 1,
+      "mean": 0.6399999981125196
+    },
+    "rafMs": {
+      "n": 120,
+      "median": 32.20000000000027,
+      "p95": 34.5,
+      "max": 35,
+      "mean": 25.96833333333333
+    },
+    "glGpuMs": {
+      "n": 119,
+      "median": 13.948749,
+      "p95": 14.984,
+      "max": 15.309999,
+      "mean": 14.151122764705882
+    },
+    "disjoint": false,
+    "over25ms": 67
+  }
+]

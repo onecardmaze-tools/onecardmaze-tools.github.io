@@ -1,0 +1,17 @@
+{
+  "zero": {
+    "meanAbsoluteRGBError": 0.005222407407407407,
+    "fractionPixelsOver8RGB": 0.0,
+    "maxRGBError": 8
+  },
+  "rotate": {
+    "meanAbsoluteRGBError": 0.02280583333333333,
+    "fractionPixelsOver8RGB": 0.0,
+    "maxRGBError": 8
+  },
+  "odd": {
+    "meanAbsoluteRGBError": 0.005661481481481482,
+    "fractionPixelsOver8RGB": 0.0,
+    "maxRGBError": 7
+  }
+}

@@ -1,0 +1,69 @@
+--- a/index.html
++++ b/index.html
+@@ -479,6 +479,7 @@
+ uniform vec4 uCSeamScale;
+ uniform vec4 uCSeamBias;
+ uniform vec4 uBorderEnabled;
++uniform vec4 uInterior;
+ uniform vec2 uColorMix;
+ uniform float uCAmt;
+ uniform float uSeamDark;
+@@ -492,7 +493,14 @@
+ 
+ void main() {
+   vec4 edge = vec4(vLocal.x, 1.0-vLocal.x, vLocal.y, 1.0-vLocal.y);
++  // Sample outside divergent control flow: implicit mip derivatives and
++  // artwork filtering remain identical to the full edge shader.
+   vec3 art = texture2D(uArt, vArt).rgb;
++  if(all(greaterThanEqual(edge,uInterior))) {
++    float interiorLuma=dot(art,vec3(.2126,.7152,.0722));
++    gl_FragColor=vec4(art*uColorMix.x+vec3(interiorLuma*uColorMix.y),uCAmt);
++    return;
++  }
+   art *= mix(1.0-uSeamDark, 1.0, edgeMask(edge, uCSeamScale, uCSeamBias));
+   vec4 edgePx = edge * uEdgePxScale;
+   vec4 borders = (1.0-smoothstep(vec4(1.1), vec4(1.8), edgePx)) * uBorderEnabled;
+@@ -504,7 +512,7 @@
+ }`;
+ const UNIFORMS = ["uView","uCam","uZoom","uRotation","uCard",
+   "uCIdx","uCOutScale","uCOutBias","uCSeamScale","uCSeamBias",
+-  "uBorderEnabled","uColorMix","uEdgePxScale","uCAmt","uSeamDark","uArt"];
++  "uBorderEnabled","uInterior","uColorMix","uEdgePxScale","uCAmt","uSeamDark","uArt"];
+ let prog = null, bgProg = null, quadBuf = null, cardFloatPrecision = 0;
+ const U = {}, BU = {};
+ const NCARD = 18;
+@@ -1570,6 +1578,26 @@
+ // touches. This rejects holes, fading cards, and outer ramps. Expanding by two
+ // device pixels plus a float32 round-off allowance keeps the decision away
+ // from raster/precision boundaries. Cards outside that box cannot contribute.
++// A fast-path edge is inside only after the *uploaded float32* ramp
++// saturates and the 1.8 CSS-pixel border is zero. Eight float32 ulps of
++// absolute UV slack cover threshold rounding and reciprocal/multiply error.
++// Lower-precision devices retain the unmodified complete shader path.
++function interiorEdgeLimit(outer,seam,size,zoom,precision) {
++  if(precision<23)return 2;
++  let limit=0;
++  if(outer>0)limit=Math.max(limit,1/Math.fround(size/outer));
++  if(seam>0)limit=Math.max(limit,1/Math.fround(size/seam));
++  if(seam>SEAM_BORDER_EPS)limit=Math.max(limit,Math.fround(1.8)/Math.fround(size*zoom));
++  return Number.isFinite(limit)?Math.fround(limit+8*2**-23):2;
++}
++function uploadInteriorBounds(offset) {
++  gl.uniform4f(U.uInterior,
++    interiorEdgeLimit(cardOut[offset],cardSeam[offset],S.W,S.zoom,cardFloatPrecision),
++    interiorEdgeLimit(cardOut[offset+1],cardSeam[offset+1],S.W,S.zoom,cardFloatPrecision),
++    interiorEdgeLimit(cardOut[offset+2],cardSeam[offset+2],S.H,S.zoom,cardFloatPrecision),
++    interiorEdgeLimit(cardOut[offset+3],cardSeam[offset+3],S.H,S.zoom,cardFloatPrecision));
++}
++
+ function cardsCoverViewport(count) {
+   const W=S.W,H=S.H,zoom=S.zoom;
+   if(cardFloatPrecision<23||!(W>0&&H>0&&zoom>0&&view.w>0&&view.h>0))return false;
+@@ -1668,6 +1696,7 @@
+       if(cardAmt[n]<=.004)continue;
+       gl.uniform2f(U.uCIdx,cardIdx[n*2],cardIdx[n*2+1]);
+       const offset = n * 4;
++      uploadInteriorBounds(offset);
+       uploadEdgeRamp(U.uCOutScale, U.uCOutBias, cardOut, offset);
+       uploadEdgeRamp(U.uCSeamScale, U.uCSeamBias, cardSeam, offset);
+       gl.uniform4f(U.uBorderEnabled, cardSeam[offset]>SEAM_BORDER_EPS ? 1 : 0,

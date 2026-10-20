@@ -1,0 +1,97 @@
+[
+  {
+    "trace": "benchmarks/rendering-production-2026-10-20/split-rotate-presentation-events.json.gz",
+    "measuredMs": 30043.214,
+    "method": "Chromium presentation-feedback counters, complete tracker intervals inside OCM measurement marks; JSAnimation and RAF overlap and must not be added together.",
+    "trackers": {
+      "JSAnimation": {
+        "expected": 1801,
+        "droppedV3": 1,
+        "droppedV4": 0,
+        "intervals": 1799,
+        "producedV3": 1800,
+        "dropPercentV3": 0.0555247084952804,
+        "dropPercentV4": 0.0
+      },
+      "RAF": {
+        "expected": 1801,
+        "droppedV3": 1,
+        "droppedV4": 0,
+        "intervals": 1799,
+        "producedV3": 1800,
+        "dropPercentV3": 0.0555247084952804,
+        "dropPercentV4": 0.0
+      }
+    },
+    "droppedIntervals": [
+      {
+        "kind": "JSAnimation",
+        "atMs": 281.103,
+        "durationMs": 16.666,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 0
+      },
+      {
+        "kind": "RAF",
+        "atMs": 281.103,
+        "durationMs": 16.666,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 0
+      }
+    ]
+  },
+  {
+    "trace": "benchmarks/rendering-production-2026-10-20/split-walk-presentation-events.json.gz",
+    "measuredMs": 29984.946,
+    "method": "Chromium presentation-feedback counters, complete tracker intervals inside OCM measurement marks; JSAnimation and RAF overlap and must not be added together.",
+    "trackers": {
+      "JSAnimation": {
+        "expected": 1798,
+        "droppedV3": 0,
+        "droppedV4": 0,
+        "intervals": 1798,
+        "producedV3": 1798,
+        "dropPercentV3": 0.0,
+        "dropPercentV4": 0.0
+      },
+      "RAF": {
+        "expected": 1798,
+        "droppedV3": 0,
+        "droppedV4": 0,
+        "intervals": 1798,
+        "producedV3": 1798,
+        "dropPercentV3": 0.0,
+        "dropPercentV4": 0.0
+      }
+    },
+    "droppedIntervals": []
+  },
+  {
+    "trace": "benchmarks/rendering-production-2026-10-20/split-replay-presentation-events.json.gz",
+    "measuredMs": 29983.856,
+    "method": "Chromium presentation-feedback counters, complete tracker intervals inside OCM measurement marks; JSAnimation and RAF overlap and must not be added together.",
+    "trackers": {
+      "JSAnimation": {
+        "expected": 1798,
+        "droppedV3": 0,
+        "droppedV4": 0,
+        "intervals": 1798,
+        "producedV3": 1798,
+        "dropPercentV3": 0.0,
+        "dropPercentV4": 0.0
+      },
+      "RAF": {
+        "expected": 1798,
+        "droppedV3": 0,
+        "droppedV4": 0,
+        "intervals": 1798,
+        "producedV3": 1798,
+        "dropPercentV3": 0.0,
+        "dropPercentV4": 0.0
+      }
+    },
+    "droppedIntervals": []
+  }
+]

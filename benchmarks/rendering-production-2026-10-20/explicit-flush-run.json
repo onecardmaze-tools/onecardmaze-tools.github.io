@@ -1,0 +1,777 @@
+{
+  "root": "/private/tmp/ocm-explicit-flush",
+  "results": [
+    {
+      "mode": "full",
+      "workload": "rotate",
+      "cycles": 15,
+      "gpuTimers": false,
+      "framesPerCycle": 120,
+      "warmupFrames": 20,
+      "measurementNote": "RAF callback cadence and CPU/GPU query timings; not confirmed presented frames, energy, or power. Cycle resets are included in rafMs, and their affected intervals are separated in resetBoundaryRafMs. GPU query scopes on separate contexts are not an additive critical-path measurement.",
+      "viewport": [
+        1504,
+        1492
+      ],
+      "dpr": 2,
+      "backing": [
+        3008,
+        2984
+      ],
+      "vertices": 48,
+      "projectedSegments": 235,
+      "canonicalStamps": 28,
+      "canonicalChevrons": 28,
+      "tiles": 9,
+      "zoom": 0.888095238095238,
+      "renderer": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) UHD Graphics 630, Unspecified Version)",
+      "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+      "traceSurface": null,
+      "cpuMs": {
+        "n": 1800,
+        "median": 1.199999988079071,
+        "p95": 1.800000011920929,
+        "p99": 2.199999988079071,
+        "max": 2.800000011920929,
+        "mean": 1.2499444442987442
+      },
+      "rafMs": {
+        "n": 1800,
+        "median": 16.699999999999818,
+        "p95": 17.399999999999636,
+        "p99": 17.599999999998545,
+        "max": 33.40000000000009,
+        "mean": 16.67611111111117
+      },
+      "steadyRafMs": {
+        "n": 1786,
+        "median": 16.699999999999818,
+        "p95": 17.399999999999636,
+        "p99": 17.599999999998545,
+        "max": 33.40000000000009,
+        "mean": 16.67704367301237
+      },
+      "resetBoundaryRafMs": {
+        "n": 14,
+        "median": 16.799999999999272,
+        "p95": 17.100000000000364,
+        "p99": 17.100000000000364,
+        "max": 17.100000000000364,
+        "mean": 16.55714285714287
+      },
+      "glGpuMs": {
+        "n": 0,
+        "median": null,
+        "p95": null,
+        "p99": null,
+        "max": null,
+        "mean": null
+      },
+      "overlayGpuMs": {
+        "n": 0,
+        "median": null,
+        "p95": null,
+        "p99": null,
+        "max": null,
+        "mean": null
+      },
+      "overlayDisjoint": null,
+      "overlayBefore": {
+        "frames": 3,
+        "draws": 156,
+        "vertices": 28032,
+        "uploads": 75,
+        "cachedDraws": 100,
+        "cacheHits": 31,
+        "cacheMisses": 19,
+        "pathBytes": 130176
+      },
+      "overlayAfter": {
+        "frames": 1837,
+        "draws": 116571,
+        "vertices": 24255000,
+        "uploads": 48393,
+        "cachedDraws": 75132,
+        "cacheHits": 30612,
+        "cacheMisses": 6954,
+        "pathBytes": 1013376
+      },
+      "disjoint": null,
+      "staticClears": 0,
+      "over25ms": 1,
+      "steadyOver25ms": 1,
+      "elapsedMeasuredMs": 29983.6,
+      "reset": {
+        "count": 14,
+        "cpuMs": {
+          "n": 14,
+          "median": 3.899999976158142,
+          "p95": 5.600000023841858,
+          "p99": 5.600000023841858,
+          "max": 5.600000023841858,
+          "mean": 3.9642857142857144
+        },
+        "artGpuMs": {
+          "n": 0,
+          "median": null,
+          "p95": null,
+          "p99": null,
+          "max": null,
+          "mean": null
+        },
+        "overlayGpuMs": {
+          "n": 0,
+          "median": null,
+          "p95": null,
+          "p99": null,
+          "max": null,
+          "mean": null
+        },
+        "records": [
+          {
+            "cycle": 1,
+            "cpuMs": 5.600000023841858
+          },
+          {
+            "cycle": 2,
+            "cpuMs": 3.100000023841858
+          },
+          {
+            "cycle": 3,
+            "cpuMs": 4.600000023841858
+          },
+          {
+            "cycle": 4,
+            "cpuMs": 5.300000011920929
+          },
+          {
+            "cycle": 5,
+            "cpuMs": 4.900000035762787
+          },
+          {
+            "cycle": 6,
+            "cpuMs": 3.199999988079071
+          },
+          {
+            "cycle": 7,
+            "cpuMs": 3.800000011920929
+          },
+          {
+            "cycle": 8,
+            "cpuMs": 4.799999952316284
+          },
+          {
+            "cycle": 9,
+            "cpuMs": 3.899999976158142
+          },
+          {
+            "cycle": 10,
+            "cpuMs": 2.600000023841858
+          },
+          {
+            "cycle": 11,
+            "cpuMs": 3.599999964237213
+          },
+          {
+            "cycle": 12,
+            "cpuMs": 4.199999988079071
+          },
+          {
+            "cycle": 13,
+            "cpuMs": 2.399999976158142
+          },
+          {
+            "cycle": 14,
+            "cpuMs": 3.5
+          }
+        ]
+      },
+      "timerQueries": {
+        "art": {
+          "api": null,
+          "unavailable": null
+        },
+        "overlay": {
+          "api": null,
+          "unavailable": null,
+          "sharedWithArt": false
+        }
+      },
+      "perCycle": [
+        {
+          "cycle": 0,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1.5,
+            "p95": 2.200000047683716,
+            "p99": 2.5,
+            "max": 2.5,
+            "mean": 1.5291666646798452
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.699999999999818,
+            "p95": 17.300000000000182,
+            "p99": 17.59999999999991,
+            "max": 33.40000000000009,
+            "mean": 16.809166666666666
+          },
+          "over25ms": 1,
+          "artGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          },
+          "overlayGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          }
+        },
+        {
+          "cycle": 1,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1.300000011920929,
+            "p95": 1.9000000357627869,
+            "p99": 2.300000011920929,
+            "max": 2.800000011920929,
+            "mean": 1.3408333301544189
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.699999999999818,
+            "p95": 17.400000000000546,
+            "p99": 17.599999999999454,
+            "max": 17.600000000000364,
+            "mean": 16.66583333333334
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          },
+          "overlayGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          }
+        },
+        {
+          "cycle": 2,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1.199999988079071,
+            "p95": 1.7000000476837158,
+            "p99": 1.9000000357627869,
+            "max": 2,
+            "mean": 1.1866666694482169
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.699999999999818,
+            "p95": 17.399999999999636,
+            "p99": 17.5,
+            "max": 17.699999999999818,
+            "mean": 16.669999999999998
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          },
+          "overlayGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          }
+        },
+        {
+          "cycle": 3,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1.300000011920929,
+            "p95": 1.899999976158142,
+            "p99": 2.5,
+            "max": 2.699999988079071,
+            "mean": 1.3666666666666667
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.69999999999891,
+            "p95": 17.400000000000546,
+            "p99": 17.599999999998545,
+            "max": 17.599999999999454,
+            "mean": 16.66833333333334
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          },
+          "overlayGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          }
+        },
+        {
+          "cycle": 4,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1.100000023841858,
+            "p95": 1.699999988079071,
+            "p99": 1.800000011920929,
+            "max": 2.199999988079071,
+            "mean": 1.1625000009934108
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.69999999999891,
+            "p95": 17.30000000000109,
+            "p99": 17.5,
+            "max": 17.799999999999272,
+            "mean": 16.66333333333332
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          },
+          "overlayGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          }
+        },
+        {
+          "cycle": 5,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1.199999988079071,
+            "p95": 1.600000023841858,
+            "p99": 1.800000011920929,
+            "max": 1.800000011920929,
+            "mean": 1.2108333339293798
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.69999999999891,
+            "p95": 17.399999999999636,
+            "p99": 17.5,
+            "max": 17.5,
+            "mean": 16.666666666666668
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          },
+          "overlayGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          }
+        },
+        {
+          "cycle": 6,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1.199999988079071,
+            "p95": 1.7000000476837158,
+            "p99": 1.9000000357627869,
+            "max": 2.400000035762787,
+            "mean": 1.1675000036756198
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.700000000000728,
+            "p95": 17.400000000001455,
+            "p99": 17.5,
+            "max": 17.599999999998545,
+            "mean": 16.6625
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          },
+          "overlayGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          }
+        },
+        {
+          "cycle": 7,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1.300000011920929,
+            "p95": 1.800000011920929,
+            "p99": 2.300000011920929,
+            "max": 2.300000011920929,
+            "mean": 1.3283333321412405
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.700000000000728,
+            "p95": 17.400000000001455,
+            "p99": 17.600000000000364,
+            "max": 17.700000000000728,
+            "mean": 16.67583333333335
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          },
+          "overlayGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          }
+        },
+        {
+          "cycle": 8,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1.199999988079071,
+            "p95": 1.699999988079071,
+            "p99": 1.899999976158142,
+            "max": 1.899999976158142,
+            "mean": 1.1791666651765504
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.69999999999709,
+            "p95": 17.400000000001455,
+            "p99": 17.5,
+            "max": 17.600000000002183,
+            "mean": 16.66333333333332
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          },
+          "overlayGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          }
+        },
+        {
+          "cycle": 9,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1.300000011920929,
+            "p95": 1.9000000357627869,
+            "p99": 2.199999988079071,
+            "max": 2.300000011920929,
+            "mean": 1.2999999990065894
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.69999999999709,
+            "p95": 17.30000000000291,
+            "p99": 17.5,
+            "max": 17.5,
+            "mean": 16.66833333333334
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          },
+          "overlayGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          }
+        },
+        {
+          "cycle": 10,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1.199999988079071,
+            "p95": 1.699999988079071,
+            "p99": 2,
+            "max": 2.199999988079071,
+            "mean": 1.2191666627923647
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.700000000000728,
+            "p95": 17.30000000000291,
+            "p99": 17.5,
+            "max": 17.5,
+            "mean": 16.66333333333332
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          },
+          "overlayGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          }
+        },
+        {
+          "cycle": 11,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1.2000000476837158,
+            "p95": 1.600000023841858,
+            "p99": 1.7000000476837158,
+            "max": 2,
+            "mean": 1.227500000099341
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.700000000000728,
+            "p95": 17.5,
+            "p99": 17.599999999998545,
+            "max": 17.600000000002183,
+            "mean": 16.664166666666674
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          },
+          "overlayGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          }
+        },
+        {
+          "cycle": 12,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1.100000023841858,
+            "p95": 1.699999988079071,
+            "p99": 1.7000000476837158,
+            "max": 2.099999964237213,
+            "mean": 1.1558333352208137
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.600000000002183,
+            "p95": 17.5,
+            "p99": 17.599999999998545,
+            "max": 17.600000000002183,
+            "mean": 16.669166666666662
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          },
+          "overlayGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          }
+        },
+        {
+          "cycle": 13,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1.199999988079071,
+            "p95": 1.699999988079071,
+            "p99": 2,
+            "max": 2,
+            "mean": 1.1791666676600774
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.700000000000728,
+            "p95": 17.400000000001455,
+            "p99": 17.5,
+            "max": 17.600000000002183,
+            "mean": 16.664999999999996
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          },
+          "overlayGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          }
+        },
+        {
+          "cycle": 14,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1.199999988079071,
+            "p95": 1.699999988079071,
+            "p99": 1.800000011920929,
+            "max": 2,
+            "mean": 1.195833332836628
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.600000000002183,
+            "p95": 17.400000000001455,
+            "p99": 17.600000000002183,
+            "max": 17.700000000000728,
+            "mean": 16.666666666666668
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          },
+          "overlayGpuMs": {
+            "n": 0,
+            "median": null,
+            "p95": null,
+            "p99": null,
+            "max": null,
+            "mean": null
+          }
+        }
+      ],
+      "glErrors": [],
+      "round": 0,
+      "traceFile": "/private/tmp/ocm-flush-measured-0-rotate.json.gz"
+    }
+  ]
+}

@@ -212,8 +212,10 @@ Append `?demo` to load the rules card automatically (requires Internet access).
 
 ## Development and checks
 
-- `index.html`: controls, WebGL artwork/reference trail, Canvas2D review layer,
-  event state machine, camera, free-form markers, local image/marker storage.
+- `index.html`: controls, card-quad WebGL artwork, event state machine, camera,
+  free-form markers and local image/marker storage.
+- `gpu-renderer.js`: retained GPU paths with analytic antialiasing, small glyph
+  textures, bounded caches, context restoration and Canvas2D fallback.
 - `replay-core.js`: dependency-free timeline geometry, exact seam intersections,
   fold mapping, distance interpolation, and spin events; also usable in Node.
 - `tests/replay.test.js`: geometry and actual application state-machine regression
@@ -235,8 +237,9 @@ preservation, and marker projection across every rotated/folded copy.
 ## Rendering and energy
 
 The app sleeps when settled, suspends in the background, reuses unchanged artwork
-and static history, and updates only the partial progress leg during ordinary
-replay. Controls remain immediate; the animated HUD refreshes at 10 Hz. There are
+and retained GPU route geometry, and rebuilds only the changing progress geometry
+during ordinary replay. Analytic edge coverage preserves antialiasing without
+full-screen MSAA. Controls remain immediate; the animated HUD refreshes at 10 Hz. There are
 no third-party runtime dependencies. See [measurements, memory tradeoffs and
 remaining limits](PERFORMANCE.md), including browser and native-Canvas benchmarks.
 

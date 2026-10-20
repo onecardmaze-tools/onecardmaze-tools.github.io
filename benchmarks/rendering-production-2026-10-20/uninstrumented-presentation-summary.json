@@ -1,0 +1,385 @@
+[
+  {
+    "trace": "benchmarks/rendering-production-2026-10-20/noquery-rotate-presentation-events.json.gz",
+    "measuredMs": 30417.502,
+    "method": "Chromium presentation-feedback counters, complete tracker intervals inside OCM measurement marks; JSAnimation and RAF overlap and must not be added together.",
+    "trackers": {
+      "JSAnimation": {
+        "expected": 1825,
+        "droppedV3": 27,
+        "droppedV4": 27,
+        "intervals": 1761,
+        "producedV3": 1798,
+        "dropPercentV3": 1.4794520547945205,
+        "dropPercentV4": 1.4794520547945205
+      },
+      "RAF": {
+        "expected": 1826,
+        "droppedV3": 27,
+        "droppedV4": 27,
+        "intervals": 1761,
+        "producedV3": 1799,
+        "dropPercentV3": 1.4786418400876231,
+        "dropPercentV4": 1.4786418400876231
+      }
+    },
+    "droppedIntervals": [
+      {
+        "kind": "JSAnimation",
+        "atMs": 23.003,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 23.003,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 206.347,
+        "durationMs": 66.669,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 206.347,
+        "durationMs": 66.669,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 323.02,
+        "durationMs": 33.336,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 323.02,
+        "durationMs": 33.336,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 489.696,
+        "durationMs": 33.336,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 489.696,
+        "durationMs": 33.336,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 606.37,
+        "durationMs": 16.667,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 606.37,
+        "durationMs": 16.667,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 839.716,
+        "durationMs": 16.668,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 839.716,
+        "durationMs": 16.668,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 973.057,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 973.057,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 1123.065,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1123.065,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 1373.079,
+        "durationMs": 50.003,
+        "expected": 3,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1373.079,
+        "durationMs": 50.003,
+        "expected": 3,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 1423.082,
+        "durationMs": 16.668,
+        "expected": 4,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1423.082,
+        "durationMs": 16.668,
+        "expected": 4,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 16323.235,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 16323.235,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 17923.273,
+        "durationMs": 50.002,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 17923.273,
+        "durationMs": 50.002,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 17973.275,
+        "durationMs": 16.667,
+        "expected": 4,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 17973.275,
+        "durationMs": 16.667,
+        "expected": 4,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 18123.278,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 18123.278,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 18189.946,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 18189.946,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 18406.618,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 18406.618,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 18656.624,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 18656.624,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 18673.291,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 18673.291,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 18723.292,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 18723.292,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      }
+    ]
+  },
+  {
+    "trace": "benchmarks/rendering-production-2026-10-20/noquery-walk-presentation-events.json.gz",
+    "measuredMs": 29985.004,
+    "method": "Chromium presentation-feedback counters, complete tracker intervals inside OCM measurement marks; JSAnimation and RAF overlap and must not be added together.",
+    "trackers": {
+      "JSAnimation": {
+        "expected": 1798,
+        "droppedV3": 0,
+        "droppedV4": 0,
+        "intervals": 1798,
+        "producedV3": 1798,
+        "dropPercentV3": 0.0,
+        "dropPercentV4": 0.0
+      },
+      "RAF": {
+        "expected": 1798,
+        "droppedV3": 0,
+        "droppedV4": 0,
+        "intervals": 1798,
+        "producedV3": 1798,
+        "dropPercentV3": 0.0,
+        "dropPercentV4": 0.0
+      }
+    },
+    "droppedIntervals": []
+  },
+  {
+    "trace": "benchmarks/rendering-production-2026-10-20/noquery-replay-presentation-events.json.gz",
+    "measuredMs": 29984.588,
+    "method": "Chromium presentation-feedback counters, complete tracker intervals inside OCM measurement marks; JSAnimation and RAF overlap and must not be added together.",
+    "trackers": {
+      "JSAnimation": {
+        "expected": 1799,
+        "droppedV3": 0,
+        "droppedV4": 0,
+        "intervals": 1798,
+        "producedV3": 1799,
+        "dropPercentV3": 0.0,
+        "dropPercentV4": 0.0
+      },
+      "RAF": {
+        "expected": 1799,
+        "droppedV3": 0,
+        "droppedV4": 0,
+        "intervals": 1798,
+        "producedV3": 1799,
+        "dropPercentV3": 0.0,
+        "dropPercentV4": 0.0
+      }
+    },
+    "droppedIntervals": []
+  }
+]

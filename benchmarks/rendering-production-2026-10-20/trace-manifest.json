@@ -1,0 +1,129 @@
+[
+  {
+    "workload": "rotate",
+    "fullTraceSha256": "f2e6f7f1daf71163a74262d9eb495063fe80705051cab3731c0f2909201c981a",
+    "fullTraceBytes": 10192715,
+    "fullTraceLocalPath": "/Users/xuezhonghao/.codex/visualizations/2026/10/20/01a156cb-2322-73a0-b327-68bdcdb9f6a3/rendering-traces/split-rotate.json.gz",
+    "presentationEvents": "split-rotate-presentation-events.json.gz",
+    "sourceEvents": 480775,
+    "retainedEvents": 10948
+  },
+  {
+    "workload": "walk",
+    "fullTraceSha256": "506b7f0f0368567104b9b51b9a6a07d4a1ae4d5fdbfd5260f9854f3d19dbb64a",
+    "fullTraceBytes": 10329691,
+    "fullTraceLocalPath": "/Users/xuezhonghao/.codex/visualizations/2026/10/20/01a156cb-2322-73a0-b327-68bdcdb9f6a3/rendering-traces/split-walk.json.gz",
+    "presentationEvents": "split-walk-presentation-events.json.gz",
+    "sourceEvents": 516890,
+    "retainedEvents": 10420
+  },
+  {
+    "workload": "replay",
+    "fullTraceSha256": "05bce28f4f867cad223579febe38b631a63eb994a7e7f1717e2546762df27901",
+    "fullTraceBytes": 10213749,
+    "fullTraceLocalPath": "/Users/xuezhonghao/.codex/visualizations/2026/10/20/01a156cb-2322-73a0-b327-68bdcdb9f6a3/rendering-traces/split-replay.json.gz",
+    "presentationEvents": "split-replay-presentation-events.json.gz",
+    "sourceEvents": 513118,
+    "retainedEvents": 10414
+  },
+  {
+    "variant": "native",
+    "workload": "rotate",
+    "fullTraceSha256": "8692f0d41ccba0d5dc38f0681eb5fc520a17ec2a9a6e15e8e359f012b2c5eed0",
+    "fullTraceBytes": 10247283,
+    "fullTraceLocalPath": "/Users/xuezhonghao/.codex/visualizations/2026/10/20/01a156cb-2322-73a0-b327-68bdcdb9f6a3/rendering-traces/native-rotate.json.gz",
+    "presentationEvents": "native-rotate-presentation-events.json.gz",
+    "sourceEvents": 515732,
+    "retainedEvents": 10355
+  },
+  {
+    "variant": "native",
+    "workload": "walk",
+    "fullTraceSha256": "7e5b5b40978380a9b97960f749ddd693c411ad669833db060fd7cd015991ad5f",
+    "fullTraceBytes": 9896976,
+    "fullTraceLocalPath": "/Users/xuezhonghao/.codex/visualizations/2026/10/20/01a156cb-2322-73a0-b327-68bdcdb9f6a3/rendering-traces/native-walk.json.gz",
+    "presentationEvents": "native-walk-presentation-events.json.gz",
+    "sourceEvents": 515460,
+    "retainedEvents": 10427
+  },
+  {
+    "variant": "native",
+    "workload": "replay",
+    "fullTraceSha256": "02f825e6f19e4777eb38df3c575e72bc0a966369feefac6eb5b8cb7b8957d862",
+    "fullTraceBytes": 9908858,
+    "fullTraceLocalPath": "/Users/xuezhonghao/.codex/visualizations/2026/10/20/01a156cb-2322-73a0-b327-68bdcdb9f6a3/rendering-traces/native-replay.json.gz",
+    "presentationEvents": "native-replay-presentation-events.json.gz",
+    "sourceEvents": 512803,
+    "retainedEvents": 10475
+  },
+  {
+    "variant": "noquery",
+    "workload": "rotate",
+    "fullTraceSha256": "b226afa336140938d3be983cad1fceb6b1cad6225c5a200e050e403f17f7c472",
+    "fullTraceBytes": 10161780,
+    "fullTraceLocalPath": "/Users/xuezhonghao/.codex/visualizations/2026/10/20/01a156cb-2322-73a0-b327-68bdcdb9f6a3/rendering-traces/noquery-rotate.json.gz",
+    "presentationEvents": "noquery-rotate-presentation-events.json.gz",
+    "sourceEvents": 516138,
+    "retainedEvents": 10309
+  },
+  {
+    "variant": "noquery",
+    "workload": "walk",
+    "fullTraceSha256": "2b5e032223535cd1ce55351a9dfeaf7542e0f0589bd2022f0ea373e7ae745ef4",
+    "fullTraceBytes": 9863247,
+    "fullTraceLocalPath": "/Users/xuezhonghao/.codex/visualizations/2026/10/20/01a156cb-2322-73a0-b327-68bdcdb9f6a3/rendering-traces/noquery-walk.json.gz",
+    "presentationEvents": "noquery-walk-presentation-events.json.gz",
+    "sourceEvents": 475794,
+    "retainedEvents": 10423
+  },
+  {
+    "variant": "noquery",
+    "workload": "replay",
+    "fullTraceSha256": "b09c402e64716b52d179b64d5a5d33dec69b78903dfb37753317e8f3a4918fbe",
+    "fullTraceBytes": 9919144,
+    "fullTraceLocalPath": "/Users/xuezhonghao/.codex/visualizations/2026/10/20/01a156cb-2322-73a0-b327-68bdcdb9f6a3/rendering-traces/noquery-replay.json.gz",
+    "presentationEvents": "noquery-replay-presentation-events.json.gz",
+    "sourceEvents": 515093,
+    "retainedEvents": 10590
+  },
+  {
+    "variant": "hybrid",
+    "workload": "rotate",
+    "fullTraceSha256": "dc47883e4486499e38c5b8e12a80d62a987f215199340ddefae8a7d18d258a48",
+    "fullTraceBytes": 9802140,
+    "fullTraceLocalPath": "/Users/xuezhonghao/.codex/visualizations/2026/10/20/01a156cb-2322-73a0-b327-68bdcdb9f6a3/rendering-traces/hybrid-rotate.json.gz",
+    "presentationEvents": "hybrid-rotate-presentation-events.json.gz",
+    "sourceEvents": 515917,
+    "retainedEvents": 10301
+  },
+  {
+    "variant": "hybrid",
+    "workload": "walk",
+    "fullTraceSha256": "df8850cd35a978cd6195847be84e460d8d3bee3d6343969e46786e0b66cccb80",
+    "fullTraceBytes": 10076793,
+    "fullTraceLocalPath": "/Users/xuezhonghao/.codex/visualizations/2026/10/20/01a156cb-2322-73a0-b327-68bdcdb9f6a3/rendering-traces/hybrid-walk.json.gz",
+    "presentationEvents": "hybrid-walk-presentation-events.json.gz",
+    "sourceEvents": 478289,
+    "retainedEvents": 10748
+  },
+  {
+    "variant": "hybrid",
+    "workload": "replay",
+    "fullTraceSha256": "6a3c61951892bcea330a99e2fe446ce3b315929ebf7976c9119d11b07aaf38c9",
+    "fullTraceBytes": 9418461,
+    "fullTraceLocalPath": "/Users/xuezhonghao/.codex/visualizations/2026/10/20/01a156cb-2322-73a0-b327-68bdcdb9f6a3/rendering-traces/hybrid-replay.json.gz",
+    "presentationEvents": "hybrid-replay-presentation-events.json.gz",
+    "sourceEvents": 511156,
+    "retainedEvents": 10459
+  },
+  {
+    "variant": "empty",
+    "workload": "rotate",
+    "fullTraceSha256": "61791ea256facc161e04b621ae387959c91a0ae3f94c16bdb45882c8395a27c5",
+    "fullTraceBytes": 2282139,
+    "fullTraceLocalPath": "/Users/xuezhonghao/.codex/visualizations/2026/10/20/01a156cb-2322-73a0-b327-68bdcdb9f6a3/rendering-traces/empty-rotate.json.gz",
+    "presentationEvents": "empty-rotate-presentation-events.json.gz",
+    "sourceEvents": 152049,
+    "retainedEvents": 64
+  }
+]

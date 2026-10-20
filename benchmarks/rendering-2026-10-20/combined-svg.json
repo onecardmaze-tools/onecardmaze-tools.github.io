@@ -1,0 +1,179 @@
+{
+  "root": "/private/tmp/ocm-combined-svg-20261020",
+  "results": [
+    {
+      "mode": "full",
+      "workload": "rotate",
+      "viewport": [
+        1504,
+        1492
+      ],
+      "dpr": 2,
+      "backing": [
+        3008,
+        2984
+      ],
+      "vertices": 48,
+      "projectedSegments": 235,
+      "canonicalStamps": 28,
+      "canonicalChevrons": 28,
+      "tiles": 9,
+      "zoom": 0.888095238095238,
+      "renderer": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) UHD Graphics 630, Unspecified Version)",
+      "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+      "traceSurface": {
+        "x": -750,
+        "y": -1050,
+        "width": 2250,
+        "height": 3150,
+        "rasterRatio": 1.6918190621911324,
+        "cssW": 1997.8495783245562,
+        "cssH": 2796.9894096543785,
+        "pixelW": 3380,
+        "pixelH": 4732,
+        "light": "-1,-1,0.50;-1,0,0.50;-1,1,0.50;0,-1,0.50;0,0,1.00;0,1,0.50;1,-1,0.50;1,0,0.50;1,1,0.50"
+      },
+      "cpuMs": {
+        "n": 120,
+        "median": 0.9000000357627869,
+        "p95": 1.899999976158142,
+        "max": 2,
+        "mean": 1.0466666703422864
+      },
+      "rafMs": {
+        "n": 120,
+        "median": 98.89999999999964,
+        "p95": 116.80000000000018,
+        "max": 166.70000000000027,
+        "mean": 94.45
+      },
+      "glGpuMs": {
+        "n": 116,
+        "median": 8.11275,
+        "p95": 8.957332,
+        "max": 10.04675,
+        "mean": 8.119559836206895
+      },
+      "disjoint": false,
+      "staticClears": 0,
+      "over25ms": 120,
+      "round": 0
+    },
+    {
+      "mode": "full",
+      "workload": "walk",
+      "viewport": [
+        1504,
+        1492
+      ],
+      "dpr": 2,
+      "backing": [
+        3008,
+        2984
+      ],
+      "vertices": 48,
+      "projectedSegments": 235,
+      "canonicalStamps": 28,
+      "canonicalChevrons": 28,
+      "tiles": 9,
+      "zoom": 0.888095238095238,
+      "renderer": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) UHD Graphics 630, Unspecified Version)",
+      "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+      "traceSurface": {
+        "x": -750,
+        "y": -1050,
+        "width": 2250,
+        "height": 3150,
+        "rasterRatio": 1.6918190621911324,
+        "cssW": 1997.8495783245562,
+        "cssH": 2796.9894096543785,
+        "pixelW": 3380,
+        "pixelH": 4732,
+        "light": "-1,-1,0.50;-1,0,0.50;-1,1,0.50;0,-1,0.50;0,0,1.00;0,1,0.50;1,-1,0.50;1,0,0.50;1,1,0.50"
+      },
+      "cpuMs": {
+        "n": 120,
+        "median": 1.100000023841858,
+        "p95": 1.600000023841858,
+        "max": 1.800000011920929,
+        "mean": 1.2024999996026358
+      },
+      "rafMs": {
+        "n": 120,
+        "median": 34.400000000000546,
+        "p95": 68.09999999999991,
+        "max": 83.59999999999991,
+        "mean": 41.945
+      },
+      "glGpuMs": {
+        "n": 0,
+        "median": null,
+        "p95": null,
+        "max": null,
+        "mean": null
+      },
+      "disjoint": false,
+      "staticClears": 0,
+      "over25ms": 104,
+      "round": 0
+    },
+    {
+      "mode": "full",
+      "workload": "replay",
+      "viewport": [
+        1504,
+        1492
+      ],
+      "dpr": 2,
+      "backing": [
+        3008,
+        2984
+      ],
+      "vertices": 48,
+      "projectedSegments": 235,
+      "canonicalStamps": 28,
+      "canonicalChevrons": 28,
+      "tiles": 9,
+      "zoom": 0.888095238095238,
+      "renderer": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) UHD Graphics 630, Unspecified Version)",
+      "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+      "traceSurface": {
+        "x": -750,
+        "y": -1050,
+        "width": 2250,
+        "height": 3150,
+        "rasterRatio": 1.6918190621911324,
+        "cssW": 1997.8495783245562,
+        "cssH": 2796.9894096543785,
+        "pixelW": 3380,
+        "pixelH": 4732,
+        "light": "-1,-1,0.50;-1,0,0.50;-1,1,0.50;0,-1,0.50;0,0,1.00;0,1,0.50;1,-1,0.50;1,0,0.50;1,1,0.50"
+      },
+      "cpuMs": {
+        "n": 120,
+        "median": 0.5999999642372131,
+        "p95": 0.800000011920929,
+        "max": 0.9000000357627869,
+        "mean": 0.5974999974171321
+      },
+      "rafMs": {
+        "n": 120,
+        "median": 17,
+        "p95": 34.20000000000027,
+        "max": 34.90000000000009,
+        "mean": 20.139166666666668
+      },
+      "glGpuMs": {
+        "n": 103,
+        "median": 0,
+        "p95": 0,
+        "max": 0,
+        "mean": 0
+      },
+      "disjoint": false,
+      "staticClears": 0,
+      "over25ms": 25,
+      "round": 0
+    }
+  ]
+}

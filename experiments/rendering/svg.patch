@@ -1,0 +1,90 @@
+--- a/index.html
++++ b/index.html
+@@ -176,8 +176,8 @@
+ </head>
+ <body>
+ <canvas id="stage" aria-label="Maze map"></canvas>
+-<canvas id="traceLayer" aria-hidden="true"></canvas>
+-<canvas id="replayLayer" aria-hidden="true"></canvas>
++<svg id="traceLayer" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"></svg>
++<svg id="replayLayer" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"></svg>
+ 
+ <div id="hud">
+   <div class="topbar">
+@@ -319,6 +319,7 @@
+   <button id="btnMeasure">Measure performance · 15s</button>
+   <p id="measureStatus" role="status" aria-live="polite">Optional: play or rotate normally during the sample. Results are included in your next export. This measures frame timing and long tasks, not CPU/GPU power.</p>
+ </section>
++<script src="svg-adapter.js"></script>
+ <script src="session-codec.js?v=1"></script>
+ <script src="replay-core.js?v=4"></script>
+ <script src="trace-renderer.js?v=3"></script>
+@@ -785,8 +786,9 @@
+ /* ============================================================
+    EVENT REVIEW — presentation never edits the recorded points.
+    ============================================================ */
+-const replayCanvas = $("replayLayer"), replayCtx = replayCanvas.getContext("2d");
+-const traceCanvas=$("traceLayer"),traceCtx=traceCanvas.getContext("2d");
++const Path2D=window.SVGPath;
++const replayCanvas = svgCanvas("replayLayer"), replayCtx = replayCanvas.getContext("2d");
++const traceCanvas=svgCanvas("traceLayer"),traceCtx=traceCanvas.getContext("2d");
+ let staticTraceKey="";
+ const coarsePointer=window.matchMedia('(pointer:coarse)').matches;
+ // A retained world-space surface avoids re-rasterising line joins on every
+@@ -1111,20 +1113,21 @@
+   const last = trailAt(b); g.lineTo(last.x, last.y);
+ }
+ function drawStaticTrace() {
++  // Keep geometry in world coordinates; camera changes update one SVG group.
++  const cs=Math.cos(S.rot)*S.zoom,sn=Math.sin(S.rot)*S.zoom;
++  traceCtx.root.setAttribute('transform','matrix('+[cs*dpr,sn*dpr,-sn*dpr,cs*dpr,(view.w/2-cs*S.cam.x+sn*S.cam.y)*dpr,(view.h/2-sn*S.cam.x-cs*S.cam.y)*dpr].join(' ')+')');
+   const bound=S.review?(S.reviewDir>0?Math.floor(S.cursor):Math.ceil(S.cursor)):-1;
+-  const layout=traceLayout();placeTraceSurface(layout);
+-  const placement=layout?[layout.x,layout.y,layout.width,layout.height,S.zoom,dpr,S.anchor.i,S.anchor.j,layout.light].join(','):lastArtKey;
+-  const key=[layout?'world':'screen',placement,S.traceVersion,S.trailOn,S.review,S.reviewDir,bound,traceCanvas.width,traceCanvas.height].join(':');
++  const tiles=[...S.cards.values()].filter(t=>t.amt>.01);
++  const light=tiles.map(t=>[t.i,t.j,Math.max(.5,t.bright===undefined?cardLight(t.i,t.j):t.bright).toFixed(2)].join(',')).join(';');
++  const key=[S.traceVersion,S.trailOn,S.review,S.reviewDir,bound,S.zoom,S.anchor.i,S.anchor.j,light].join(':');
+   if(key===staticTraceKey)return;
+   staticTraceKey=key;
+-  const g=traceCtx;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,traceCanvas.width,traceCanvas.height);
+-  if(!S.ready)return;
+-  g.scale(layout?layout.rasterRatio:dpr,layout?layout.rasterRatio:dpr);g.save();
+-  if(layout){g.scale(S.zoom,S.zoom);g.translate(-layout.x,-layout.y);}else worldTransform(g);
+-  const a=S.anchor;
++  const g=traceCtx;g.setTransform(1,0,0,1,0,0);g.clearRect();
++  if(!S.ready){g.finish();return;}
++  g.save();const a=S.anchor;
+   g.strokeStyle='rgba(79,209,197,.55)';g.lineWidth=1/S.zoom;
+   g.strokeRect(a.i*S.W+1/S.zoom,a.j*S.H+1/S.zoom,S.W-2/S.zoom,S.H-2/S.zoom);
+-  drawTrace(g);g.restore();
++  drawTrace(g);g.restore();g.finish();
+ }
+ function partialTrace() {
+   const cache=traceScene(),bound=S.reviewDir>0?Math.floor(S.cursor):Math.ceil(S.cursor);
+@@ -1138,7 +1141,7 @@
+   drawStaticTrace();
+   const g = replayCtx;
+   g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, replayCanvas.width, replayCanvas.height);
+-  if (!S.ready) return;
++  if (!S.ready) {g.finish();return;}
+   g.scale(dpr, dpr); g.save(); worldTransform(g);
+   const width=Math.min(S.W,S.H)*CFG.trailWidthFrac;
+   if (S.review && S.trailOn && S.trail.length > 1) {
+@@ -1183,7 +1186,7 @@
+   }
+   drawTraceStamps(g);
+   drawMarkers(g);
+-  if (!S.started) return;
++  if (!S.started) {g.finish();return;}
+   if(S.walker.tx!=null) {
+     const dest=w2s(S.walker.tx,S.walker.ty);g.beginPath();g.arc(dest.x,dest.y,9,0,TAU);
+     g.strokeStyle='#ffcc6b';g.lineWidth=2;g.stroke();
+@@ -1196,6 +1199,7 @@
+   const mark = w2s(S.walker.x, S.walker.y);
+   g.beginPath(); g.arc(mark.x, mark.y, 5, 0, Math.PI * 2); g.fillStyle = "#edfffc"; g.fill();
+   g.strokeStyle = "#103f43"; g.lineWidth = 1.5; g.stroke();
++  g.finish();
+ }
+ 
+ const scrubEl = $("scrub"), playerEl = $("player"), countEl = $("pcount");

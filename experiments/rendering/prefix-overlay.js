@@ -1,0 +1,87 @@
+/* Experimental Canvas-style WebGL overlay. Main scene pixels never use Canvas2D. */
+(function(root){
+'use strict';
+const I=()=>[1,0,0,1,0,0];
+const mul=(a,b)=>[a[0]*b[0]+a[2]*b[1],a[1]*b[0]+a[3]*b[1],a[0]*b[2]+a[2]*b[3],a[1]*b[2]+a[3]*b[3],a[0]*b[4]+a[2]*b[5]+a[4],a[1]*b[4]+a[3]*b[5]+a[5]];
+const pt=(m,x,y)=>[m[0]*x+m[2]*y+m[4],m[1]*x+m[3]*y+m[5]];
+class GPUPath {
+ constructor(other){this.lines=[];this.rects=[];this.children=[];if(other)this.addPath(other);}
+ moveTo(x,y){this.lines.push([[x,y]]);}
+ lineTo(x,y){if(!this.lines.length)this.moveTo(x,y);else this.lines[this.lines.length-1].push([x,y]);}
+ closePath(){const l=this.lines[this.lines.length-1];if(l&&l.length>1)l.push(l[0].slice());}
+ rect(x,y,w,h){this.rects.push([x,y,w,h]);this.moveTo(x,y);this.lineTo(x+w,y);this.lineTo(x+w,y+h);this.lineTo(x,y+h);this.closePath();}
+ arc(x,y,r,a,b,ccw){let delta=b-a;if(!ccw){while(delta<0)delta+=Math.PI*2;delta=Math.min(delta,Math.PI*2);}else {while(delta>0)delta-=Math.PI*2;delta=Math.max(delta,-Math.PI*2);}const n=Math.max(8,Math.ceil(Math.abs(delta)*Math.sqrt(r)*2));for(let k=0;k<=n;k++){const t=a+delta*k/n;const q=[x+Math.cos(t)*r,y+Math.sin(t)*r];if(k===0&&!this.lines.length)this.moveTo(...q);else this.lineTo(...q);}}
+ addPath(p){this.children.push(p);}
+}
+const colorCache=new Map();
+function color(s){if(colorCache.has(s))return colorCache.get(s);let r;if(s[0]==='#'){let h=s.slice(1);if(h.length<=4)h=[...h].map(c=>c+c).join('');if(h.length===6)h+='ff';r=[0,2,4,6].map(i=>parseInt(h.slice(i,i+2),16)/255);}else if(s.startsWith('rgb')){const n=s.match(/[\d.]+/g).map(Number);r=[n[0]/255,n[1]/255,n[2]/255,n.length>3?n[3]:1];}else r=s==='white'?[1,1,1,1]:[0,0,0,1];colorCache.set(s,r);return r;}
+class GPUContext {
+ constructor(canvas){this.canvas=canvas;const gl=this.gl=canvas.getContext('webgl',{alpha:true,antialias:true,depth:false,stencil:true,premultipliedAlpha:true,preserveDrawingBuffer:false});if(!gl)throw Error('GPU overlay WebGL unavailable');
+ const shader=(type,src)=>{const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(s));return s;};
+ const p=this.program=gl.createProgram();gl.attachShader(p,shader(gl.VERTEX_SHADER,`attribute vec2 aPosition;attribute vec4 aColor;attribute vec2 aUv;uniform vec2 uSize;uniform mat3 uTransform;uniform vec4 uTint;varying vec4 vColor;varying vec2 vUv;varying vec2 vPos;void main(){vPos=(uTransform*vec3(aPosition,1.)).xy;gl_Position=vec4(vPos/uSize*vec2(2.,-2.)+vec2(-1.,1.),0.,1.);vColor=aColor*uTint;vUv=aUv;}`));
+ gl.attachShader(p,shader(gl.FRAGMENT_SHADER,`precision highp float;varying vec4 vColor;varying vec2 vUv;varying vec2 vPos;uniform sampler2D uTex;uniform float uTextured;uniform int uClipCount;uniform vec4 uClip[18];uniform mat3 uClipInverse;void main(){if(uClipCount>0){vec2 q=(uClipInverse*vec3(vPos,1.)).xy;bool inside=false;for(int i=0;i<18;i++){if(i<uClipCount){vec4 r=uClip[i];if(q.x>=r.x&&q.y>=r.y&&q.x<=r.z&&q.y<=r.w)inside=true;}}if(!inside)discard;}gl_FragColor=vColor;if(uTextured>0.5)gl_FragColor*=texture2D(uTex,vUv);}`));gl.linkProgram(p);if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw Error(gl.getProgramInfoLog(p));
+ this.u={};for(const n of ['uTransform','uTint','uSize','uTex','uTextured','uClipCount','uClip','uClipInverse'])this.u[n]=gl.getUniformLocation(p,n);this.attrs=['aPosition','aColor','aUv'].map(n=>gl.getAttribLocation(p,n));this.buffer=gl.createBuffer();this.data=[];this.texture=null;this.textureCache=new WeakMap();this.textCache=new Map();this.stack=[];this.path=new GPUPath();
+ this.state={m:I(),clip:null,globalAlpha:1,strokeStyle:'#000',fillStyle:'#000',lineWidth:1,lineCap:'butt',lineJoin:'miter',font:'10px sans-serif',textAlign:'start',textBaseline:'alphabetic',dash:[]};
+ for(const n of Object.keys(this.state).filter(n=>!['m','clip','dash'].includes(n)))Object.defineProperty(this,n,{get:()=>this.state[n],set:v=>this.state[n]=v});
+ this.metrics={frames:0,draws:0,vertices:0};this.strokeId=0;this.accurateStrokes=true;this.pathBuffers=new Map();this.metrics.uploads=0;this.metrics.cachedDraws=0;this.metrics.cacheHits=0;this.metrics.cacheMisses=0;
+ }
+ save(){this.stack.push({...this.state,m:this.state.m.slice(),dash:this.state.dash.slice()});}
+ restore(){if(!this.stack.length)return;const state=this.stack.pop();if(state.clip!==this.state.clip)this.flush();this.state=state;}
+ setTransform(a,b,c,d,e,f){this.state.m=[a,b,c,d,e,f];}
+ translate(x,y){this.state.m=mul(this.state.m,[1,0,0,1,x,y]);}
+ scale(x,y){this.state.m=mul(this.state.m,[x,0,0,y,0,0]);}
+ rotate(a){this.state.m=mul(this.state.m,[Math.cos(a),Math.sin(a),-Math.sin(a),Math.cos(a),0,0]);}
+ beginPath(){this.path=new GPUPath();}
+ moveTo(...a){this.path.moveTo(...a);}lineTo(...a){this.path.lineTo(...a);}closePath(){this.path.closePath();}rect(...a){this.path.rect(...a);}arc(...a){this.path.arc(...a);}setLineDash(d){this.state.dash=d;}
+ clip(){this.flush();this.state.clip={rects:this.path.rects.slice(0,18),m:this.state.m.slice()};}
+ clearRect(){this.data.length=0;this.texture=null;const gl=this.gl;gl.viewport(0,0,this.canvas.width,this.canvas.height);gl.clearColor(0,0,0,0);gl.clearStencil(0);gl.clear(gl.COLOR_BUFFER_BIT|gl.STENCIL_BUFFER_BIT);this.strokeId=0;this.metrics.frames++;}
+ tri(a,b,c,col){for(const q of [a,b,c])this.data.push(q[0],q[1],col[0],col[1],col[2],col[3],0,0);}
+ solid(){if(this.texture){this.flush();this.texture=null;}}
+ rgba(style){const c=color(style).slice();c[3]*=this.globalAlpha;return c;}
+ disk(p,r,col){const n=Math.max(10,Math.min(40,Math.ceil(r*2)));for(let k=0;k<n;k++){const a=k*Math.PI*2/n,b=(k+1)*Math.PI*2/n;this.tri(p,[p[0]+Math.cos(a)*r,p[1]+Math.sin(a)*r],[p[0]+Math.cos(b)*r,p[1]+Math.sin(b)*r],col);}}
+ segment(a,b,r,col){const dx=b[0]-a[0],dy=b[1]-a[1],l=Math.hypot(dx,dy);if(!l)return;const x=-dy/l*r,y=dx/l*r;const p=[a[0]+x,a[1]+y],q=[a[0]-x,a[1]-y],s=[b[0]+x,b[1]+y],t=[b[0]-x,b[1]-y];this.tri(p,q,s,col);this.tri(s,q,t,col);}
+ stencilBegin(){if(!this.accurateStrokes)return;const gl=this.gl;if(++this.strokeId>254){gl.clearStencil(0);gl.clear(gl.STENCIL_BUFFER_BIT);this.strokeId=1;}gl.enable(gl.STENCIL_TEST);gl.stencilFunc(gl.NOTEQUAL,this.strokeId,255);gl.stencilOp(gl.KEEP,gl.KEEP,gl.REPLACE);}
+ strokeGeometry(path){const m=this.state.m,r=this.lineWidth*Math.hypot(m[0],m[1])/2,c=this.rgba(this.strokeStyle),dash=this.state.dash,scale=Math.hypot(m[0],m[1]);for(const raw of path.lines){const line=raw.map(p=>pt(m,...p));let phase=0;for(let k=1;k<line.length;k++){const a=line[k-1],b=line[k],len=Math.hypot(b[0]-a[0],b[1]-a[1]);if(dash.length&&len){const cycle=dash.reduce((a,b)=>a+b,0)*scale;let s=0;while(s<len){let rem=phase%cycle,idx=0;while(rem>=dash[idx]*scale&&idx<dash.length-1){rem-=dash[idx]*scale;idx++;}const end=Math.min(len,s+dash[idx]*scale-rem);if(idx%2===0){const u=[a[0]+(b[0]-a[0])*s/len,a[1]+(b[1]-a[1])*s/len],v=[a[0]+(b[0]-a[0])*end/len,a[1]+(b[1]-a[1])*end/len];this.segment(u,v,r,c);}phase+=end-s;s=end;}}else this.segment(a,b,r,c);}if(this.lineJoin==='round')for(let k=1;k<line.length-1;k++)this.disk(line[k],r,c);if(this.lineCap==='round'&&line.length){this.disk(line[0],r,c);this.disk(line[line.length-1],r,c);}}}
+ pathEntry(path){
+  const key=[this.lineWidth,this.lineCap,this.lineJoin,this.state.dash.join(',')].join('|');
+  let cached=this.pathBuffers.get(path);
+  if(!cached)cached=new Map();
+  // Refresh LRU position on every use so stable prefixes survive transient tails.
+  this.pathBuffers.delete(path);this.pathBuffers.set(path,cached);
+  let entry=cached.get(key);
+  if(!entry){
+   const state=this.state;this.state={...state,m:I(),globalAlpha:1,strokeStyle:'#ffffff'};
+   this.strokeGeometry(path);this.state=state;
+   const array=new Float32Array(this.data);this.data.length=0;
+   entry={buffer:this.gl.createBuffer(),count:array.length/8};
+   this.gl.bindBuffer(this.gl.ARRAY_BUFFER,entry.buffer);this.gl.bufferData(this.gl.ARRAY_BUFFER,array,this.gl.STATIC_DRAW);this.metrics.uploads++;this.metrics.cacheMisses++;
+   cached.set(key,entry);
+   if(cached.size>8){const first=cached.keys().next().value;this.gl.deleteBuffer(cached.get(first).buffer);cached.delete(first);}
+   if(this.pathBuffers.size>256){const first=this.pathBuffers.keys().next().value;for(const item of this.pathBuffers.get(first).values())this.gl.deleteBuffer(item.buffer);this.pathBuffers.delete(first);}
+  }else {this.metrics.cacheHits++;cached.delete(key);cached.set(key,entry);}
+  return entry;
+ }
+ strokeLeaves(path,tint){
+  if(path.lines.length){const entry=this.pathEntry(path);this.drawBuffer(entry.buffer,entry.count,this.state.m,tint);this.metrics.cachedDraws++;}
+  for(const child of path.children)this.strokeLeaves(child,tint);
+ }
+ stroke(path=this.path){
+  this.solid();this.flush();this.stencilBegin();
+  if(arguments.length)this.strokeLeaves(path,this.rgba(this.strokeStyle));
+  else {this.strokeGeometry(path);this.flush();}
+  this.gl.disable(this.gl.STENCIL_TEST);
+ }
+
+ fill(path=this.path){this.solid();const c=this.rgba(this.fillStyle),m=this.state.m;for(const raw of path.lines){const points=raw.map(p=>pt(m,...p));if(points.length>1&&points[0][0]===points[points.length-1][0]&&points[0][1]===points[points.length-1][1])points.pop();if(points.length<3)continue;let area=0;for(let i=0;i<points.length;i++){const a=points[i],b=points[(i+1)%points.length];area+=a[0]*b[1]-b[0]*a[1];}if(area<0)points.reverse();const cross=(a,b,c)=>(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);let convex=true;for(let i=0;i<points.length;i++)if(cross(points[i],points[(i+1)%points.length],points[(i+2)%points.length])< -1e-8){convex=false;break;}if(convex){for(let i=1;i<points.length-1;i++)this.tri(points[0],points[i],points[i+1],c);continue;}let guard=points.length*points.length;while(points.length>3&&guard-->0){let found=false;for(let i=0;i<points.length;i++){const a=points[(i+points.length-1)%points.length],b=points[i],d=points[(i+1)%points.length];if(cross(a,b,d)<=0)continue;let inside=false;for(let j=0;j<points.length;j++){const p=points[j];if(p===a||p===b||p===d)continue;if(cross(a,b,p)>=0&&cross(b,d,p)>=0&&cross(d,a,p)>=0){inside=true;break;}}if(!inside){this.tri(a,b,d,c);points.splice(i,1);found=true;break;}}if(!found)break;}if(points.length===3)this.tri(...points,c);}}
+ fillRect(x,y,w,h){const p=new GPUPath();p.rect(x,y,w,h);this.fill(p);}
+ strokeRect(x,y,w,h){const p=new GPUPath();p.rect(x,y,w,h);this.stroke(p);}
+ imageTexture(source){let tex=this.textureCache.get(source);if(tex)return tex;const g=this.gl;tex=g.createTexture();g.bindTexture(g.TEXTURE_2D,tex);g.pixelStorei(g.UNPACK_PREMULTIPLY_ALPHA_WEBGL,false);g.texParameteri(g.TEXTURE_2D,g.TEXTURE_MIN_FILTER,g.LINEAR);g.texParameteri(g.TEXTURE_2D,g.TEXTURE_MAG_FILTER,g.LINEAR);g.texParameteri(g.TEXTURE_2D,g.TEXTURE_WRAP_S,g.CLAMP_TO_EDGE);g.texParameteri(g.TEXTURE_2D,g.TEXTURE_WRAP_T,g.CLAMP_TO_EDGE);g.texImage2D(g.TEXTURE_2D,0,g.RGBA,g.RGBA,g.UNSIGNED_BYTE,source);this.textureCache.set(source,tex);return tex;}
+ drawImage(source,x,y,w=source.width,h=source.height){const texture=this.imageTexture(source);if(this.texture!==texture){this.flush();this.texture=texture;}const m=this.state.m,points=[[x,y,0,0],[x+w,y,1,0],[x,y+h,0,1],[x+w,y+h,1,1]];for(const i of [0,1,2,2,1,3]){const p=points[i],q=pt(m,p[0],p[1]);this.data.push(q[0],q[1],1,1,1,this.globalAlpha,p[2],p[3]);}}
+ textContext(){if(!this.measureCanvas){this.measureCanvas=document.createElement('canvas');this.measureCtx=this.measureCanvas.getContext('2d');}this.measureCtx.font=this.font;return this.measureCtx;}
+ measureText(text){return this.textContext().measureText(text);}
+ fillText(text,x,y){const key=[this.font,this.fillStyle,text].join('|');let image=this.textCache.get(key);if(!image){const metrics=this.measureText(text),size=+(this.font.match(/[\d.]+px/)||['12px'])[0].slice(0,-2),cv=document.createElement('canvas');cv.width=Math.ceil((metrics.width+8)*2);cv.height=Math.ceil((size*1.6+8)*2);const ctx=cv.getContext('2d');ctx.scale(2,2);ctx.font=this.font;ctx.fillStyle=this.fillStyle;ctx.textBaseline='middle';ctx.fillText(text,4,cv.height/4);image={cv,w:cv.width/2,h:cv.height/2,textW:metrics.width};this.textCache.set(key,image);}let px=x-4,py=y-image.h/2;if(this.textAlign==='center')px-=image.textW/2;else if(this.textAlign==='right'||this.textAlign==='end')px-=image.textW;if(this.textBaseline!=='middle')py-=image.h*.3;this.drawImage(image.cv,px,py,image.w,image.h);}
+ flush(){if(!this.data.length)return;const gl=this.gl;gl.bindBuffer(gl.ARRAY_BUFFER,this.buffer);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(this.data),gl.STREAM_DRAW);this.metrics.uploads++;this.drawBuffer(this.buffer,this.data.length/8,I(),[1,1,1,1]);this.data.length=0;}
+ drawBuffer(buffer,count,transform,tint){if(!count)return;const gl=this.gl;gl.useProgram(this.program);gl.viewport(0,0,this.canvas.width,this.canvas.height);gl.enable(gl.BLEND);gl.blendFuncSeparate(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA,gl.ONE,gl.ONE_MINUS_SRC_ALPHA);gl.bindBuffer(gl.ARRAY_BUFFER,buffer);for(let k=0;k<3;k++){gl.enableVertexAttribArray(this.attrs[k]);gl.vertexAttribPointer(this.attrs[k],[2,4,2][k],gl.FLOAT,false,32,[0,8,24][k]);}const m=transform;gl.uniformMatrix3fv(this.u.uTransform,false,[m[0],m[1],0,m[2],m[3],0,m[4],m[5],1]);gl.uniform4fv(this.u.uTint,tint);gl.uniform2f(this.u.uSize,this.canvas.width,this.canvas.height);gl.uniform1f(this.u.uTextured,this.texture?1:0);if(this.texture){gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,this.texture);gl.uniform1i(this.u.uTex,0);}const clip=this.state.clip;if(clip&&clip.rects.length){const a=clip.m,d=a[0]*a[3]-a[1]*a[2],inv=[a[3]/d,-a[1]/d,0,-a[2]/d,a[0]/d,0,(a[2]*a[5]-a[3]*a[4])/d,(a[1]*a[4]-a[0]*a[5])/d,1],rects=new Float32Array(72);clip.rects.forEach((r,i)=>rects.set([r[0],r[1],r[0]+r[2],r[1]+r[3]],i*4));gl.uniform1i(this.u.uClipCount,clip.rects.length);gl.uniform4fv(this.u.uClip,rects);gl.uniformMatrix3fv(this.u.uClipInverse,false,inv);}else gl.uniform1i(this.u.uClipCount,0);gl.drawArrays(gl.TRIANGLES,0,count);this.metrics.draws++;this.metrics.vertices+=count;}
+}
+root.GPUOverlay={Context:GPUContext,Path:GPUPath};
+})(window);

@@ -1,0 +1,63 @@
+--- a/index.html
++++ b/index.html
+@@ -4,7 +4,7 @@
+ <meta charset="utf-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+ <title>One Card Maze Helper · Infinite Walker</title>
+-<meta name="app-version" content="2026-10-19-large-view" />
++<meta name="app-version" content="2026-10-20-gpu-overlay-prototype" />
+ <meta name="description" content="Free, open-source One Card Maze helper. Upload both sides of your maze card, explore connected edges, track your path, and replay your walk in your browser." />
+ <link rel="canonical" href="https://onecardmaze-tools.github.io/" />
+ <meta property="og:title" content="One Card Maze Helper · Infinite Walker" />
+@@ -321,6 +321,8 @@
+ </section>
+ <script src="session-codec.js?v=1"></script>
+ <script src="replay-core.js?v=4"></script>
++<script src="gpu-overlay.js"></script>
++<script>window.Path2D=GPUOverlay.Path;</script>
+ <script src="trace-renderer.js?v=3"></script>
+ <script>
+ (function () {
+@@ -785,7 +787,8 @@
+ /* ============================================================
+    EVENT REVIEW — presentation never edits the recorded points.
+    ============================================================ */
+-const replayCanvas = $("replayLayer"), replayCtx = replayCanvas.getContext("2d");
++const replayCanvas = $("replayLayer"), replayCtx = new GPUOverlay.Context(replayCanvas);
++window.gpuOverlay=replayCtx;
+ const traceCanvas=$("traceLayer"),traceCtx=traceCanvas.getContext("2d");
+ let staticTraceKey="";
+ const coarsePointer=window.matchMedia('(pointer:coarse)').matches;
+@@ -1135,11 +1138,14 @@
+   return progressCache.partial;
+ }
+ function drawReplayLayer() {
+-  drawStaticTrace();
+   const g = replayCtx;
+   g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, replayCanvas.width, replayCanvas.height);
+   if (!S.ready) return;
+   g.scale(dpr, dpr); g.save(); worldTransform(g);
++  const a=S.anchor;
++  g.strokeStyle='rgba(79,209,197,.55)';g.lineWidth=1/S.zoom;
++  g.strokeRect(a.i*S.W+1/S.zoom,a.j*S.H+1/S.zoom,S.W-2/S.zoom,S.H-2/S.zoom);
++  drawTrace(g);
+   const width=Math.min(S.W,S.H)*CFG.trailWidthFrac;
+   if (S.review && S.trailOn && S.trail.length > 1) {
+     const partial=partialTrace();
+@@ -1673,6 +1679,7 @@
+     gl.drawArrays(gl.TRIANGLES, 0, 6);
+   }
+   drawReplayLayer();
++  replayCtx.flush();
+ }
+ 
+ /* ============================================================
+@@ -2158,7 +2165,7 @@
+   c.height = Math.max(1, Math.floor(view.h * dpr));
+   c.style.width = view.w + "px"; c.style.height = view.h + "px";
+   replayCanvas.width = c.width; replayCanvas.height = c.height;
+-  traceCanvas.width=c.width;traceCanvas.height=c.height;staticTraceKey="";
++  traceCanvas.width=1;traceCanvas.height=1;traceCanvas.style.display="none";staticTraceKey="";
+   gl.viewport(0, 0, c.width, c.height);
+   if (S.ready) clampZoom();
+   invalidate();

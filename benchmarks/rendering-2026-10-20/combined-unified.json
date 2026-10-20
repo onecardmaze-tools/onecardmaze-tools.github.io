@@ -1,0 +1,257 @@
+{
+  "root": "/private/tmp/ocm-combined-unified-20261020",
+  "results": [
+    {
+      "mode": "full",
+      "workload": "rotate",
+      "viewport": [
+        1504,
+        1492
+      ],
+      "dpr": 2,
+      "backing": [
+        3008,
+        2984
+      ],
+      "vertices": 48,
+      "projectedSegments": 235,
+      "canonicalStamps": 28,
+      "canonicalChevrons": 28,
+      "tiles": 9,
+      "zoom": 0.888095238095238,
+      "renderer": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) UHD Graphics 630, Unspecified Version)",
+      "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+      "traceSurface": {
+        "x": -750,
+        "y": -1050,
+        "width": 2250,
+        "height": 3150,
+        "rasterRatio": 1.6918190621911324,
+        "cssW": 1997.8495783245562,
+        "cssH": 2796.9894096543785,
+        "pixelW": 3380,
+        "pixelH": 4732,
+        "light": "-1,-1,0.50;-1,0,0.50;-1,1,0.50;0,-1,0.50;0,0,1.00;0,1,0.50;1,-1,0.50;1,0,0.50;1,1,0.50"
+      },
+      "cpuMs": {
+        "n": 120,
+        "median": 3.200000047683716,
+        "p95": 4.899999976158142,
+        "max": 6.100000023841858,
+        "mean": 3.330833331743876
+      },
+      "rafMs": {
+        "n": 120,
+        "median": 50.100000000000136,
+        "p95": 66.60000000000036,
+        "max": 67.09999999999945,
+        "mean": 52.08666666666666
+      },
+      "glGpuMs": {
+        "n": 117,
+        "median": 43.32375,
+        "p95": 46.617,
+        "max": 49.347999,
+        "mean": 43.46230938461539
+      },
+      "overlayGpuMs": {
+        "n": 0,
+        "median": null,
+        "p95": null,
+        "max": null,
+        "mean": null
+      },
+      "overlayDisjoint": null,
+      "overlayBefore": {
+        "frames": 2,
+        "draws": 106,
+        "vertices": 99072,
+        "uploads": 85,
+        "cachedDraws": 30,
+        "cacheHits": 21,
+        "cacheMisses": 9
+      },
+      "overlayAfter": {
+        "frames": 142,
+        "draws": 6233,
+        "vertices": 6591384,
+        "uploads": 4252,
+        "cachedDraws": 2130,
+        "cacheHits": 1981,
+        "cacheMisses": 149
+      },
+      "disjoint": false,
+      "staticClears": 0,
+      "over25ms": 120,
+      "round": 0
+    },
+    {
+      "mode": "full",
+      "workload": "walk",
+      "viewport": [
+        1504,
+        1492
+      ],
+      "dpr": 2,
+      "backing": [
+        3008,
+        2984
+      ],
+      "vertices": 48,
+      "projectedSegments": 235,
+      "canonicalStamps": 28,
+      "canonicalChevrons": 28,
+      "tiles": 9,
+      "zoom": 0.888095238095238,
+      "renderer": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) UHD Graphics 630, Unspecified Version)",
+      "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+      "traceSurface": {
+        "x": -750,
+        "y": -1050,
+        "width": 2250,
+        "height": 3150,
+        "rasterRatio": 1.6918190621911324,
+        "cssW": 1997.8495783245562,
+        "cssH": 2796.9894096543785,
+        "pixelW": 3380,
+        "pixelH": 4732,
+        "light": "-1,-1,0.50;-1,0,0.50;-1,1,0.50;0,-1,0.50;0,0,1.00;0,1,0.50;1,-1,0.50;1,0,0.50;1,1,0.50"
+      },
+      "cpuMs": {
+        "n": 120,
+        "median": 5.599999964237213,
+        "p95": 6.600000023841858,
+        "max": 8.400000035762787,
+        "mean": 5.608333337803682
+      },
+      "rafMs": {
+        "n": 120,
+        "median": 50.100000000000364,
+        "p95": 66.90000000000009,
+        "max": 99.79999999999995,
+        "mean": 52.77833333333334
+      },
+      "glGpuMs": {
+        "n": 117,
+        "median": 43.802583,
+        "p95": 47.080416,
+        "max": 48.165832,
+        "mean": 44.04511057264955
+      },
+      "overlayGpuMs": {
+        "n": 0,
+        "median": null,
+        "p95": null,
+        "max": null,
+        "mean": null
+      },
+      "overlayDisjoint": null,
+      "overlayBefore": {
+        "frames": 2,
+        "draws": 106,
+        "vertices": 99072,
+        "uploads": 85,
+        "cachedDraws": 30,
+        "cacheHits": 21,
+        "cacheMisses": 9
+      },
+      "overlayAfter": {
+        "frames": 142,
+        "draws": 7944,
+        "vertices": 7391340,
+        "uploads": 5976,
+        "cachedDraws": 2408,
+        "cacheHits": 1968,
+        "cacheMisses": 440
+      },
+      "disjoint": false,
+      "staticClears": 0,
+      "over25ms": 119,
+      "round": 0
+    },
+    {
+      "mode": "full",
+      "workload": "replay",
+      "viewport": [
+        1504,
+        1492
+      ],
+      "dpr": 2,
+      "backing": [
+        3008,
+        2984
+      ],
+      "vertices": 48,
+      "projectedSegments": 235,
+      "canonicalStamps": 28,
+      "canonicalChevrons": 28,
+      "tiles": 9,
+      "zoom": 0.888095238095238,
+      "renderer": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) UHD Graphics 630, Unspecified Version)",
+      "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/155.0.0.0 Safari/537.36",
+      "traceSurface": {
+        "x": -750,
+        "y": -1050,
+        "width": 2250,
+        "height": 3150,
+        "rasterRatio": 1.6918190621911324,
+        "cssW": 1997.8495783245562,
+        "cssH": 2796.9894096543785,
+        "pixelW": 3380,
+        "pixelH": 4732,
+        "light": "-1,-1,0.50;-1,0,0.50;-1,1,0.50;0,-1,0.50;0,0,1.00;0,1,0.50;1,-1,0.50;1,0,0.50;1,1,0.50"
+      },
+      "cpuMs": {
+        "n": 120,
+        "median": 5.699999988079071,
+        "p95": 7.200000047683716,
+        "max": 7.800000011920929,
+        "mean": 5.650833333532016
+      },
+      "rafMs": {
+        "n": 120,
+        "median": 50.100000000000364,
+        "p95": 67.09999999999945,
+        "max": 67.30000000000018,
+        "mean": 53.33333333333333
+      },
+      "glGpuMs": {
+        "n": 117,
+        "median": 44.130834,
+        "p95": 49.152666,
+        "max": 56.341666,
+        "mean": 44.1290552051282
+      },
+      "overlayGpuMs": {
+        "n": 0,
+        "median": null,
+        "p95": null,
+        "max": null,
+        "mean": null
+      },
+      "overlayDisjoint": null,
+      "overlayBefore": {
+        "frames": 2,
+        "draws": 106,
+        "vertices": 99072,
+        "uploads": 85,
+        "cachedDraws": 30,
+        "cacheHits": 21,
+        "cacheMisses": 9
+      },
+      "overlayAfter": {
+        "frames": 142,
+        "draws": 7666,
+        "vertices": 6470892,
+        "uploads": 6109,
+        "cachedDraws": 1990,
+        "cacheHits": 1557,
+        "cacheMisses": 433
+      },
+      "disjoint": false,
+      "staticClears": 0,
+      "over25ms": 120,
+      "round": 0
+    }
+  ]
+}

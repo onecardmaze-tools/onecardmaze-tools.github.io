@@ -1,0 +1,241 @@
+--- a/index.html
++++ b/index.html
+@@ -424,7 +424,7 @@
+                  powerPreference: window.matchMedia('(pointer:coarse)').matches && window.innerWidth<900 ? "low-power" : "default" };
+ let gl = null, isGL2 = false, contextLost = false;
+ try {
+-  gl = c.getContext("webgl2", glOpts);
++  gl = c.getContext("webgl2", {...glOpts, depth:true, stencil:true});
+   if (gl) isGL2 = true; else gl = c.getContext("webgl", glOpts);
+ } catch (e) { gl = null; }
+ if (!gl) { $("err").classList.remove("hidden"); return; }
+@@ -582,6 +582,7 @@
+ }
+ function uploadArt() {
+   artVersion++;lastArtKey="";
++  cachedArtKey="";
+   // Keep the CPU atlas current during context loss; restoration uploads it.
+   if (contextLost) return;
+   if (artTex) gl.deleteTexture(artTex);
+@@ -777,13 +778,70 @@
+ /* ============================================================
+    EVENT REVIEW — presentation never edits the recorded points.
+    ============================================================ */
+-const foreground = GPURenderer.create($("replayLayer"), {
++const foregroundOptions = {
+   invalidate,
+   onError(error) {
+     $("errMsg").textContent = "The overlay renderer could not recover: " + error;
+     $("err").classList.remove("hidden");
+   }
+-});
++};
++let foreground, sharedContext=false;
++if(isGL2) {
++  try {
++    foreground=GPURenderer.create(c,{...foregroundOptions,gl,preserveColor:true});
++    sharedContext=true;
++    $("replayLayer").style.display="none";
++  } catch(error) {
++    // A missing analytic capability still has the existing independent backend.
++    foreground=GPURenderer.create($("replayLayer"),foregroundOptions);
++  }
++} else foreground=GPURenderer.create($("replayLayer"),foregroundOptions);
++let artFramebuffer=null, artColorBuffer=null, artVertexArray=null;
++let artSurfaceWidth=0, artSurfaceHeight=0, cachedArtKey="";
++function releaseArtSurface(abandon=false) {
++  if(!abandon) {
++    if(artFramebuffer)gl.deleteFramebuffer(artFramebuffer);
++    if(artColorBuffer)gl.deleteTexture(artColorBuffer);
++    if(artVertexArray)gl.deleteVertexArray(artVertexArray);
++  }
++  artFramebuffer=artColorBuffer=artVertexArray=null;
++  artSurfaceWidth=artSurfaceHeight=0;
++  lastArtKey=cachedArtKey="";
++}
++function ensureArtSurface() {
++  if(!sharedContext)return;
++  if(artFramebuffer&&artSurfaceWidth===c.width&&artSurfaceHeight===c.height)return;
++  releaseArtSurface();
++  try {
++    artColorBuffer=gl.createTexture();
++    artFramebuffer=gl.createFramebuffer();
++    artVertexArray=gl.createVertexArray();
++    if(!artColorBuffer||!artFramebuffer||!artVertexArray)throw Error("Could not allocate the shared artwork surface");
++    gl.activeTexture(gl.TEXTURE0);
++    gl.bindTexture(gl.TEXTURE_2D,artColorBuffer);
++    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.NEAREST);
++    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.NEAREST);
++    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
++    gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
++    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA8,c.width,c.height,0,gl.RGBA,gl.UNSIGNED_BYTE,null);
++    gl.bindFramebuffer(gl.FRAMEBUFFER,artFramebuffer);
++    gl.framebufferTexture2D(gl.FRAMEBUFFER,gl.COLOR_ATTACHMENT0,gl.TEXTURE_2D,artColorBuffer,0);
++    if(gl.checkFramebufferStatus(gl.FRAMEBUFFER)!==gl.FRAMEBUFFER_COMPLETE)throw Error("The shared artwork surface is incomplete");
++    artSurfaceWidth=c.width;artSurfaceHeight=c.height;
++    gl.bindFramebuffer(gl.FRAMEBUFFER,null);
++  } catch(error) {
++    releaseArtSurface();
++    gl.bindFramebuffer(gl.FRAMEBUFFER,null);
++    throw error;
++  }
++}
++function presentArtSurface() {
++  gl.bindFramebuffer(gl.READ_FRAMEBUFFER,artFramebuffer);
++  gl.bindFramebuffer(gl.DRAW_FRAMEBUFFER,null);
++  gl.blitFramebuffer(0,0,c.width,c.height,0,0,c.width,c.height,gl.COLOR_BUFFER_BIT,gl.NEAREST);
++  gl.bindFramebuffer(gl.FRAMEBUFFER,null);
++}
++
+ const replayCanvas = foreground.canvas, replayCtx = foreground.context;
+ const Path2D = foreground.Path;
+ // Kept for old recording/benchmark readers; no giant world-space bitmap exists.
+@@ -1600,7 +1658,12 @@
+ }
+ 
+ function render() {
+-  if (contextLost) return;
++  if (contextLost || foreground.mode==="webgl-lost") return;
++  if(sharedContext) {
++    gl.bindFramebuffer(gl.FRAMEBUFFER,null);
++    gl.disable(gl.DEPTH_TEST);gl.disable(gl.STENCIL_TEST);
++    gl.colorMask(true,true,true,true);
++  }
+   if (!S.ready) {
+     gl.viewport(0, 0, c.width, c.height);
+     gl.clearColor(BG[0], BG[1], BG[2], 1);
+@@ -1636,8 +1699,21 @@
+ 
+   const artKey=[artVersion,c.width,c.height,S.cam.x,S.cam.y,S.zoom,S.rot,
+     ...cardIdx,...cardOut,...cardSeam,...cardBright,...cardAmt].join(',');
+-  if(artKey!==lastArtKey) {
+-    lastArtKey=artKey;
++  // Moving artwork draws directly to the default framebuffer: no full-screen
++  // copy is added to rotation/panning. Only a repeated key takes the cached
++  // path, lazily constructing the pristine artwork before drawing the overlay.
++  const artworkChanged=artKey!==lastArtKey;
++  const useCachedArtwork=sharedContext&&!artworkChanged;
++  if(useCachedArtwork)ensureArtSurface();
++  if(artworkChanged||(useCachedArtwork&&cachedArtKey!==artKey)) {
++    if(sharedContext) {
++      if(!artVertexArray) {
++        artVertexArray=gl.createVertexArray();
++        if(!artVertexArray)throw Error("Could not allocate the artwork vertex array");
++      }
++      gl.bindFramebuffer(gl.FRAMEBUFFER,useCachedArtwork?artFramebuffer:null);
++      gl.bindVertexArray(artVertexArray);
++    }
+     gl.viewport(0, 0, c.width, c.height);
+     gl.bindBuffer(gl.ARRAY_BUFFER,quadBuf);
+     gl.enableVertexAttribArray(0);
+@@ -1679,7 +1755,10 @@
+       gl.drawArrays(gl.TRIANGLES,0,6);
+     }
+     gl.disable(gl.BLEND);
+-  }
++    if(useCachedArtwork)cachedArtKey=artKey;
++  }
++  lastArtKey=artKey;
++  if(useCachedArtwork)presentArtSurface();
+   drawReplayLayer();
+   foreground.flush();
+ }
+@@ -1878,18 +1957,19 @@
+ c.addEventListener("webglcontextlost", (e) => {
+   e.preventDefault();
+   contextLost = true;
++  if(sharedContext)releaseArtSurface(true);
+   // Every object belongs to the lost context; never reuse stale handles.
+   prog = bgProg = quadBuf = artTex = null;
+-  lastArtKey = "";
++  lastArtKey = cachedArtKey = "";
+ });
+ c.addEventListener("webglcontextrestored", () => {
+   try {
+     buildProgram();
+     contextLost = false;
+     if (S.ready) uploadArt();
+-    lastArtKey = "";
++    lastArtKey = cachedArtKey = "";
+     traceCache = null;
+-    $("err").classList.add("hidden");
++    if(!foreground.error)$("err").classList.add("hidden");
+     invalidate();
+   } catch (error) {
+     contextLost = true;
+@@ -2179,9 +2259,10 @@
+   }
+   c.width = Math.max(1, Math.floor(view.w * dpr));
+   c.height = Math.max(1, Math.floor(view.h * dpr));
+-  lastArtKey=""; // Assigning even the same canvas size clears its drawing buffer.
++  lastArtKey=cachedArtKey=""; // Assigning even the same canvas size clears its drawing buffer.
+   c.style.width = view.w + "px"; c.style.height = view.h + "px";
+-  replayCanvas.width = c.width; replayCanvas.height = c.height;
++  if(replayCanvas!==c){replayCanvas.width=c.width;replayCanvas.height=c.height;}
++  if(sharedContext)releaseArtSurface(contextLost);
+   foreground.resize();
+   gl.viewport(0, 0, c.width, c.height);
+   if (S.ready) clampZoom();
+--- a/gpu-renderer.js
++++ b/gpu-renderer.js
+@@ -159,6 +159,7 @@
+   class GPUContext {
+     constructor(canvas, config = {}) {
+       this.canvas = canvas;
++      this.preserveColor = !!config.preserveColor;
+       const options = {
+         alpha: true,
+         antialias: false,
+@@ -168,7 +169,7 @@
+         preserveDrawingBuffer: false,
+       };
+       const gl = (this.gl =
+-        canvas.getContext("webgl2", options) ||
++        config.gl || canvas.getContext("webgl2", options) ||
+         canvas.getContext("webgl", options));
+       if (!gl) throw Error("GPU overlay WebGL unavailable");
+       this.pendingShaders = new Set();
+@@ -182,6 +183,10 @@
+         this.webgl2 =
+           typeof WebGL2RenderingContext !== "undefined" &&
+           gl instanceof WebGL2RenderingContext;
++        if (config.gl && this.webgl2) {
++          this.vertexArray = gl.createVertexArray();
++          gl.bindVertexArray(this.vertexArray);
++        }
+         if (!this.webgl2 && !gl.getExtension("EXT_frag_depth"))
+           throw Error("Analytic path renderer requires EXT_frag_depth");
+         const shader = (type, src) => {
+@@ -357,6 +362,7 @@
+         }
+         this.pathBuffers.clear();
+       }
++      if (this.vertexArray) gl.deleteVertexArray(this.vertexArray);
+       if (this.buffer) gl.deleteBuffer(this.buffer);
+       if (this.program) gl.deleteProgram(this.program);
+       if (this.strokeProgram) gl.deleteProgram(this.strokeProgram.program);
+@@ -491,12 +497,14 @@
+       this.texture = null;
+       const gl = this.gl;
+       gl.viewport(0, 0, this.canvas.width, this.canvas.height);
++      if(this.vertexArray)gl.bindVertexArray(this.vertexArray);
++      if(this.preserveColor)gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+       gl.clearColor(0, 0, 0, 0);
+       gl.clearStencil(0);
+       gl.clearDepth(0);
+       gl.depthMask(true);
+       gl.clear(
+-        gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT | gl.DEPTH_BUFFER_BIT,
++        (this.preserveColor ? 0 : gl.COLOR_BUFFER_BIT) | gl.STENCIL_BUFFER_BIT | gl.DEPTH_BUFFER_BIT,
+       );
+       this.strokeId = 0;
+       this.metrics.frames++;
+@@ -1235,6 +1243,8 @@
+       context = new GPUContext(currentCanvas, options);
+       gpu = true;
+     } catch (error) {
++      // The owner keeps a shared stage; never replace it with a 2D canvas.
++      if(options.gl)throw error;
+       // A canvas that has acquired any GL context cannot subsequently acquire
+       // Canvas2D. Replace only during construction, before consumers bind it.
+       const replacement = currentCanvas.cloneNode(false);

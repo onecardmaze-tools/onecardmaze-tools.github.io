@@ -4,7 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>One Card Maze Helper · Infinite Walker</title>
-<meta name="app-version" content="2026-10-19-large-view" />
+<meta name="app-version" content="2026-10-19-retained-gpu" />
 <meta name="description" content="Free, open-source One Card Maze helper. Upload both sides of your maze card, explore connected edges, track your path, and replay your walk in your browser." />
 <link rel="canonical" href="https://onecardmaze-tools.github.io/" />
 <meta property="og:title" content="One Card Maze Helper · Infinite Walker" />
@@ -111,7 +111,7 @@
   #help ul{margin:12px 0 0;padding-left:18px;color:var(--muted);font-size:13px;line-height:1.9}
   #help b{color:var(--ink)}
 
-  #traceLayer,#replayLayer{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
+  #replayLayer{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
   [hidden]{display:none!important}
   #replayReadout{pointer-events:auto;align-self:center;width:min(620px,100%);box-sizing:border-box;
     border:1px solid rgba(79,209,197,.4);border-radius:16px;padding:13px 18px;
@@ -176,7 +176,6 @@
 </head>
 <body>
 <canvas id="stage" aria-label="Maze map"></canvas>
-<canvas id="traceLayer" aria-hidden="true"></canvas>
 <canvas id="replayLayer" aria-hidden="true"></canvas>
 
 <div id="hud">
@@ -322,6 +321,7 @@
 <script src="session-codec.js?v=1"></script>
 <script src="replay-core.js?v=4"></script>
 <script src="trace-renderer.js?v=3"></script>
+<script src="gpu-renderer.js?v=1"></script>
 <script>
 (function () {
 "use strict";
@@ -339,7 +339,8 @@
    view animates the next card into the middle.
 
    WebGL samples the artwork atlas. TraceRenderer retains exact polylines and
-   projects them through sheet symmetries onto a Canvas2D vector overlay.
+   projects them through sheet symmetries into retained GPU geometry. Analytic
+   edge coverage preserves antialiasing without a multisampled viewport.
    ReplayCore supplies one shared seam geometry and distance-based timeline.
    ============================================================ */
 
@@ -421,162 +422,151 @@ const c = $("stage");
 const glOpts = { alpha: false, antialias: false, depth: false, stencil: false,
                  premultipliedAlpha: false, preserveDrawingBuffer: false,
                  powerPreference: window.matchMedia('(pointer:coarse)').matches && window.innerWidth<900 ? "low-power" : "default" };
-let gl = null, isGL2 = false;
+let gl = null, isGL2 = false, contextLost = false;
 try {
   gl = c.getContext("webgl2", glOpts);
   if (gl) isGL2 = true; else gl = c.getContext("webgl", glOpts);
 } catch (e) { gl = null; }
 if (!gl) { $("err").classList.remove("hidden"); return; }
 
-const VS = `
+// Background shading is independent of the number of cards. Card lookup and
+// the inverse camera transform no longer run for every device pixel.
+const BGVS = `
 attribute vec2 aPos;
-varying vec2 vUv;
+varying OCM_PRECISION vec2 vUv;
 void main() {
-  vUv = vec2(aPos.x * 0.5 + 0.5, 0.5 - aPos.y * 0.5);   // uv.y = 0 at the top
+  vUv = vec2(aPos.x * 0.5 + 0.5, 0.5 - aPos.y * 0.5);
   gl_Position = vec4(aPos, 0.0, 1.0);
 }`;
-
+const BGFS = `
+precision OCM_PRECISION float;
+varying OCM_PRECISION vec2 vUv;
+uniform vec2 uView;
+uniform vec3 uBg;
+void main() {
+  vec2 dd = vUv - 0.5;
+  float rr = length(dd * vec2(uView.x / max(uView.y, 1.0), 1.0));
+  gl_FragColor = vec4(uBg * (1.0 - 0.45 * smoothstep(0.15, 0.95, rr)), 1.0);
+}`;
+const VS = `
+attribute vec2 aPos;
+varying OCM_PRECISION vec2 vLocal;
+varying OCM_PRECISION vec2 vArt;
+uniform vec2 uView;
+uniform vec2 uCam;
+uniform OCM_PRECISION float uZoom;
+uniform vec2 uRotation; // cos, sin; once per frame on the CPU
+uniform OCM_PRECISION vec2 uCard;
+uniform vec2 uCIdx;
+void main() {
+  vLocal = aPos * 0.5 + 0.5;
+  float p = mod(uCIdx.x + uCIdx.y, 2.0);
+  float flip = mod(uCIdx.y, 2.0);
+  vec2 art = mix(vLocal, 1.0-vLocal, flip);
+  vArt = vec2(art.x, (art.y+p)*0.5);
+  vec2 d = ((uCIdx+vLocal)*uCard-uCam)*uZoom;
+  vec2 screen = vec2(uRotation.x*d.x-uRotation.y*d.y,
+                     uRotation.y*d.x+uRotation.x*d.y);
+  gl_Position = vec4(screen.x*2.0/uView.x, -screen.y*2.0/uView.y, 0.0, 1.0);
+}`;
 const FS = `
-precision highp float;
-#define NCARD 18
-varying vec2 vUv;
-
-uniform vec2  uView;        // canvas size, CSS px
-uniform vec3  uBg;
-uniform vec2  uCam;         // camera, world px
-uniform float uZoom;
-uniform float uRot;
-uniform vec2  uCard;        // W, H
-uniform vec2  uStep;        // stepX, stepY (== card size: tiles butt edge-to-edge)
-/* The cards on screen: the one you are standing on and all eight around it —
-   the other side across each edge, the same side turned 180 in each corner —
-   plus, briefly, any card that has just been handed the middle, fading out
-   rather than vanishing. */
-uniform vec2  uCIdx[NCARD];      // tile index of each card
-uniform vec4  uCOut[NCARD];      // outer ramps: that card's own silhouette fading into the dark
-uniform vec4  uCSeam[NCARD];     // the shared edge(s), where the faint fold line lives
-uniform float uCBright[NCARD];   // how far "over there" each card reads
-uniform float uCAmt[NCARD];      // 0..1: a card leaving the set fades away
+precision OCM_PRECISION float;
+varying OCM_PRECISION vec2 vLocal;
+varying OCM_PRECISION vec2 vArt;
+uniform vec4 uEdgePxScale;
+uniform vec4 uCOutScale;
+uniform vec4 uCOutBias;
+uniform vec4 uCSeamScale;
+uniform vec4 uCSeamBias;
+uniform vec4 uBorderEnabled;
+uniform vec2 uColorMix;
+uniform float uCAmt;
 uniform float uSeamDark;
-uniform sampler2D uArt;                  // atlas: W x 2H  (front on top, back below)
-
-vec2 gWorld;
-
-float edgeMask(vec2 uv, vec4 r, vec2 size) {
-  float a = 1.0;
-  if (r.x > 0.0) a *= clamp(uv.x / (r.x / size.x), 0.0, 1.0);
-  if (r.y > 0.0) a *= clamp((1.0 - uv.x) / (r.y / size.x), 0.0, 1.0);
-  if (r.z > 0.0) a *= clamp(uv.y / (r.z / size.y), 0.0, 1.0);
-  if (r.w > 0.0) a *= clamp((1.0 - uv.y) / (r.w / size.y), 0.0, 1.0);
-  return a;
-}
-
-vec3 brightSat(vec3 col, float b, float s) {
-  float l = dot(col, vec3(0.2126, 0.7152, 0.0722));
-  return mix(vec3(l), col, s) * b;
-}
-
-/* One card. alpha = coverage; col = its artwork colour. */
-void tileLayer(vec2 idx, vec4 outer, vec4 seam, float vis, float bright, float sat,
-               out vec3 col, out float alpha) {
-  float p = mod(idx.x + idx.y, 2.0);                       // 0 = front, 1 = back
-  vec2 local = (gWorld - idx * uStep) / uCard;             // 0..1 across the card
-  // Most of the cards in the list do not cover this pixel at all: bail out before
-  // sampling the artwork. (The small slack keeps the seam between two cards
-  // from ever falling between them.)
-  if (local.x < -0.002 || local.x > 1.002 ||
-      local.y < -0.002 || local.y > 1.002) { col = vec3(0.0); alpha = 0.0; return; }
-  float inside = step(0.0, local.x) * step(local.x, 1.0) *
-                 step(0.0, local.y) * step(local.y, 1.0);
-  // The card is a physical sheet: crossing an edge folds it over that edge, so a
-  // tile shows its face turned through 180 when its row is odd. (fx and fy both
-  // reduce to j&1; matching the canonical geometry in ReplayCore.)
-  float fx = mod(mod(idx.x, 2.0) + p, 2.0);                // 1 => mirror x
-  float fy = mod(idx.y, 2.0);                              // 1 => mirror y
-  vec2 map = vec2(mix(local.x, 1.0 - local.x, fx),
-                  mix(local.y, 1.0 - local.y, fy));
-  vec2 uv = vec2(map.x, (map.y + p) * 0.5);                // atlas: front top, back bottom
-  float om = edgeMask(local, outer, uCard);                // the card's own silhouette
-  vec3 art = texture2D(uArt, uv).rgb;
-  // faint fold line where this card meets its neighbour -- on the artwork only,
-  // so the trail crosses the seam unbroken
-  art *= mix(1.0 - uSeamDark, 1.0, edgeMask(local, seam, uCard));
-  // A real border in CSS pixels, independent of printed artwork and scan resolution.
-  // Only the artwork is darkened: an unconstrained trail can cross it continuously.
-  vec4 edgePx = vec4(local.x * uCard.x, (1.0-local.x) * uCard.x,
-                     local.y * uCard.y, (1.0-local.y) * uCard.y) * uZoom;
-  float border = 0.0;
-  if (seam.x > .001) border = max(border, 1.0-smoothstep(1.1,1.8,edgePx.x));
-  if (seam.y > .001) border = max(border, 1.0-smoothstep(1.1,1.8,edgePx.y));
-  if (seam.z > .001) border = max(border, 1.0-smoothstep(1.1,1.8,edgePx.z));
-  if (seam.w > .001) border = max(border, 1.0-smoothstep(1.1,1.8,edgePx.w));
-  art = mix(art, vec3(.012,.018,.026), border * .96);
-  col = brightSat(art, bright, sat);
-  alpha = inside * om * vis;
+uniform sampler2D uArt;
+// Ramps are normalized on the CPU once per card. Disabled edges use a unit
+// bias, so the hot fragment path has neither uniform divisions nor branches.
+float edgeMask(vec4 edge, vec4 scale, vec4 bias) {
+  vec4 ramp = clamp(edge * scale + bias, 0.0, 1.0);
+  return ramp.x * ramp.y * ramp.z * ramp.w;
 }
 
 void main() {
-  vec2 sp = vUv * uView;                                   // CSS px, y down
-  vec2 d  = sp - uView * 0.5;
-  float cr = cos(uRot), sr = sin(uRot);
-  gWorld = vec2(cr * d.x + sr * d.y, -sr * d.x + cr * d.y) / uZoom + uCam;
-
-  // background: dark with a soft vignette
-  vec2 dd = vUv - 0.5;
-  float rr = length(dd * vec2(uView.x / max(uView.y, 1.0), 1.0));
-  vec3 col = uBg * (1.0 - 0.45 * smoothstep(0.15, 0.95, rr));
-
-  vec3 ck; float ak;
-
-  vec2 tile=floor(gWorld/uStep);
-  for (int k = 0; k < NCARD; k++) {
-    float amt = uCAmt[k];
-    if (amt > 0.004 && all(equal(uCIdx[k],tile))) {
-      float b = uCBright[k];
-      tileLayer(uCIdx[k], uCOut[k], uCSeam[k], amt, b, mix(0.40, 1.0, b), ck, ak);
-      col = mix(col, ck, ak);
-      break;
-    }
-  }
-
-  gl_FragColor = vec4(col, 1.0);
+  vec4 edge = vec4(vLocal.x, 1.0-vLocal.x, vLocal.y, 1.0-vLocal.y);
+  vec3 art = texture2D(uArt, vArt).rgb;
+  art *= mix(1.0-uSeamDark, 1.0, edgeMask(edge, uCSeamScale, uCSeamBias));
+  vec4 edgePx = edge * uEdgePxScale;
+  vec4 borders = (1.0-smoothstep(vec4(1.1), vec4(1.8), edgePx)) * uBorderEnabled;
+  float border = max(max(borders.x, borders.y), max(borders.z, borders.w));
+  art = mix(art, vec3(.012,.018,.026), border*.96);
+  float luma = dot(art, vec3(.2126, .7152, .0722));
+  vec3 col = art * uColorMix.x + vec3(luma * uColorMix.y);
+  gl_FragColor = vec4(col, edgeMask(edge, uCOutScale, uCOutBias)*uCAmt);
 }`;
-
-const UNIFORMS = ["uView","uBg","uCam","uZoom","uRot","uCard","uStep",
-  "uCIdx","uCOut","uCSeam","uCBright","uCAmt","uSeamDark",
-  "uArt"];
-
-let prog = null, quadBuf = null, aPos = -1;
-const U = {};
-/* one entry per card on screen: the middle card plus its four neighbours */
-// 18 = two overlapping 3x3 blocks (14) plus headroom for a quick reverse on a seam
+const UNIFORMS = ["uView","uCam","uZoom","uRotation","uCard",
+  "uCIdx","uCOutScale","uCOutBias","uCSeamScale","uCSeamBias",
+  "uBorderEnabled","uColorMix","uEdgePxScale","uCAmt","uSeamDark","uArt"];
+let prog = null, bgProg = null, quadBuf = null, cardFloatPrecision = 0;
+const U = {}, BU = {};
 const NCARD = 18;
 const cardIdx = new Float32Array(NCARD * 2);
 const cardOut = new Float32Array(NCARD * 4);
 const cardSeam = new Float32Array(NCARD * 4);
 const cardBright = new Float32Array(NCARD);
 const cardAmt = new Float32Array(NCARD);
-
+// Two tiny programs share one immutable quad. No per-pixel card search, camera
+// inversion, or card-count-dependent loop is left in the fragment shader.
 function buildProgram() {
-  const mk = (type, src) => {
-    const s = gl.createShader(type);
-    gl.shaderSource(s, src); gl.compileShader(s);
-    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
-    return s;
+  const precision = gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT);
+  cardFloatPrecision = precision ? precision.precision : 0;
+  const prefix = "#define OCM_PRECISION " + (precision && precision.precision ? "highp" : "mediump") + "\n";
+  const link = (vs, fs) => {
+    const shaders = [], program = gl.createProgram();
+    if (!program) throw new Error("Could not allocate a card program");
+    try {
+      for (const [type, source] of [[gl.VERTEX_SHADER, vs], [gl.FRAGMENT_SHADER, fs]]) {
+        const shader = gl.createShader(type);
+        if (!shader) throw new Error("Could not allocate a card shader");
+        shaders.push(shader);
+        gl.shaderSource(shader, prefix + source);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
+          throw new Error(gl.getShaderInfoLog(shader));
+        gl.attachShader(program, shader);
+      }
+      gl.bindAttribLocation(program, 0, "aPos");
+      gl.linkProgram(program);
+      if (!gl.getProgramParameter(program, gl.LINK_STATUS))
+        throw new Error(gl.getProgramInfoLog(program));
+      return program;
+    } catch (error) {
+      gl.deleteProgram(program);
+      throw error;
+    } finally {
+      for (const shader of shaders) gl.deleteShader(shader);
+    }
   };
-  const p = gl.createProgram();
-  gl.attachShader(p, mk(gl.VERTEX_SHADER, VS));
-  gl.attachShader(p, mk(gl.FRAGMENT_SHADER, FS));
-  gl.linkProgram(p);
-  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
-  prog = p;
-  aPos = gl.getAttribLocation(p, "aPos");
-  for (let n = 0; n < UNIFORMS.length; n++) U[UNIFORMS[n]] = gl.getUniformLocation(p, UNIFORMS[n]);
-  if (!quadBuf) {
-    quadBuf = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]), gl.STATIC_DRAW);
+  let nextProgram = null, nextBackground = null, nextQuad = null;
+  try {
+    nextProgram = link(VS, FS);
+    nextBackground = link(BGVS, BGFS);
+    nextQuad = gl.createBuffer();
+    if (!nextQuad) throw new Error("Could not allocate the card geometry");
+    gl.bindBuffer(gl.ARRAY_BUFFER, nextQuad);
+    gl.bufferData(gl.ARRAY_BUFFER,
+      new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]), gl.STATIC_DRAW);
+  } catch (error) {
+    if (nextProgram) gl.deleteProgram(nextProgram);
+    if (nextBackground) gl.deleteProgram(nextBackground);
+    if (nextQuad) gl.deleteBuffer(nextQuad);
+    throw error;
   }
+  // Install only a complete resource set; rebuilding never leaks old programs.
+  if (prog) gl.deleteProgram(prog);
+  if (bgProg) gl.deleteProgram(bgProg);
+  if (quadBuf) gl.deleteBuffer(quadBuf);
+  prog = nextProgram; bgProg = nextBackground; quadBuf = nextQuad;
+  for (const name of UNIFORMS) U[name] = gl.getUniformLocation(prog, name);
+  for (const name of ["uView", "uBg"]) BU[name] = gl.getUniformLocation(bgProg, name);
 }
 try { buildProgram(); } catch (e) {
   $("errMsg").textContent = "The card shader failed to build: " + e;
@@ -592,6 +582,8 @@ function pixelStore() {
 }
 function uploadArt() {
   artVersion++;lastArtKey="";
+  // Keep the CPU atlas current during context loss; restoration uploads it.
+  if (contextLost) return;
   if (artTex) gl.deleteTexture(artTex);
   artTex = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, artTex);
@@ -785,48 +777,17 @@ function setAnchor(i, j) {
 /* ============================================================
    EVENT REVIEW — presentation never edits the recorded points.
    ============================================================ */
-const replayCanvas = $("replayLayer"), replayCtx = replayCanvas.getContext("2d");
-const traceCanvas=$("traceLayer"),traceCtx=traceCanvas.getContext("2d");
-let staticTraceKey="";
-const coarsePointer=window.matchMedia('(pointer:coarse)').matches;
-// A retained world-space surface avoids re-rasterising line joins on every
-// camera rotation. Bound allocation explicitly; small touch screens keep their current path.
-const TRACE_PIXEL_BUDGET=16000000;
-let traceSurface=null;
-function traceLayout() {
-  if((coarsePointer&&view.w<900)||!S.ready)return null;
-  const tiles=[...S.cards.values()].filter(t=>t.amt>.01);if(!tiles.length)return null;
-  const x=Math.min(...tiles.map(t=>t.i))*S.W,y=Math.min(...tiles.map(t=>t.j))*S.H;
-  const width=(Math.max(...tiles.map(t=>t.i))+1)*S.W-x,height=(Math.max(...tiles.map(t=>t.j))+1)*S.H-y;
-  const cssW=width*S.zoom,cssH=height*S.zoom;
-  // Budget raster density, not cache eligibility. A Retina desktop can exceed
-  // the cap at normal Fit zoom; falling back there repaints every spin frame.
-  // Round down only on the bounded path so allocation never exceeds the cap.
-  let rasterRatio=dpr,pixelW=Math.ceil(cssW*dpr),pixelH=Math.ceil(cssH*dpr);
-  if(pixelW*pixelH>TRACE_PIXEL_BUDGET||pixelW>8192||pixelH>8192){
-    rasterRatio=Math.min(dpr,Math.sqrt(TRACE_PIXEL_BUDGET/(cssW*cssH)),8192/cssW,8192/cssH);
-    if(rasterRatio<1)return null; // Extreme zoom: avoid sub-CSS-pixel strokes.
-    pixelW=Math.floor(cssW*rasterRatio);pixelH=Math.floor(cssH*rasterRatio);
+const foreground = GPURenderer.create($("replayLayer"), {
+  invalidate,
+  onError(error) {
+    $("errMsg").textContent = "The overlay renderer could not recover: " + error;
+    $("err").classList.remove("hidden");
   }
-  return {x,y,width,height,rasterRatio,cssW:pixelW/rasterRatio,cssH:pixelH/rasterRatio,pixelW,pixelH,
-    light:tiles.map(t=>[t.i,t.j,Math.max(.5,t.bright===undefined?cardLight(t.i,t.j):t.bright).toFixed(2)].join(',')).join(';')};
-}
-function placeTraceSurface(layout) {
-  const style=traceCanvas.style;
-  if(layout) {
-    if(traceCanvas.width!==layout.pixelW)traceCanvas.width=layout.pixelW;
-    if(traceCanvas.height!==layout.pixelH)traceCanvas.height=layout.pixelH;
-    style.inset='auto';style.left='0';style.top='0';style.width=layout.cssW+'px';style.height=layout.cssH+'px';
-    style.transformOrigin='0 0';style.willChange='transform';
-    const p=w2s(layout.x,layout.y),cs=Math.cos(S.rot),sn=Math.sin(S.rot);
-    const matrix='matrix('+[cs,sn,-sn,cs,p.x,p.y].join(',')+')';
-    if(style.transform!==matrix)style.transform=matrix;
-  } else if(traceSurface) {
-    traceCanvas.width=c.width;traceCanvas.height=c.height;
-    style.inset='0';style.width='100%';style.height='100%';style.transform='none';style.willChange='auto';
-  }
-  traceSurface=layout;
-}
+});
+const replayCanvas = foreground.canvas, replayCtx = foreground.context;
+const Path2D = foreground.Path;
+// Kept for old recording/benchmark readers; no giant world-space bitmap exists.
+function traceLayout() { return null; }
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 let progressCache = null, menuVersion = -1, menuSignature = null, hudPending = true;
 function invalidateReplay(routeChanged=true) { S.replayVersion++;if(routeChanged)S.traceVersion++;progressCache = null; }
@@ -1110,22 +1071,6 @@ function routeRange(g, from, to) {
   for (let i = Math.floor(a) + 1; i <= Math.floor(b) && i < S.trail.length; i++) g.lineTo(S.trail[i].x, S.trail[i].y);
   const last = trailAt(b); g.lineTo(last.x, last.y);
 }
-function drawStaticTrace() {
-  const bound=S.review?(S.reviewDir>0?Math.floor(S.cursor):Math.ceil(S.cursor)):-1;
-  const layout=traceLayout();placeTraceSurface(layout);
-  const placement=layout?[layout.x,layout.y,layout.width,layout.height,S.zoom,dpr,S.anchor.i,S.anchor.j,layout.light].join(','):lastArtKey;
-  const key=[layout?'world':'screen',placement,S.traceVersion,S.trailOn,S.review,S.reviewDir,bound,traceCanvas.width,traceCanvas.height].join(':');
-  if(key===staticTraceKey)return;
-  staticTraceKey=key;
-  const g=traceCtx;g.setTransform(1,0,0,1,0,0);g.clearRect(0,0,traceCanvas.width,traceCanvas.height);
-  if(!S.ready)return;
-  g.scale(layout?layout.rasterRatio:dpr,layout?layout.rasterRatio:dpr);g.save();
-  if(layout){g.scale(S.zoom,S.zoom);g.translate(-layout.x,-layout.y);}else worldTransform(g);
-  const a=S.anchor;
-  g.strokeStyle='rgba(79,209,197,.55)';g.lineWidth=1/S.zoom;
-  g.strokeRect(a.i*S.W+1/S.zoom,a.j*S.H+1/S.zoom,S.W-2/S.zoom,S.H-2/S.zoom);
-  drawTrace(g);g.restore();
-}
 function partialTrace() {
   const cache=traceScene(),bound=S.reviewDir>0?Math.floor(S.cursor):Math.ceil(S.cursor);
   if(!progressCache||progressCache.cursor===S.cursor)return progressCache&&progressCache.partial;
@@ -1135,11 +1080,14 @@ function partialTrace() {
   return progressCache.partial;
 }
 function drawReplayLayer() {
-  drawStaticTrace();
   const g = replayCtx;
   g.setTransform(1, 0, 0, 1, 0, 0); g.clearRect(0, 0, replayCanvas.width, replayCanvas.height);
   if (!S.ready) return;
   g.scale(dpr, dpr); g.save(); worldTransform(g);
+  const a=S.anchor;
+  g.strokeStyle='rgba(79,209,197,.55)';g.lineWidth=1/S.zoom;
+  g.strokeRect(a.i*S.W+1/S.zoom,a.j*S.H+1/S.zoom,S.W-2/S.zoom,S.H-2/S.zoom);
+  drawTrace(g);
   const width=Math.min(S.W,S.H)*CFG.trailWidthFrac;
   if (S.review && S.trailOn && S.trail.length > 1) {
     const partial=partialTrace();
@@ -1303,7 +1251,7 @@ function undoOnce() {
 }
 /* Invalidate retained geometry; route vertices are the sole source of truth. */
 function refreshTrace() {
-  S.traceVersion++;staticTraceKey="";
+  S.traceVersion++;
   traceCache=null;geometryCache=null;prefixCache=null; resetProgress(); syncTimeline();
 }
 /* Walking again makes the rewound future real: drop it. */
@@ -1605,19 +1553,60 @@ function update(dt) {
    the neighbour across that edge is.
    ============================================================ */
 const DIR_IDX = { L: 0, R: 1, T: 2, B: 3 };
+const SEAM_BORDER_EPS = Math.fround(.001); // Match the original GLSL float comparison.
 
 /* ============================================================
    RENDER
    ============================================================ */
+function uploadEdgeRamp(scaleUniform, biasUniform, ramps, offset) {
+  const l = ramps[offset], r = ramps[offset+1], t = ramps[offset+2], b = ramps[offset+3];
+  gl.uniform4f(scaleUniform, l>0 ? S.W/l : 0, r>0 ? S.W/r : 0,
+    t>0 ? S.H/t : 0, b>0 ? S.H/b : 0);
+  gl.uniform4f(biasUniform, l>0 ? 0 : 1, r>0 ? 0 : 1, t>0 ? 0 : 1, b>0 ? 0 : 1);
+}
+
+// A conservative proof, not a four-corner heuristic: the inverse-rotated
+// viewport AABB must be covered by opaque interiors in *every* grid cell it
+// touches. This rejects holes, fading cards, and outer ramps. Expanding by two
+// device pixels plus a float32 round-off allowance keeps the decision away
+// from raster/precision boundaries. Cards outside that box cannot contribute.
+function cardsCoverViewport(count) {
+  const W=S.W,H=S.H,zoom=S.zoom;
+  if(cardFloatPrecision<23||!(W>0&&H>0&&zoom>0&&view.w>0&&view.h>0))return false;
+  const cr=Math.abs(Math.cos(S.rot)),sr=Math.abs(Math.sin(S.rot));
+  const halfX=(cr*view.w+sr*view.h)/(2*zoom);
+  const halfY=(sr*view.w+cr*view.h)/(2*zoom);
+  const extent=Math.max(Math.abs(S.cam.x),Math.abs(S.cam.y),W,H,halfX,halfY);
+  const margin=2/(Math.max(dpr,.01)*zoom)+extent*8*2**-23;
+  const left=S.cam.x-halfX-margin,right=S.cam.x+halfX+margin;
+  const top=S.cam.y-halfY-margin,bottom=S.cam.y+halfY+margin;
+  if(!Number.isFinite(left+right+top+bottom))return false;
+  const i0=Math.floor(left/W),i1=Math.floor(right/W);
+  const j0=Math.floor(top/H),j1=Math.floor(bottom/H);
+  if((i1-i0+1)*(j1-j0+1)>count)return false;
+  for(let j=j0;j<=j1;j++)for(let i=i0;i<=i1;i++) {
+    let n=0;
+    for(;n<count;n++)if(cardIdx[n*2]===i&&cardIdx[n*2+1]===j)break;
+    if(n===count||cardAmt[n]!==1)return false;
+    const o=n*4,x=i*W,y=j*H;
+    // The tested portion is the viewport box intersected with this tile.
+    // Adjacent cells meet exactly; positive outer ramps leave a real gap.
+    if(Math.max(left,x)<x+Math.max(0,cardOut[o]) ||
+       Math.min(right,x+W)>x+W-Math.max(0,cardOut[o+1]) ||
+       Math.max(top,y)<y+Math.max(0,cardOut[o+2]) ||
+       Math.min(bottom,y+H)>y+H-Math.max(0,cardOut[o+3]))return false;
+  }
+  return true;
+}
+
 function render() {
+  if (contextLost) return;
   if (!S.ready) {
     gl.viewport(0, 0, c.width, c.height);
     gl.clearColor(BG[0], BG[1], BG[2], 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
     return;
   }
-  const stepX = S.W, stepY = S.H;
-
   // ---- the cards on screen ------------------------------------------------
   // A card fades into the dark on an edge only to the extent that there is no
   // card across it — so the middle card (surrounded on all four sides) stays
@@ -1650,29 +1639,49 @@ function render() {
   if(artKey!==lastArtKey) {
     lastArtKey=artKey;
     gl.viewport(0, 0, c.width, c.height);
+    gl.bindBuffer(gl.ARRAY_BUFFER,quadBuf);
+    gl.enableVertexAttribArray(0);
+    gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
+    const opaqueViewport=cardsCoverViewport(k);
+    gl.disable(gl.BLEND);
+    if(!opaqueViewport) {
+      gl.useProgram(bgProg);
+      gl.uniform2f(BU.uView,view.w,view.h);
+      gl.uniform3fv(BU.uBg,BG);
+      gl.drawArrays(gl.TRIANGLES,0,6);
+    }
+
     gl.useProgram(prog);
-    gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
-    gl.enableVertexAttribArray(aPos);
-    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
-
-    gl.uniform2f(U.uView, view.w, view.h);
-    gl.uniform3fv(U.uBg, BG);
-    gl.uniform2f(U.uCam, S.cam.x, S.cam.y);
-    gl.uniform1f(U.uZoom, S.zoom);
-    gl.uniform1f(U.uRot, S.rot);
-    gl.uniform2f(U.uCard, S.W, S.H);
-    gl.uniform2f(U.uStep, stepX, stepY);
-    gl.uniform2fv(U.uCIdx, cardIdx);
-    gl.uniform4fv(U.uCOut, cardOut);
-    gl.uniform4fv(U.uCSeam, cardSeam);
-    gl.uniform1fv(U.uCBright, cardBright);
-    gl.uniform1fv(U.uCAmt, cardAmt);
-    gl.uniform1f(U.uSeamDark, CFG.seamDark);
-    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, artTex); gl.uniform1i(U.uArt, 0);
-
-    gl.drawArrays(gl.TRIANGLES, 0, 6);
+    gl.uniform2f(U.uView,view.w,view.h);
+    gl.uniform2f(U.uCam,S.cam.x,S.cam.y);
+    gl.uniform1f(U.uZoom,S.zoom);
+    gl.uniform2f(U.uRotation,Math.cos(S.rot),Math.sin(S.rot));
+    gl.uniform2f(U.uCard,S.W,S.H);
+    gl.uniform4f(U.uEdgePxScale,S.W*S.zoom,S.W*S.zoom,S.H*S.zoom,S.H*S.zoom);
+    gl.uniform1f(U.uSeamDark,CFG.seamDark);
+    gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,artTex);gl.uniform1i(U.uArt,0);
+    if(!opaqueViewport) {
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+    }
+    for(let n=0;n<k;n++) {
+      if(cardAmt[n]<=.004)continue;
+      gl.uniform2f(U.uCIdx,cardIdx[n*2],cardIdx[n*2+1]);
+      const offset = n * 4;
+      uploadEdgeRamp(U.uCOutScale, U.uCOutBias, cardOut, offset);
+      uploadEdgeRamp(U.uCSeamScale, U.uCSeamBias, cardSeam, offset);
+      gl.uniform4f(U.uBorderEnabled, cardSeam[offset]>SEAM_BORDER_EPS ? 1 : 0,
+        cardSeam[offset+1]>SEAM_BORDER_EPS ? 1 : 0, cardSeam[offset+2]>SEAM_BORDER_EPS ? 1 : 0,
+        cardSeam[offset+3]>SEAM_BORDER_EPS ? 1 : 0);
+      const brightness = cardBright[n], saturation = .4 + .6 * brightness;
+      gl.uniform2f(U.uColorMix, brightness * saturation, brightness * (1-saturation));
+      gl.uniform1f(U.uCAmt,cardAmt[n]);
+      gl.drawArrays(gl.TRIANGLES,0,6);
+    }
+    gl.disable(gl.BLEND);
   }
   drawReplayLayer();
+  foreground.flush();
 }
 
 /* ============================================================
@@ -1866,11 +1875,27 @@ window.addEventListener("keyup", (e) => {
   invalidate();
 });
 
-c.addEventListener("webglcontextlost", (e) => { e.preventDefault(); });
+c.addEventListener("webglcontextlost", (e) => {
+  e.preventDefault();
+  contextLost = true;
+  // Every object belongs to the lost context; never reuse stale handles.
+  prog = bgProg = quadBuf = artTex = null;
+  lastArtKey = "";
+});
 c.addEventListener("webglcontextrestored", () => {
-  try { buildProgram(); } catch (err) { return; }
-  if (S.ready) { uploadArt(); traceCache=null; }
-  invalidate();
+  try {
+    buildProgram();
+    contextLost = false;
+    if (S.ready) uploadArt();
+    lastArtKey = "";
+    traceCache = null;
+    $("err").classList.add("hidden");
+    invalidate();
+  } catch (error) {
+    contextLost = true;
+    $("errMsg").textContent = "The card renderer could not recover: " + error;
+    $("err").classList.remove("hidden");
+  }
 });
 
 /* ============================================================
@@ -1973,13 +1998,11 @@ $("btnStart").addEventListener("click", () => {
    including demo/imported maps, rather than racing pending IndexedDB writes. */
 let sessionBusy=false, lastMeasurement=null, measurement=null;
 function environmentSnapshot(){
-  const layout=traceLayout();
   return {appVersion:document.querySelector('meta[name="app-version"]').content,
     userAgent:navigator.userAgent,viewport:{width:view.w,height:view.h},
     devicePixelRatio:window.devicePixelRatio||1,canvasPixelRatio:dpr,
     logicalProcessors:navigator.hardwareConcurrency||null,deviceMemoryGiB:navigator.deviceMemory||null,
-    traceSurface:layout?{mode:"world",width:layout.pixelW,height:layout.pixelH,rasterRatio:layout.rasterRatio}:
-      {mode:"viewport",width:c.width,height:c.height,reason:coarsePointer&&view.w<900?"small-touch-screen":"outside-retained-raster-budget"}};
+    traceSurface:{mode:foreground.mode,width:replayCanvas.width,height:replayCanvas.height,rasterRatio:dpr}};
 }
 function captureSession(){
   if(!S.ready)throw new Error('Load a card before exporting');
@@ -2148,7 +2171,7 @@ syncTimeline();
 function resize() {
   const oldW=view.w,oldH=view.h;
   const nextDpr=Math.min(window.devicePixelRatio||1,2);
-  if(nextDpr!==dpr)stampSprites.clear();
+  if(nextDpr!==dpr){stampSprites.clear();foreground.clearRasterCache();}
   dpr=nextDpr;
   view.w = window.innerWidth; view.h = window.innerHeight;
   if(oldW&&oldH)for(const pivot of [S.manualPivot,S.phase&&S.phase.pivot])if(pivot) {
@@ -2156,9 +2179,10 @@ function resize() {
   }
   c.width = Math.max(1, Math.floor(view.w * dpr));
   c.height = Math.max(1, Math.floor(view.h * dpr));
+  lastArtKey=""; // Assigning even the same canvas size clears its drawing buffer.
   c.style.width = view.w + "px"; c.style.height = view.h + "px";
   replayCanvas.width = c.width; replayCanvas.height = c.height;
-  traceCanvas.width=c.width;traceCanvas.height=c.height;staticTraceKey="";
+  foreground.resize();
   gl.viewport(0, 0, c.width, c.height);
   if (S.ready) clampZoom();
   invalidate();
@@ -2171,7 +2195,7 @@ setHint("Load a card to begin.");
 updateHUD();
 
 /* expose for headless probes */
-window.OCM = { S, CFG, gl, render, update, applyImages, w2s, s2w, resize,
+window.OCM = { S, CFG, gl, foreground, render, update, applyImages, w2s, s2w, resize,
   artCv, uploadArt, fitView, camTarget, traceLayout, captureSession, restoreSessionState, importSessionFile,
   camGoal: () => S.camGoal, trailAt, walkedTo, setCursor, play, undoOnce, commitWalk,
   refreshTrace, clearWalk, syncTimeline, recordPosition, addMarker, restoreMarkers, markerCopies, replayModel, advanceReplay, cardLight, cardCenter, spin, startNow, tap, seekEvent, orientationAt };

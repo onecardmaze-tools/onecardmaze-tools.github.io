@@ -1,0 +1,290 @@
+--- a/index.html
++++ b/index.html
+@@ -428,40 +428,58 @@
+ } catch (e) { gl = null; }
+ if (!gl) { $("err").classList.remove("hidden"); return; }
+ 
+-const VS = `
++// Background shading is independent of the number of cards. Card lookup and
++// the inverse camera transform no longer run for every device pixel.
++const BGVS = `
+ attribute vec2 aPos;
+ varying vec2 vUv;
+ void main() {
+-  vUv = vec2(aPos.x * 0.5 + 0.5, 0.5 - aPos.y * 0.5);   // uv.y = 0 at the top
++  vUv = vec2(aPos.x * 0.5 + 0.5, 0.5 - aPos.y * 0.5);
+   gl_Position = vec4(aPos, 0.0, 1.0);
+ }`;
+-
++const BGFS = `
++precision highp float;
++varying vec2 vUv;
++uniform vec2 uView;
++uniform vec3 uBg;
++void main() {
++  vec2 dd = vUv - 0.5;
++  float rr = length(dd * vec2(uView.x / max(uView.y, 1.0), 1.0));
++  gl_FragColor = vec4(uBg * (1.0 - 0.45 * smoothstep(0.15, 0.95, rr)), 1.0);
++}`;
++const VS = `
++attribute vec2 aPos;
++varying vec2 vLocal;
++varying vec2 vArt;
++uniform vec2 uView;
++uniform vec2 uCam;
++uniform float uZoom;
++uniform vec2 uRotation; // cos, sin; once per frame on the CPU
++uniform vec2 uCard;
++uniform vec2 uCIdx;
++void main() {
++  vLocal = aPos * 0.5 + 0.5;
++  float p = mod(uCIdx.x + uCIdx.y, 2.0);
++  float flip = mod(uCIdx.y, 2.0);
++  vec2 art = mix(vLocal, 1.0-vLocal, flip);
++  vArt = vec2(art.x, (art.y+p)*0.5);
++  vec2 d = ((uCIdx+vLocal)*uCard-uCam)*uZoom;
++  vec2 screen = vec2(uRotation.x*d.x-uRotation.y*d.y,
++                     uRotation.y*d.x+uRotation.x*d.y);
++  gl_Position = vec4(screen.x*2.0/uView.x, -screen.y*2.0/uView.y, 0.0, 1.0);
++}`;
+ const FS = `
+ precision highp float;
+-#define NCARD 18
+-varying vec2 vUv;
+-
+-uniform vec2  uView;        // canvas size, CSS px
+-uniform vec3  uBg;
+-uniform vec2  uCam;         // camera, world px
++varying vec2 vLocal;
++varying vec2 vArt;
++uniform vec2 uCard;
+ uniform float uZoom;
+-uniform float uRot;
+-uniform vec2  uCard;        // W, H
+-uniform vec2  uStep;        // stepX, stepY (== card size: tiles butt edge-to-edge)
+-/* The cards on screen: the one you are standing on and all eight around it —
+-   the other side across each edge, the same side turned 180 in each corner —
+-   plus, briefly, any card that has just been handed the middle, fading out
+-   rather than vanishing. */
+-uniform vec2  uCIdx[NCARD];      // tile index of each card
+-uniform vec4  uCOut[NCARD];      // outer ramps: that card's own silhouette fading into the dark
+-uniform vec4  uCSeam[NCARD];     // the shared edge(s), where the faint fold line lives
+-uniform float uCBright[NCARD];   // how far "over there" each card reads
+-uniform float uCAmt[NCARD];      // 0..1: a card leaving the set fades away
++uniform vec4 uCOut;
++uniform vec4 uCSeam;
++uniform float uCBright;
++uniform float uCAmt;
+ uniform float uSeamDark;
+-uniform sampler2D uArt;                  // atlas: W x 2H  (front on top, back below)
+-
+-vec2 gWorld;
+-
++uniform sampler2D uArt;
+ float edgeMask(vec2 uv, vec4 r, vec2 size) {
+   float a = 1.0;
+   if (r.x > 0.0) a *= clamp(uv.x / (r.x / size.x), 0.0, 1.0);
+@@ -476,107 +494,56 @@
+   return mix(vec3(l), col, s) * b;
+ }
+ 
+-/* One card. alpha = coverage; col = its artwork colour. */
+-void tileLayer(vec2 idx, vec4 outer, vec4 seam, float vis, float bright, float sat,
+-               out vec3 col, out float alpha) {
+-  float p = mod(idx.x + idx.y, 2.0);                       // 0 = front, 1 = back
+-  vec2 local = (gWorld - idx * uStep) / uCard;             // 0..1 across the card
+-  // Most of the cards in the list do not cover this pixel at all: bail out before
+-  // sampling the artwork. (The small slack keeps the seam between two cards
+-  // from ever falling between them.)
+-  if (local.x < -0.002 || local.x > 1.002 ||
+-      local.y < -0.002 || local.y > 1.002) { col = vec3(0.0); alpha = 0.0; return; }
+-  float inside = step(0.0, local.x) * step(local.x, 1.0) *
+-                 step(0.0, local.y) * step(local.y, 1.0);
+-  // The card is a physical sheet: crossing an edge folds it over that edge, so a
+-  // tile shows its face turned through 180 when its row is odd. (fx and fy both
+-  // reduce to j&1; matching the canonical geometry in ReplayCore.)
+-  float fx = mod(mod(idx.x, 2.0) + p, 2.0);                // 1 => mirror x
+-  float fy = mod(idx.y, 2.0);                              // 1 => mirror y
+-  vec2 map = vec2(mix(local.x, 1.0 - local.x, fx),
+-                  mix(local.y, 1.0 - local.y, fy));
+-  vec2 uv = vec2(map.x, (map.y + p) * 0.5);                // atlas: front top, back bottom
+-  float om = edgeMask(local, outer, uCard);                // the card's own silhouette
+-  vec3 art = texture2D(uArt, uv).rgb;
+-  // faint fold line where this card meets its neighbour -- on the artwork only,
+-  // so the trail crosses the seam unbroken
+-  art *= mix(1.0 - uSeamDark, 1.0, edgeMask(local, seam, uCard));
+-  // A real border in CSS pixels, independent of printed artwork and scan resolution.
+-  // Only the artwork is darkened: an unconstrained trail can cross it continuously.
+-  vec4 edgePx = vec4(local.x * uCard.x, (1.0-local.x) * uCard.x,
+-                     local.y * uCard.y, (1.0-local.y) * uCard.y) * uZoom;
++
++void main() {
++  vec3 art = texture2D(uArt, vArt).rgb;
++  art *= mix(1.0-uSeamDark, 1.0, edgeMask(vLocal, uCSeam, uCard));
++  vec4 edgePx = vec4(vLocal.x*uCard.x, (1.0-vLocal.x)*uCard.x,
++                     vLocal.y*uCard.y, (1.0-vLocal.y)*uCard.y)*uZoom;
+   float border = 0.0;
+-  if (seam.x > .001) border = max(border, 1.0-smoothstep(1.1,1.8,edgePx.x));
+-  if (seam.y > .001) border = max(border, 1.0-smoothstep(1.1,1.8,edgePx.y));
+-  if (seam.z > .001) border = max(border, 1.0-smoothstep(1.1,1.8,edgePx.z));
+-  if (seam.w > .001) border = max(border, 1.0-smoothstep(1.1,1.8,edgePx.w));
+-  art = mix(art, vec3(.012,.018,.026), border * .96);
+-  col = brightSat(art, bright, sat);
+-  alpha = inside * om * vis;
+-}
+-
+-void main() {
+-  vec2 sp = vUv * uView;                                   // CSS px, y down
+-  vec2 d  = sp - uView * 0.5;
+-  float cr = cos(uRot), sr = sin(uRot);
+-  gWorld = vec2(cr * d.x + sr * d.y, -sr * d.x + cr * d.y) / uZoom + uCam;
+-
+-  // background: dark with a soft vignette
+-  vec2 dd = vUv - 0.5;
+-  float rr = length(dd * vec2(uView.x / max(uView.y, 1.0), 1.0));
+-  vec3 col = uBg * (1.0 - 0.45 * smoothstep(0.15, 0.95, rr));
+-
+-  vec3 ck; float ak;
+-
+-  vec2 tile=floor(gWorld/uStep);
+-  for (int k = 0; k < NCARD; k++) {
+-    float amt = uCAmt[k];
+-    if (amt > 0.004 && all(equal(uCIdx[k],tile))) {
+-      float b = uCBright[k];
+-      tileLayer(uCIdx[k], uCOut[k], uCSeam[k], amt, b, mix(0.40, 1.0, b), ck, ak);
+-      col = mix(col, ck, ak);
+-      break;
+-    }
+-  }
+-
+-  gl_FragColor = vec4(col, 1.0);
++  if (uCSeam.x > .001) border = max(border, 1.0-smoothstep(1.1,1.8,edgePx.x));
++  if (uCSeam.y > .001) border = max(border, 1.0-smoothstep(1.1,1.8,edgePx.y));
++  if (uCSeam.z > .001) border = max(border, 1.0-smoothstep(1.1,1.8,edgePx.z));
++  if (uCSeam.w > .001) border = max(border, 1.0-smoothstep(1.1,1.8,edgePx.w));
++  art = mix(art, vec3(.012,.018,.026), border*.96);
++  vec3 col = brightSat(art, uCBright, mix(.40, 1.0, uCBright));
++  gl_FragColor = vec4(col, edgeMask(vLocal, uCOut, uCard)*uCAmt);
+ }`;
+-
+-const UNIFORMS = ["uView","uBg","uCam","uZoom","uRot","uCard","uStep",
+-  "uCIdx","uCOut","uCSeam","uCBright","uCAmt","uSeamDark",
+-  "uArt"];
+-
+-let prog = null, quadBuf = null, aPos = -1;
+-const U = {};
+-/* one entry per card on screen: the middle card plus its four neighbours */
+-// 18 = two overlapping 3x3 blocks (14) plus headroom for a quick reverse on a seam
++const UNIFORMS = ["uView","uCam","uZoom","uRotation","uCard",
++  "uCIdx","uCOut","uCSeam","uCBright","uCAmt","uSeamDark","uArt"];
++let prog = null, bgProg = null, quadBuf = null;
++const U = {}, BU = {};
+ const NCARD = 18;
+ const cardIdx = new Float32Array(NCARD * 2);
+ const cardOut = new Float32Array(NCARD * 4);
+ const cardSeam = new Float32Array(NCARD * 4);
+ const cardBright = new Float32Array(NCARD);
+ const cardAmt = new Float32Array(NCARD);
+-
+ function buildProgram() {
+-  const mk = (type, src) => {
+-    const s = gl.createShader(type);
+-    gl.shaderSource(s, src); gl.compileShader(s);
+-    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s));
+-    return s;
++  const link = (vs,fs) => {
++    const shaders=[];
++    const p=gl.createProgram();
++    try {
++      for(const [type,source] of [[gl.VERTEX_SHADER,vs],[gl.FRAGMENT_SHADER,fs]]) {
++        const shader=gl.createShader(type); shaders.push(shader);
++        gl.shaderSource(shader,source);gl.compileShader(shader);
++        if(!gl.getShaderParameter(shader,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(shader));
++        gl.attachShader(p,shader);
++      }
++      // Both programs share the same quad attribute and buffer binding.
++      gl.bindAttribLocation(p,0,"aPos");gl.linkProgram(p);
++      if(!gl.getProgramParameter(p,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(p));
++      return p;
++    } catch(error) {gl.deleteProgram(p);throw error;}
++    finally {for(const shader of shaders)gl.deleteShader(shader);}
+   };
+-  const p = gl.createProgram();
+-  gl.attachShader(p, mk(gl.VERTEX_SHADER, VS));
+-  gl.attachShader(p, mk(gl.FRAGMENT_SHADER, FS));
+-  gl.linkProgram(p);
+-  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p));
+-  prog = p;
+-  aPos = gl.getAttribLocation(p, "aPos");
+-  for (let n = 0; n < UNIFORMS.length; n++) U[UNIFORMS[n]] = gl.getUniformLocation(p, UNIFORMS[n]);
+-  if (!quadBuf) {
+-    quadBuf = gl.createBuffer();
+-    gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, -1,1, 1,-1, 1,1]), gl.STATIC_DRAW);
+-  }
++  prog=link(VS,FS);bgProg=link(BGVS,BGFS);
++  for(const name of UNIFORMS)U[name]=gl.getUniformLocation(prog,name);
++  for(const name of ["uView","uBg"])BU[name]=gl.getUniformLocation(bgProg,name);
++  // A lost context invalidates buffers as well as programs and textures.
++  quadBuf=gl.createBuffer();
++  gl.bindBuffer(gl.ARRAY_BUFFER,quadBuf);
++  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]),gl.STATIC_DRAW);
+ }
+ try { buildProgram(); } catch (e) {
+   $("errMsg").textContent = "The card shader failed to build: " + e;
+@@ -1650,27 +1617,35 @@
+   if(artKey!==lastArtKey) {
+     lastArtKey=artKey;
+     gl.viewport(0, 0, c.width, c.height);
++    gl.bindBuffer(gl.ARRAY_BUFFER,quadBuf);
++    gl.enableVertexAttribArray(0);
++    gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
++    gl.disable(gl.BLEND);
++    gl.useProgram(bgProg);
++    gl.uniform2f(BU.uView,view.w,view.h);
++    gl.uniform3fv(BU.uBg,BG);
++    gl.drawArrays(gl.TRIANGLES,0,6);
++
+     gl.useProgram(prog);
+-    gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+-    gl.enableVertexAttribArray(aPos);
+-    gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+-
+-    gl.uniform2f(U.uView, view.w, view.h);
+-    gl.uniform3fv(U.uBg, BG);
+-    gl.uniform2f(U.uCam, S.cam.x, S.cam.y);
+-    gl.uniform1f(U.uZoom, S.zoom);
+-    gl.uniform1f(U.uRot, S.rot);
+-    gl.uniform2f(U.uCard, S.W, S.H);
+-    gl.uniform2f(U.uStep, stepX, stepY);
+-    gl.uniform2fv(U.uCIdx, cardIdx);
+-    gl.uniform4fv(U.uCOut, cardOut);
+-    gl.uniform4fv(U.uCSeam, cardSeam);
+-    gl.uniform1fv(U.uCBright, cardBright);
+-    gl.uniform1fv(U.uCAmt, cardAmt);
+-    gl.uniform1f(U.uSeamDark, CFG.seamDark);
+-    gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, artTex); gl.uniform1i(U.uArt, 0);
+-
+-    gl.drawArrays(gl.TRIANGLES, 0, 6);
++    gl.uniform2f(U.uView,view.w,view.h);
++    gl.uniform2f(U.uCam,S.cam.x,S.cam.y);
++    gl.uniform1f(U.uZoom,S.zoom);
++    gl.uniform2f(U.uRotation,Math.cos(S.rot),Math.sin(S.rot));
++    gl.uniform2f(U.uCard,S.W,S.H);
++    gl.uniform1f(U.uSeamDark,CFG.seamDark);
++    gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,artTex);gl.uniform1i(U.uArt,0);
++    gl.enable(gl.BLEND);
++    gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
++    for(let n=0;n<k;n++) {
++      if(cardAmt[n]<=.004)continue;
++      gl.uniform2f(U.uCIdx,cardIdx[n*2],cardIdx[n*2+1]);
++      gl.uniform4f(U.uCOut,cardOut[n*4],cardOut[n*4+1],cardOut[n*4+2],cardOut[n*4+3]);
++      gl.uniform4f(U.uCSeam,cardSeam[n*4],cardSeam[n*4+1],cardSeam[n*4+2],cardSeam[n*4+3]);
++      gl.uniform1f(U.uCBright,cardBright[n]);
++      gl.uniform1f(U.uCAmt,cardAmt[n]);
++      gl.drawArrays(gl.TRIANGLES,0,6);
++    }
++    gl.disable(gl.BLEND);
+   }
+   drawReplayLayer();
+ }

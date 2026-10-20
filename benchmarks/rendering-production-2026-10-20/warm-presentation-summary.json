@@ -1,0 +1,61 @@
+[
+  {
+    "trace": "/private/tmp/ocm-production-warm-0-rotate.json.gz",
+    "measuredMs": 30033.113,
+    "method": "Chromium presentation-feedback counters, complete tracker intervals inside OCM measurement marks; JSAnimation and RAF overlap and must not be added together.",
+    "trackers": {
+      "JSAnimation": {
+        "expected": 1803,
+        "droppedV3": 3,
+        "droppedV4": 3,
+        "intervals": 1800,
+        "producedV3": 1800,
+        "dropPercentV3": 0.16638935108153077,
+        "dropPercentV4": 0.16638935108153077
+      },
+      "RAF": {
+        "expected": 1803,
+        "droppedV3": 3,
+        "droppedV4": 3,
+        "intervals": 1800,
+        "producedV3": 1800,
+        "dropPercentV3": 0.16638935108153077,
+        "dropPercentV4": 0.16638935108153077
+      }
+    },
+    "droppedIntervals": [
+      {
+        "kind": "JSAnimation",
+        "atMs": 204.856,
+        "durationMs": 16.667,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 204.856,
+        "durationMs": 16.667,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 304.857,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 304.857,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      }
+    ]
+  }
+]

@@ -1,0 +1,161 @@
+[
+  {
+    "trace": "benchmarks/rendering-production-2026-10-20/hybrid-rotate-presentation-events.json.gz",
+    "measuredMs": 30184.282,
+    "method": "Chromium presentation-feedback counters, complete tracker intervals inside OCM measurement marks; JSAnimation and RAF overlap and must not be added together.",
+    "trackers": {
+      "JSAnimation": {
+        "expected": 1810,
+        "droppedV3": 12,
+        "droppedV4": 12,
+        "intervals": 1769,
+        "producedV3": 1798,
+        "dropPercentV3": 0.6629834254143646,
+        "dropPercentV4": 0.6629834254143646
+      },
+      "RAF": {
+        "expected": 1810,
+        "droppedV3": 12,
+        "droppedV4": 12,
+        "intervals": 1769,
+        "producedV3": 1798,
+        "dropPercentV3": 0.6629834254143646,
+        "dropPercentV4": 0.6629834254143646
+      }
+    },
+    "droppedIntervals": [
+      {
+        "kind": "JSAnimation",
+        "atMs": 21990.673,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 21990.673,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 22024.007,
+        "durationMs": 16.667,
+        "expected": 6,
+        "droppedV3": 4,
+        "droppedV4": 4
+      },
+      {
+        "kind": "RAF",
+        "atMs": 22024.007,
+        "durationMs": 16.667,
+        "expected": 6,
+        "droppedV3": 4,
+        "droppedV4": 4
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 22074.008,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 22074.008,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 22107.342,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 22107.342,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 22224.012,
+        "durationMs": 16.667,
+        "expected": 5,
+        "droppedV3": 4,
+        "droppedV4": 4
+      },
+      {
+        "kind": "RAF",
+        "atMs": 22224.012,
+        "durationMs": 16.667,
+        "expected": 5,
+        "droppedV3": 4,
+        "droppedV4": 4
+      }
+    ]
+  },
+  {
+    "trace": "benchmarks/rendering-production-2026-10-20/hybrid-walk-presentation-events.json.gz",
+    "measuredMs": 29986.516,
+    "method": "Chromium presentation-feedback counters, complete tracker intervals inside OCM measurement marks; JSAnimation and RAF overlap and must not be added together.",
+    "trackers": {
+      "JSAnimation": {
+        "expected": 1799,
+        "droppedV3": 0,
+        "droppedV4": 0,
+        "intervals": 1764,
+        "producedV3": 1799,
+        "dropPercentV3": 0.0,
+        "dropPercentV4": 0.0
+      },
+      "RAF": {
+        "expected": 1798,
+        "droppedV3": 0,
+        "droppedV4": 0,
+        "intervals": 1764,
+        "producedV3": 1798,
+        "dropPercentV3": 0.0,
+        "dropPercentV4": 0.0
+      }
+    },
+    "droppedIntervals": []
+  },
+  {
+    "trace": "benchmarks/rendering-production-2026-10-20/hybrid-replay-presentation-events.json.gz",
+    "measuredMs": 29983.962,
+    "method": "Chromium presentation-feedback counters, complete tracker intervals inside OCM measurement marks; JSAnimation and RAF overlap and must not be added together.",
+    "trackers": {
+      "JSAnimation": {
+        "expected": 1799,
+        "droppedV3": 0,
+        "droppedV4": 0,
+        "intervals": 1799,
+        "producedV3": 1799,
+        "dropPercentV3": 0.0,
+        "dropPercentV4": 0.0
+      },
+      "RAF": {
+        "expected": 1799,
+        "droppedV3": 0,
+        "droppedV4": 0,
+        "intervals": 1799,
+        "producedV3": 1799,
+        "dropPercentV3": 0.0,
+        "dropPercentV4": 0.0
+      }
+    },
+    "droppedIntervals": []
+  }
+]

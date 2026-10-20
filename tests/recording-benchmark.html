@@ -16,9 +16,9 @@ async function run(noArtwork){
  if(!recording){out.textContent='Choose a recording first.';return;}
  const win=frame.contentWindow,app=win.OCM,S=app.S;
  app.restoreSessionState(recording.state);for(let k=0;k<240;k++)app.update(.05);app.render();
- const ctx=frame.contentDocument.getElementById('traceLayer').getContext('2d'),clear=ctx.clearRect,paint=win.TraceRenderer.paint,draw=app.gl.drawArrays,raf=win.requestAnimationFrame;
+ const ctx=frame.contentDocument.getElementById('traceLayer')?.getContext('2d'),clear=ctx?.clearRect,paint=win.TraceRenderer.paint,draw=app.gl.drawArrays,raf=win.requestAnimationFrame;
  let clears=0,paints=0,artDraws=0;const render=[],intervals=[];let last=null;
- ctx.clearRect=function(...a){clears++;return clear.apply(this,a);};
+ if(ctx)ctx.clearRect=function(...a){clears++;return clear.apply(this,a);};
  win.TraceRenderer.paint=function(...a){paints++;return paint.apply(this,a);};
  app.gl.drawArrays=function(...a){artDraws++;if(!noArtwork)return draw.apply(this,a);};
  win.requestAnimationFrame=()=>0;out.textContent='Running…';
@@ -29,8 +29,8 @@ async function run(noArtwork){
   S.rot=recording.state.rotation+k/69*Math.PI/2;S.rotTarget=S.rot;
   const begin=performance.now();app.render();if(k>=10)render.push(performance.now()-begin);
  }
- const layout=app.traceLayout();out.textContent=JSON.stringify({appVersion:frame.contentDocument.querySelector('meta[name="app-version"]').content,noArtwork,viewport:[win.innerWidth,win.innerHeight],devicePixelRatio:win.devicePixelRatio,vertices:S.trail.length,spins:S.spins.length,surface:layout?{width:layout.pixelW,height:layout.pixelH,rasterRatio:layout.rasterRatio||2}:null,measuredFrames:60,historyClears:clears,historyPaints:paints,artDraws,render:win.SessionCodec.summarize(render),rafIntervals:win.SessionCodec.summarize(intervals)},null,2);
- }finally{ctx.clearRect=clear;win.TraceRenderer.paint=paint;app.gl.drawArrays=draw;win.requestAnimationFrame=raf;app.resize();}
+ const layout=app.traceLayout();out.textContent=JSON.stringify({appVersion:frame.contentDocument.querySelector('meta[name="app-version"]').content,noArtwork,viewport:[win.innerWidth,win.innerHeight],devicePixelRatio:win.devicePixelRatio,vertices:S.trail.length,spins:S.spins.length,surface:layout?{width:layout.pixelW,height:layout.pixelH,rasterRatio:layout.rasterRatio||2}:null,measuredFrames:60,renderer:app.foreground?.mode||'legacy-canvas',historyClears:ctx?clears:null,tracePaintCalls:paints,artDraws,render:win.SessionCodec.summarize(render),rafIntervals:win.SessionCodec.summarize(intervals)},null,2);
+ }finally{if(ctx)ctx.clearRect=clear;win.TraceRenderer.paint=paint;app.gl.drawArrays=draw;win.requestAnimationFrame=raf;app.resize();}
 }
 document.getElementById('run').onclick=()=>run(false);document.getElementById('noArt').onclick=()=>run(true);
 </script>
