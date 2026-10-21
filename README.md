@@ -33,6 +33,11 @@ changes ease in and out, including when focus passes to the next card. Markers
 retain their high-contrast appearance on every copy.
 
 Uploaded images are saved only in your browser's IndexedDB and are never uploaded.
+The most recently imported pair opens automatically on your next visit in the
+same browser, without the introduction. A toast confirms that the card was saved;
+if browser storage is unavailable or full, you can still play and a message
+explains that it could not be saved. **Import my card → Forget saved images**
+removes the cached card and markers. Clearing site data also removes them.
 The route lasts for the current page session. Markers are saved locally alongside
 your uploaded card and restored on reload. Loading a different card clears its
 on-screen markers; loading the demo does not overwrite the saved uploaded card
@@ -227,6 +232,7 @@ node tests/trace.test.js
 node tests/performance.test.js
 node tests/ui-mode.test.js     # modes and route safety
 node tests/ui-states.cjs       # browser QA at six viewports (needs Playwright)
+node tests/card-cache.cjs      # image cache and storage failures (needs Playwright)
 ```
 
 Coverage includes negative tiles, diagonal crossings, touching an edge without

@@ -4,14 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>One Card Maze Helper · Unofficial</title>
-<meta name="app-version" content="2026-10-21-ui-redesign" />
+<meta name="app-version" content="2026-10-21-card-cache" />
 <meta name="description" content="Free, open-source One Card Maze helper. Upload both sides of your maze card, explore connected edges, track your path, and replay your walk in your browser." />
 <link rel="canonical" href="https://onecardmaze-tools.github.io/" />
 <meta property="og:title" content="One Card Maze Helper · Unofficial" />
 <meta property="og:description" content="Explore both sides of your One Card Maze card with path tracking, rotation, undo, and replay. Free and open source." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://onecardmaze-tools.github.io/" />
-<link rel="stylesheet" href="companion.css?v=ui-redesign-1" />
+<link rel="stylesheet" href="companion.css?v=card-cache-1" />
 </head>
 <body data-mode="walk" data-route="0">
 <!-- UI: see DESIGN-SYSTEM.md. One dock whose contents follow uiMode(); never stack bars. -->
@@ -138,7 +138,7 @@
   <div class="panel sheet-like">
     <div class="sheet-grab" aria-hidden="true"></div>
     <button class="sheet-close" id="btnLoaderClose" aria-label="Close import">×</button><h2 class="sheet-title" id="importTitle">Bring your own card</h2>
-    <p class="sheet-lead">Choose photos or scans of both faces. They stay on this device and are never uploaded.</p>
+    <p class="sheet-lead">Choose photos or scans of both faces. Your last card is saved in this browser and opens automatically next time. Images are never uploaded.</p>
     <div class="drops">
       <label class="drop" id="dropFront">
         <input id="fileFront" type="file" accept="image/*" hidden />
@@ -181,10 +181,10 @@
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="session-codec.js?v=ui-redesign-1"></script>
-<script src="replay-core.js?v=ui-redesign-1"></script>
-<script src="trace-renderer.js?v=ui-redesign-1"></script>
-<script src="gpu-renderer.js?v=ui-redesign-1"></script>
+<script src="session-codec.js?v=card-cache-1"></script>
+<script src="replay-core.js?v=card-cache-1"></script>
+<script src="trace-renderer.js?v=card-cache-1"></script>
+<script src="gpu-renderer.js?v=card-cache-1"></script>
 <script>
 (function () {
 "use strict";
@@ -566,30 +566,36 @@ function idb() {
     r.onerror = () => rej(r.error);
   });
 }
-async function idbPut(key, blob) {
+// Save both faces and their markers together: an interrupted write must never
+// leave a front face from one card paired with the back of another.
+async function idbWrite(entries, clear = false) {
   const db = await idb();
-  return new Promise((res, rej) => {
-    const tx = db.transaction("imgs", "readwrite");
-    tx.objectStore("imgs").put(blob, key);
-    tx.oncomplete = res; tx.onerror = () => rej(tx.error);
-  });
+  try {
+    await new Promise((res, rej) => {
+      const tx = db.transaction("imgs", "readwrite");
+      tx.oncomplete = () => res();
+      tx.onerror = tx.onabort = () => rej(tx.error || new Error("Card storage unavailable"));
+      try {
+        const store = tx.objectStore("imgs");
+        if (clear) store.clear();
+        for (const [key, value] of entries) store.put(value, key);
+      } catch (error) { tx.abort(); rej(error); }
+    });
+  } finally { db.close(); }
 }
+function idbPut(key, value) { return idbWrite([[key, value]]); }
 async function idbGet(key) {
   const db = await idb();
-  return new Promise((res, rej) => {
-    const tx = db.transaction("imgs", "readonly");
-    const rq = tx.objectStore("imgs").get(key);
-    rq.onsuccess = () => res(rq.result); rq.onerror = () => rej(rq.error);
-  });
+  try {
+    return await new Promise((res, rej) => {
+      const tx = db.transaction("imgs", "readonly");
+      const rq = tx.objectStore("imgs").get(key);
+      tx.oncomplete = () => res(rq.result);
+      tx.onerror = tx.onabort = () => rej(tx.error || new Error("Card storage unavailable"));
+    });
+  } finally { db.close(); }
 }
-async function idbClear() {
-  const db = await idb();
-  return new Promise((res, rej) => {
-    const tx = db.transaction("imgs", "readwrite");
-    tx.objectStore("imgs").clear();
-    tx.oncomplete = res; tx.onerror = () => rej(tx.error);
-  });
-}
+function idbClear() { return idbWrite([], true); }
 
 /* ============================================================
    CAMERA / TRANSFORMS
@@ -1912,18 +1918,26 @@ async function handleFile(side, file) {
     const img = await loadImage(url);
     pending[side] = { img: img, blob: file };
     markDrop(side, url);
-    maybeActivate();
+    await maybeActivate();
   } catch { toast("Could not read that image"); }
 }
 
-function maybeActivate() {
+async function maybeActivate() {
   if (pending.front && pending.back) {
     applyImages(pending.front.img, pending.back.img);
     S.persistMarkers = true;
-    idbPut("markers", []).catch(() => {});
-    idbPut("front", pending.front.blob).catch(() => {});
-    idbPut("back", pending.back.blob).catch(() => {});
-    toast("Card ready — set your start");
+    const front = pending.front, back = pending.back;
+    toast("Card ready · saving in this browser…");
+    try {
+      await idbWrite([["front", front.blob], ["back", back.blob], ["markers", []]]);
+      if (pending.front === front && pending.back === back)
+        toast("Card saved in this browser · ready next time");
+    } catch {
+      if (pending.front === front && pending.back === back) {
+        S.persistMarkers = false;
+        toast("Card ready, but could not save in this browser. Keep the images for next time.", 6500);
+      }
+    }
   }
 }
 
@@ -1977,10 +1991,14 @@ function startNow() {
 }
 
 $("btnForget").addEventListener("click", async () => {
-  try { await idbClear(); } catch {}
+  try { await idbClear(); } catch { toast("Could not clear saved images. Please try again."); return; }
   S.persistMarkers=false;
   pending = { front: null, back: null };
-  ["dropFront", "dropBack"].forEach((id) => $(id).classList.remove("has"));
+  for (const side of ["Front", "Back"]) {
+    $("drop" + side).classList.remove("has");
+    $("thumb" + side).removeAttribute("src");
+    $("file" + side).value = "";
+  }
   toast("Saved images cleared");
 });
 
@@ -2234,7 +2252,7 @@ window.OCM = { S, CFG, gl, foreground, render, update, applyImages, w2s, s2w, re
   refreshTrace, clearWalk, syncTimeline, uiMode, finishReview, confirmYes, confirmNo, guardRoute, doReset,
   restoreRoute, actionToast, syncSheets, uiInsets, setMarkerMode, recordPosition, addMarker, restoreMarkers, markerCopies, replayModel, advanceReplay, cardLight, cardCenter, spin, startNow, tap, seekEvent, orientationAt };
 
-(async () => {
+window.OCM.startup = (async () => {
   if (new URLSearchParams(location.search).has("demo")) { await loadDemo(true); return; }
   try {
     const [fb, bb, markers] = await Promise.all([idbGet("front"), idbGet("back"), idbGet("markers")]);
@@ -2248,15 +2266,17 @@ window.OCM = { S, CFG, gl, foreground, render, update, applyImages, w2s, s2w, re
       S.persistMarkers = true;
       restoreMarkers(markers);
       startNow();
-      return;
+      toast("Saved card restored");
+      return true;
     }
-  } catch {}
+  } catch {} // Missing, unreadable or unavailable storage falls back to practice.
   await loadDemo(true);
+  return false;
 })();
 
 scheduleFrame();
 })();
 </script>
-<script src="companion-ui.js?v=ui-redesign-1" defer></script>
+<script src="companion-ui.js?v=card-cache-1" defer></script>
 </body>
 </html>

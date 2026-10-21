@@ -127,5 +127,7 @@
     (target && target.getClientRects().length ? target : $('btnHelp')).focus({ preventScroll: true });
   });
   // ?demo remains an explicit quick-open route, including benchmark fixtures.
-  if (!new URLSearchParams(location.search).has('demo')) intro.showModal();
+  if (!new URLSearchParams(location.search).has('demo')) {
+    app.startup.then(restored => { if (!restored && !intro.open) intro.showModal(); });
+  }
 })();
