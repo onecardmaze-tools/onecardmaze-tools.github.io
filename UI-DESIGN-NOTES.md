@@ -36,5 +36,41 @@ Verified reference links:
 - Prefer plain fan-made / unofficial wording rather than formal authorization language.
 - Add a GitHub icon to the source link.
 - Use clean, mirrored circular rotation arrows with connected arrowheads.
-- Keep only the unofficial tool name and About in a quiet, opaque footer.
+- Keep only the unofficial tool name and About in a quiet, opaque footer. (Superseded 2026-10-21: the footer became the top-left identity chip.)
 - Move card import and secondary actions into a separate floating Tools menu, with opaque surfaces so the artwork cannot obscure them.
+
+## Redesign implemented (2026-10-21)
+
+Reviewed against issue #1 and the owner's direction to rewrite the UI/UX. The
+owner approved the mock direction and asked for a design system so later work
+stays consistent. The rules now live in [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md);
+this file keeps the history.
+
+Problems found by testing the previous UI:
+
+- Bottom controls covered 22–36% of a 390×664 phone (25–34% at 320×568, up to
+  41% in landscape), stacked as rotate buttons, a transport and a footer.
+- The completion panel never went away.
+- Data loss: after a reverse replay, one map tap truncated the route and Undo
+  could not restore it. Rotating after scrubbing back did the same.
+- Start over cleared the route with no confirmation or undo.
+- At 320px the markers panel overlapped Tools, and "Use this card" was below the
+  fold.
+
+Decisions:
+
+- One dock chosen by mode (walk, playing, paused, complete, place); the footer
+  is replaced by a top-left "unofficial OneCardMaze helper" chip that opens
+  About. Walk chrome is now about 11–12% of the height on phones.
+- Reviewing never edits. Branching from a review position asks "Walk from
+  here?"; Done returns to the end unchanged; tapping during a replay pauses.
+  Undo stays a walking tool.
+- Start over is immediate but offers Undo for 8 seconds; switching or importing
+  a card asks first because that can't be undone.
+- Short landscape uses side rails for Rotate left/right so nothing covers the
+  bottom centre while walking.
+- Tools, Markers and Recording are bottom sheets on phones and popovers on
+  desktop. The intro and import are bottom sheets on phones.
+- The hand-drawn identity is kept and made consistent: Patrick Hand (bundled,
+  OFL) for titles, uneven radii, offset shadows, olive/paper palette, amber only
+  for route progress.

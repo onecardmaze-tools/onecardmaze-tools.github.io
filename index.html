@@ -4,106 +4,172 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>One Card Maze Helper · Unofficial</title>
-<meta name="app-version" content="2026-10-20-supplied-demo" />
+<meta name="app-version" content="2026-10-21-ui-redesign" />
 <meta name="description" content="Free, open-source One Card Maze helper. Upload both sides of your maze card, explore connected edges, track your path, and replay your walk in your browser." />
 <link rel="canonical" href="https://onecardmaze-tools.github.io/" />
 <meta property="og:title" content="One Card Maze Helper · Unofficial" />
 <meta property="og:description" content="Explore both sides of your One Card Maze card with path tracking, rotation, undo, and replay. Free and open source." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://onecardmaze-tools.github.io/" />
-<link rel="stylesheet" href="companion.css?v=practice-artwork-3" />
+<link rel="stylesheet" href="companion.css?v=ui-redesign-1" />
 </head>
-<body>
+<body data-mode="walk" data-route="0">
+<!-- UI: see DESIGN-SYSTEM.md. One dock whose contents follow uiMode(); never stack bars. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-rotl" viewBox="0 0 24 24"><path d="M3 11a9 9 0 1 1 2.64 6.36M3 4v7h7"/></symbol>
+  <symbol id="i-rotr" viewBox="0 0 24 24"><g transform="translate(24 0) scale(-1 1)"><path d="M3 11a9 9 0 1 1 2.64 6.36M3 4v7h7"/></g></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12.5-7.5z" class="solid"/></symbol>
+  <symbol id="i-rev" viewBox="0 0 24 24"><path d="M17 4.5v15L4.5 12z" class="solid"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="4.5" width="4" height="15" rx="1" class="solid"/><rect x="14" y="4.5" width="4" height="15" rx="1" class="solid"/></symbol>
+  <symbol id="i-done" viewBox="0 0 24 24"><path d="M5 12.5 10 17.5 19.5 7"/></symbol>
+  <symbol id="i-again" viewBox="0 0 24 24"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 4v5h-5"/></symbol>
+  <symbol id="i-tools" viewBox="0 0 24 24"><path d="M4 7h7m4 0h5M4 17h3m4 0h9"/><circle cx="13" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.5v.5"/></symbol>
+  <symbol id="i-card" viewBox="0 0 24 24"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h3"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 15V4m-4 4 4-4 4 4M5 15v4h14v-4"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11.5A7 7 0 0 0 5 9.5C5 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></symbol>
+  <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></symbol>
+  <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></symbol>
+  <symbol id="i-fit" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></symbol>
+  <symbol id="i-trail" viewBox="0 0 24 24"><path d="M4 19c4 0 3-7 8-7s4-7 8-7"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></symbol>
+  <symbol id="i-gh" viewBox="0 0 24 24"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 19 4.77 5.07 5.07 0 0 0 18.91 1S17.73.65 15 2.48a13.38 13.38 0 0 0-7 0C5.27.65 4.09 1 4.09 1A5.07 5.07 0 0 0 4 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 8 18.13V22"/></symbol>
+</svg>
+
 <canvas id="stage" aria-label="Maze map"></canvas>
 <canvas id="replayLayer" aria-hidden="true"></canvas>
 
+<!-- Corner chips: identity (top-left) and Tools (top-right). Always present, always quiet. -->
+<button id="btnHelp" class="chip corner-left" aria-haspopup="dialog"><svg class="ic" aria-hidden="true"><use href="#i-info"/></svg><span class="chip-long">unofficial OneCardMaze helper</span><span class="chip-short">unofficial helper</span></button>
+<button id="btnMore" class="chip corner-right tools-chip" aria-expanded="false" aria-controls="moreMenu"><svg class="ic" aria-hidden="true"><use href="#i-tools"/></svg>Tools</button>
+
 <div id="hud">
-  <div class="footer">
-    <div class="rotation-controls" aria-label="Rotate card">
-      <button id="btnSpinL" class="rotate" aria-label="Rotate left (Q)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11a9 9 0 1 1 2.64 6.36M3 4v7h7" /></svg><span>Rotate left</span><kbd>Q</kbd></button>
-      <button id="btnSpinR" class="rotate" aria-label="Rotate right (E)"><svg viewBox="0 0 24 24" aria-hidden="true"><g transform="translate(24 0) scale(-1 1)"><path d="M3 11a9 9 0 1 1 2.64 6.36M3 4v7h7" /></g></svg><span>Rotate right</span><kbd>E</kbd></button>
+  <div id="walkHint" class="hint" hidden role="status"><span>Tap the path to walk there</span><button id="btnHintClose" class="hint-close" aria-label="Dismiss hint">×</button></div>
+
+  <!-- mode: walk -->
+  <div class="dock dock-walk" id="dockWalk" role="toolbar" aria-label="Walking controls">
+    <button id="btnSpinL" class="dbtn rotate" aria-label="Rotate left (Q)"><svg class="ic" aria-hidden="true"><use href="#i-rotl"/></svg><span>Rotate left</span><kbd>Q</kbd></button>
+    <button id="btnUndo" class="dbtn" aria-label="Undo last step (Z, hold to rewind)"><svg class="ic" aria-hidden="true"><use href="#i-undo"/></svg><span>Undo</span><kbd>Z</kbd></button>
+    <button id="btnReplay" class="dbtn" aria-label="Replay route (Space)"><svg class="ic" aria-hidden="true"><use href="#i-play"/></svg><span>Replay</span><kbd>Space</kbd></button>
+    <button id="btnSpinR" class="dbtn rotate" aria-label="Rotate right (E)"><svg class="ic" aria-hidden="true"><use href="#i-rotr"/></svg><span>Rotate right</span><kbd>E</kbd></button>
+  </div>
+
+  <!-- mode: playing / paused -->
+  <div class="dock dock-player" id="player" role="toolbar" aria-label="Replay controls">
+    <button id="btnDone" class="dbtn" aria-label="Done: return to walking at the end of the route (Esc)"><svg class="ic" aria-hidden="true"><use href="#i-done"/></svg><span>Done</span></button>
+    <button id="btnBack" class="dbtn" aria-label="Reverse replay (Shift+Space)"><svg class="ic" aria-hidden="true"><use href="#i-rev"/></svg><span>Reverse</span></button>
+    <button id="btnFwd" class="dbtn primary" aria-label="Play replay (Space)"><svg class="ic" aria-hidden="true"><use href="#i-play"/></svg><span>Play</span></button>
+    <div class="timeline">
+      <div class="tl-label"><span id="pcount">0%</span><span id="tlEvent"></span></div>
+      <div class="timeline-track"><span id="eventTicks" aria-hidden="true"></span><input id="scrub" type="range" min="0" max="100" step="0.01" value="0" aria-label="Recorded route position" /></div>
     </div>
-    <div class="player" id="player" hidden>
-      <button id="btnUndo" aria-label="Undo last step (Z)">Undo</button>
-      <button id="btnBack" aria-label="Reverse replay">Reverse</button>
-      <button id="btnFwd" aria-label="Forward replay">Replay</button>
-      <div class="timeline-track"><input id="scrub" type="range" min="0" max="100" step="0.01" value="0" aria-label="Recorded route position" /></div>
-      <button id="btnSpeed" aria-label="Change replay speed">0.2×</button>
-      <span id="pcount" hidden></span>
-    </div>
-    <div id="replayCompletion" role="status" hidden>Replay complete <button id="btnReplayAgain">Play again</button></div>
-    <nav class="quiet-footer" aria-label="Game tools">
-      <span>Unofficial One Card Maze helper</span><span aria-hidden="true">·</span>
-      <button id="btnHelp">About</button>
-      <a id="practiceOfficial" href="https://www.onecardmaze.com/downloads" target="_blank" rel="noopener" hidden>Free official demo ↗</a>
-    </nav>
+    <button id="btnSpeed" class="dbtn speed" aria-label="Change replay speed"><b id="speedValue">0.2×</b><span>Speed</span></button>
+  </div>
+
+  <!-- mode: complete -->
+  <div class="dock dock-pill" id="replayCompletion" role="toolbar" aria-label="Replay finished">
+    <button id="btnReplayAgain" class="dbtn primary row"><svg class="ic" aria-hidden="true"><use href="#i-again"/></svg><span>Replay again</span></button>
+    <button id="btnDoneComplete" class="dbtn row" aria-label="Done: return to walking at the end of the route (Esc)"><svg class="ic" aria-hidden="true"><use href="#i-done"/></svg><span>Done</span></button>
+  </div>
+
+  <!-- mode: place -->
+  <div class="dock dock-place" id="markerPlacementTip" role="status">
+    <span class="place-swatch" id="placeSwatch" aria-hidden="true">●</span>
+    <span class="place-text"><b>Tap the map to place it</b><button id="btnPlaceStyle" class="linkish">Change style</button></span>
+    <button id="btnCancelMarker" class="dbtn primary row"><svg class="ic" aria-hidden="true"><use href="#i-done"/></svg><span>Done</span></button>
   </div>
 </div>
-<button id="btnMore" class="canvas-tools" aria-expanded="false" aria-controls="moreMenu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h7m4 0h5M4 17h3m4 0h9"/><circle cx="13" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>Tools</button>
-<section id="moreMenu" hidden aria-label="Card and game tools">
-  <button id="btnUpload">Import card</button>
-  <button id="btnMarkers" aria-expanded="false" aria-controls="markerPanel">Markers</button>
-  <button id="btnSession" aria-expanded="false" aria-controls="sessionPanel">Save / load recording</button>
-  <button id="btnTrail" class="on" aria-pressed="true">Show trail</button>
-  <button id="btnFit">Fit card</button>
-  <div class="zoom-controls"><button id="btnZoomOut" aria-label="Zoom out">−</button><span>Zoom</span><button id="btnZoomIn" aria-label="Zoom in">+</button></div>
-  <details><summary>Replay events</summary><div class="event-controls"><button id="btnPrevEvent" aria-label="Previous event">Previous</button><button id="btnNextEvent" aria-label="Next event">Next</button><select id="eventSelect" aria-label="Jump to route event"><option value="">Events</option></select><span id="eventTicks" hidden></span></div></details>
-  <button id="btnReset">Start over</button><button id="btnPractice">Load practice demo</button>
+
+<!-- Landscape rails reuse the walk buttons via CSS; see DESIGN-SYSTEM.md › Layouts. -->
+
+<div id="confirmCard" class="confirm" role="alertdialog" aria-labelledby="confirmText" hidden>
+  <p id="confirmText"></p>
+  <div class="confirm-actions"><button id="btnConfirmNo"></button><button id="btnConfirmYes" class="primary"></button></div>
+</div>
+
+<div id="actionToast" class="toast toast-action" role="status" hidden><span id="actionToastText"></span><button id="actionToastBtn"></button><i class="toast-timer"></i></div>
+
+<div id="sheetBackdrop" hidden></div>
+<section id="moreMenu" class="sheet" hidden aria-label="Tools">
+  <div class="sheet-grab" aria-hidden="true"></div>
+  <h2 class="sheet-title">Tools</h2><button class="sheet-close" id="btnMoreClose" aria-label="Close tools">×</button>
+  <div class="sec">Route</div>
+  <details class="row-details"><summary class="li"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg>Route events<span class="r" id="eventSummary"></span></summary>
+    <div class="event-controls"><button id="btnPrevEvent" aria-label="Previous event ([)">Previous</button><button id="btnNextEvent" aria-label="Next event (])">Next</button><select id="eventSelect" aria-label="Jump to route event"><option value="">Events</option></select></div></details>
+  <button class="li" id="btnSession" aria-expanded="false" aria-controls="sessionPanel"><svg class="ic" aria-hidden="true"><use href="#i-file"/></svg>Save or load recording…</button>
+  <button class="li" id="btnMarkers" aria-expanded="false" aria-controls="markerPanel"><svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>Markers…<span class="r" id="markerCount"></span></button>
+  <div class="sec">View</div>
+  <div class="li static"><svg class="ic" aria-hidden="true"><use href="#i-fit"/></svg>Zoom<span class="seg" role="group" aria-label="Zoom"><button id="btnZoomOut" aria-label="Zoom out (−)">−</button><button id="btnFit" aria-label="Fit card (F)">Fit</button><button id="btnZoomIn" aria-label="Zoom in (+)">+</button></span></div>
+  <button class="li" id="btnTrail" role="switch" aria-checked="true"><svg class="ic" aria-hidden="true"><use href="#i-trail"/></svg>Show trail<span class="switch" aria-hidden="true"></span></button>
+  <div class="sec">Card</div>
+  <button class="li" id="btnUpload"><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg>Import my card…</button>
+  <button class="li" id="btnPractice"><svg class="ic" aria-hidden="true"><use href="#i-card"/></svg>Switch to practice card</button>
+  <div class="hr"></div>
+  <button class="li danger" id="btnReset"><svg class="ic" aria-hidden="true"><use href="#i-trash"/></svg>Start over<span class="r">keeps markers</span></button>
+  <p class="sheet-foot">Fan-made, unofficial · <button class="linkish" id="btnAboutFromTools">About</button> · <a id="practiceOfficial" href="https://www.onecardmaze.com/downloads" target="_blank" rel="noopener">Get the real demo ↗</a> · <a href="https://github.com/onecardmaze-tools/onecardmaze-tools.github.io" target="_blank" rel="noopener">Source</a></p>
 </section>
 
-<div id="markerPlacementTip" hidden role="status">Click / tap the map to place a marker <button id="btnCancelMarker">Cancel</button></div>
-<section id="markerPanel" hidden aria-label="Markers">
-  <div class="marker-title"><strong>Markers</strong><button id="btnMarkersClose" aria-label="Close markers">×</button></div>
-  <p>Place anything you want to remember. Each marker repeats on every copy of its card face.</p>
+<section id="markerPanel" class="sheet" hidden aria-label="Markers">
+  <div class="sheet-grab" aria-hidden="true"></div>
+  <h2 class="sheet-title">Markers</h2><button class="sheet-close" id="btnMarkersClose" aria-label="Close markers">×</button>
+  <p class="sheet-lead">Place anything you want to remember. Each marker repeats on every copy of its card face. Markers never move the walker.</p>
   <div class="marker-fields">
     <label for="markerShape">Shape<select id="markerShape"><option value="circle">Circle</option><option value="diamond">Diamond</option><option value="square">Square</option><option value="triangle">Triangle</option><option value="star">Star</option></select></label>
     <label for="markerColor">Colour<input id="markerColor" type="color" value="#ff5b7a" /></label>
   </div>
   <label class="marker-label" for="markerLabel">Label (optional)<input id="markerLabel" type="text" maxlength="24" placeholder="Anything you like" /></label>
-  <button id="btnPlaceMarker" class="primary">Place marker</button>
-  <p id="markerHint">Choose a style, then place it on the map. Markers do not control the walker.</p>
+  <button id="btnPlaceMarker" class="primary wide">Place marker</button>
+  <p id="markerHint" class="sheet-lead">Choose a style, then place it on the map.</p>
   <ul id="markerList" aria-label="Your markers"></ul>
 </section>
 
+<section id="sessionPanel" class="sheet" hidden aria-label="Recording">
+  <div class="sheet-grab" aria-hidden="true"></div>
+  <h2 class="sheet-title">Recording</h2><button class="sheet-close" id="btnSessionClose" aria-label="Close recording">×</button>
+  <p class="sheet-lead">One file with both card images, your complete route, spins, markers and current view. Sharing a recording also shares the card images it contains.</p>
+  <button id="btnExportSession" class="primary wide">Export recording</button>
+  <button id="btnImportSession" class="wide">Import recording</button>
+  <input id="fileSession" type="file" accept=".json,.ocm.json,application/json" hidden />
+  <p class="sheet-lead">Import replaces the current session; export first if you want to keep it. Files stay on your device until you choose to share them.</p>
+</section>
+
 <div class="overlay hidden" id="loader" role="dialog" aria-modal="true" aria-labelledby="importTitle">
-  <div class="panel">
-    <button class="panel-close" id="btnLoaderClose" aria-label="Close import">×</button><h1 id="importTitle">Bring your own card.</h1>
-    <p class="lead">Choose the front and back of your card. Images stay on this device.</p>
+  <div class="panel sheet-like">
+    <div class="sheet-grab" aria-hidden="true"></div>
+    <button class="sheet-close" id="btnLoaderClose" aria-label="Close import">×</button><h2 class="sheet-title" id="importTitle">Bring your own card</h2>
+    <p class="sheet-lead">Choose photos or scans of both faces. They stay on this device and are never uploaded.</p>
     <div class="drops">
       <label class="drop" id="dropFront">
         <input id="fileFront" type="file" accept="image/*" hidden />
-        <span class="dtag">Front</span><span class="dmsg">Click or drop an image</span>
+        <svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg><span class="dtag">Front</span><span class="dmsg">Tap or drop an image</span>
         <img class="thumb" id="thumbFront" alt="" />
       </label>
       <label class="drop" id="dropBack">
         <input id="fileBack" type="file" accept="image/*" hidden />
-        <span class="dtag">Back</span><span class="dmsg">Click or drop an image</span>
+        <svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg><span class="dtag">Back</span><span class="dmsg">Tap or drop an image</span>
         <img class="thumb" id="thumbBack" alt="" />
       </label>
     </div>
-    <div class="row">
-      <button id="btnDemo">Use practice demo</button>
-      <button id="btnImportWelcome">Import recording</button>
-      <button id="btnForget">Forget saved images</button>
-    </div>
-    <div class="startwrap"><button id="btnStart" class="primary" disabled>Use this card</button></div>
-    <p class="fine">Everything runs in your browser. Your images are saved locally on this device and never uploaded anywhere.</p>
+    <button id="btnStart" class="primary wide" disabled>Use this card</button>
+    <div class="textlinks"><button class="linkish" id="btnImportWelcome">Import a recording instead</button><button class="linkish" id="btnDemo">Use practice card</button><button class="linkish" id="btnForget">Forget saved images</button></div>
   </div>
 </div>
 
 <dialog id="help" aria-labelledby="aboutTitle">
   <div class="intro-note">
-    <button class="panel-close" id="btnHelpClose" aria-label="Close introduction">×</button>
+    <div class="sheet-grab" aria-hidden="true"></div>
+    <button class="sheet-close" id="btnHelpClose" aria-label="Close introduction">×</button>
     <h1 id="aboutTitle">Unofficial OneCardMaze helper</h1>
     <p>One Card Maze is a maze game played by rotating and flipping a single card.</p>
     <p>This helper is fan-made. It isn't an official website, and it doesn't include any official mazes.</p>
-    <div class="intro-actions"><button id="btnIntroDemo" class="primary">Play the demo</button><button id="btnIntroImport">Import my card</button></div>
+    <div class="intro-actions"><button id="btnIntroDemo" class="primary" autofocus>Play the practice card</button><button id="btnIntroImport">Import my card</button></div>
     <nav class="official-links" aria-label="Official game links"><a href="https://www.onecardmaze.com/" target="_blank" rel="noopener">Visit the official site ↗</a><a href="https://www.onecardmaze.com/downloads" target="_blank" rel="noopener">Get the real demo ↗</a><a href="https://www.onecardmaze.com/shop" target="_blank" rel="noopener">Buy the game ↗</a></nav>
     <details id="introStory" open><summary>Why I made this</summary>
       <p>I've loved this game since its early days. But after making my own physical cards, I kept losing track of where I was and where I'd already been. So I made this little tool for myself, and for anyone else who has the same problem.</p>
       <p>I deliberately haven't included any of the game's mazes. Please get those from the creators. The demo here is just a simple practice card I made for trying out the tool.</p>
     </details>
-    <p class="fine">Free &amp; open source · <a href="https://github.com/onecardmaze-tools/onecardmaze-tools.github.io" target="_blank" rel="noopener" class="source-link"><svg class="github-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-4.3 1.4-4.3-2.5-6-3m12 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 19 4.77 5.07 5.07 0 0 0 18.91 1S17.73.65 15 2.48a13.38 13.38 0 0 0-7 0C5.27.65 4.09 1 4.09 1A5.07 5.07 0 0 0 4 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 8 18.13V22"/></svg>Source code</a> · Game name and artwork belong to their owners.</p>
+    <p class="fine">Free &amp; open source · <a href="https://github.com/onecardmaze-tools/onecardmaze-tools.github.io" target="_blank" rel="noopener" class="source-link"><svg class="github-icon" aria-hidden="true"><use href="#i-gh"/></svg>Source code</a> · Game name and artwork belong to their owners.</p>
   </div>
 </dialog>
 
@@ -114,20 +180,11 @@
   </div>
 </div>
 
-<div id="toast"></div>
-
-<section id="sessionPanel" hidden role="dialog" aria-label="Recording" >
-  <div style="display:flex;justify-content:space-between;align-items:center"><strong>Recording</strong><button id="btnSessionClose" aria-label="Close recording">×</button></div>
-  <p>One file with both card images, your complete route, spins, markers and current view. Keep it as a backup. Sharing a recording also shares the card images it contains.</p>
-  <button id="btnExportSession">Export recording</button>
-  <button id="btnImportSession">Import recording</button>
-  <input id="fileSession" type="file" accept=".json,.ocm.json,application/json" hidden />
-  <p class="fine">Import replaces the current session. Export first if you want to keep it. Files stay on your device until you choose to share them.</p>
-</section>
-<script src="session-codec.js?v=1"></script>
-<script src="replay-core.js?v=4"></script>
-<script src="trace-renderer.js?v=3"></script>
-<script src="gpu-renderer.js?v=1"></script>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script src="session-codec.js?v=ui-redesign-1"></script>
+<script src="replay-core.js?v=ui-redesign-1"></script>
+<script src="trace-renderer.js?v=ui-redesign-1"></script>
+<script src="gpu-renderer.js?v=ui-redesign-1"></script>
 <script>
 (function () {
 "use strict";
@@ -205,7 +262,7 @@ const S = {
   phase: null, // event arrival -> action -> settle, kept separate from the recorded route
   play: 0,                         // 0 idle, +1 replaying forwards, -1 backwards
   replaySpeed: CFG.replaySpeed,    // multiplier on the replay rate; see CFG.replaySpeeds
-  undoHeld: false, scrubDrag: false,
+  undoHeld: false, scrubDrag: false, undoRewind: false, confirm: null,
   anchor: { i: 0, j: 0 },          // the card the view is centred on
   cards: new Map(),                // tile key -> { i, j, amt, target }: cards on screen
   cardFading: false, lightChanging: false,
@@ -470,6 +527,15 @@ function applyImages(front, back) {
   updateHUD();
 }
 
+/* Space the chrome reserves around the map, in CSS px. These numbers MUST match
+   the --inset-* tokens in companion.css; see DESIGN-SYSTEM.md › Layout budgets.
+   Portrait phones: corner chips on top, one dock at the bottom. Short landscape:
+   rotate rails on the left and right, nothing across the bottom while walking. */
+function uiInsets() {
+  const landscape = view.h <= 500 && view.w > view.h;
+  return landscape ? { top: 52, bottom: 12, left: 104, right: 104 } :
+    { top: 60, bottom: view.w >= 900 ? 92 : 96, left: 12, right: 12 };
+}
 function fitView() {
   if (!S.ready) return;
   S.manualPivot=null;
@@ -478,7 +544,11 @@ function fitView() {
   // Teaching text needs a readable first view on phones; neighboring slices
   // still show the repeated sheet. Uploaded cards retain the established fit.
   const grow = S.demo ? 1.05 : 1 + CFG.fitArmFrac * 2;
-  const fit = Math.min(view.w / (S.W * grow), Math.max(180, view.h - 240) / (S.H * grow));
+  // The camera centres the card on screen, so reserve the larger inset on both sides.
+  const ins = uiInsets();
+  const availW = Math.max(160, view.w - 2 * Math.max(ins.left, ins.right));
+  const availH = Math.max(180, view.h - 2 * Math.max(ins.top, ins.bottom));
+  const fit = Math.min(availW / (S.W * grow), availH / (S.H * grow));
   S.zoom = clamp(fit, .02, 40);
   S.minZoom = S.zoom * 0.45; S.maxZoom = S.zoom * 14;
   invalidate();
@@ -561,8 +631,10 @@ function camTarget() {
   const cr = Math.cos(S.rot), sr = Math.sin(S.rot);
   const gx = S.walker.x - tx, gy = S.walker.y - ty;
   const dx = S.zoom * (cr * gx - sr * gy), dy = S.zoom * (sr * gx + cr * gy);
-  const bottomPad = S.demo ? Math.min(view.h * .35, 200) : pad;
-  const nx = clamp(dx, -hx, hx), ny = clamp(dy, -hy, view.h * .5 - bottomPad);
+  // Keep the walker out from under the chrome as well as off the edges.
+  const ins = uiInsets(), m = 24;
+  const nx = clamp(dx, -Math.min(hx, view.w * .5 - ins.left - m), Math.min(hx, view.w * .5 - ins.right - m));
+  const ny = clamp(dy, -Math.min(hy, view.h * .5 - ins.top - m), Math.min(hy, view.h * .5 - ins.bottom - m));
   if (nx !== dx || ny !== dy) {
     tx = S.walker.x - (cr * nx + sr * ny) / S.zoom;
     ty = S.walker.y - (-sr * nx + cr * ny) / S.zoom;
@@ -637,6 +709,7 @@ function cancelPhase() {
 }
 function exitReview() {
   cancelPhase(); S.play = 0; S.review = false; S.reviewDone = false; S.reviewEvent = null;
+  S.undoRewind = false;
   resetProgress(); invalidate();
 }
 function eventName(e, dir) {
@@ -648,9 +721,6 @@ function eventName(e, dir) {
     ((dir > 0 ? e.fromFace : e.toFace) ? "back → front" : "front → back");
 }
 function syncReviewHUD() {
-  const show = S.review && S.trail.length > 1;
-  $("replayCompletion").hidden = !(show && S.reviewDone);
-  document.body.classList.toggle("reviewing", show);
   if (S.trail.length > 1 && menuVersion !== S.replayVersion) {
     const model=replayModel(),events=model.events,select=$("eventSelect"),ticks=$("eventTicks");
     const signature=events.map(e=>[e.type,e.at,e.delta,e.fromFace,e.toFace].join(':')).join(';');
@@ -676,8 +746,113 @@ function syncReviewHUD() {
   }
   backBtn.setAttribute("aria-pressed", String(S.play < 0));
   fwdBtn.setAttribute("aria-pressed", String(S.play > 0));
-  backBtn.textContent = S.play < 0 ? "Pause" : "Reverse";
-  fwdBtn.textContent = S.play > 0 ? "Pause" : "Replay";
+  setButton(backBtn, S.play < 0 ? "pause" : "rev", S.play < 0 ? "Pause" : "Reverse",
+    S.play < 0 ? "Pause reverse replay (Shift+Space)" : "Reverse replay (Shift+Space)");
+  setButton(fwdBtn, S.play > 0 ? "pause" : "play", S.play > 0 ? "Pause" : "Play",
+    S.play > 0 ? "Pause replay (Space)" : "Play replay (Space)");
+  const ev = S.reviewEvent && $("tlEvent");
+  if ($("tlEvent")) $("tlEvent").textContent = ev ? "· " + eventName(S.reviewEvent, S.reviewDir || 1) :
+    (S.play < 0 ? "of route · reverse" : "of route");
+  if ($("eventSummary")) $("eventSummary").textContent = S.trail.length > 1 ? String(replayModel().events.length) : "";
+  syncMode();                 // last: buttons above must already show their state
+}
+/* Icon + label buttons keep their markup; only the symbol and words change. */
+function setButton(btn, icon, label, aria) {
+  const use = btn.querySelector && btn.querySelector("use"), span = btn.querySelector && btn.querySelector("span");
+  if (use && use.setAttribute) use.setAttribute("href", "#i-" + icon);
+  if (span && span.textContent !== label) span.textContent = label;
+  if (aria) btn.setAttribute("aria-label", aria);
+}
+
+/* ============================================================
+   UI MODE — the single source of truth for which controls exist.
+   CSS shows controls by body[data-mode]; see DESIGN-SYSTEM.md › Modes.
+   walk     : walking, or rewinding with Undo (Undo is a walking tool)
+   playing  : a replay is running
+   paused   : reviewing a recorded position (scrub, event jump, paused replay)
+   complete : a replay reached the end it was heading for
+   place    : the next map tap places a marker
+   ============================================================ */
+function uiMode() {
+  if (S.placingMarker) return "place";
+  if (!S.review || S.undoRewind || S.trail.length < 2) return "walk";
+  if (S.play) return "playing";
+  return S.reviewDone ? "complete" : "paused";
+}
+const modePrimary = { walk: "btnReplay", playing: null, paused: "btnFwd", complete: "btnReplayAgain", place: "btnCancelMarker" };
+let lastMode = "";
+function syncMode() {
+  const m = uiMode(), b = document.body, route = S.trail.length > 1;
+  const focused = document.activeElement;     // read before hiding anything
+  if (b.getAttribute ? b.getAttribute("data-mode") !== m : true) b.setAttribute("data-mode", m);
+  b.setAttribute("data-route", route ? "1" : "0");
+  S.uiMode = m;
+  syncWalkHint();
+  if (m === lastMode) return;
+  const prev = lastMode; lastMode = m;
+  // A branch question belongs to review; leaving review (walk, play, place) withdraws it.
+  if (S.confirm && S.confirm.kind !== "card" && (m === "walk" || m === "playing" || m === "place")) hideConfirm();
+  if (m === "complete" && prev === "playing")
+    toast(S.reviewDir < 0 ? "Reverse replay complete · at the start" : "Replay complete · at the end");
+  rescueFocus(m, focused);
+}
+/* If the focused control just disappeared, hand focus to the new mode's
+   primary control so keyboard users never fall back to <body>. */
+function rescueFocus(m, a) {
+  if (!a || !a.getClientRects || a === document.body || a.id === "stage") return;
+  if (a.isConnected && a.getClientRects().length && document.activeElement === a) return;
+  let id = modePrimary[m];
+  if (m === "playing") id = S.play < 0 ? "btnBack" : "btnFwd";
+  if (m === "walk" && S.trail.length < 2) id = "btnSpinR";
+  const el = id && $(id);
+  if (el && el.focus) el.focus({ preventScroll: true });
+}
+/* One-time teaching chip; it retires itself after the first real walk. */
+function hintSeen() { try { return localStorage.getItem("ocm.hint.walk") === "1"; } catch { return false; } }
+function syncWalkHint() {
+  const el = $("walkHint"); if (!el) return;
+  const route = S.trail.length > 1;
+  if (route && !hintSeen()) { try { localStorage.setItem("ocm.hint.walk", "1"); } catch {} }
+  const show = S.ready && S.started && !route && !S.placingMarker && !hintSeen() && !S.hintClosed;
+  if (el.hidden !== !show) el.hidden = !show;
+}
+
+/* ---- confirm card: the only modal question the map asks ---------------- */
+function askConfirm(kind, text, noLabel, yesLabel, onYes) {
+  S.confirm = { kind, onYes };
+  $("confirmText").textContent = text;
+  $("btnConfirmNo").textContent = noLabel;
+  $("btnConfirmYes").textContent = yesLabel;
+  $("confirmCard").hidden = false;
+  if ($("btnConfirmNo").focus) $("btnConfirmNo").focus({ preventScroll: true });
+}
+function hideConfirm() {
+  if (!S.confirm) return;
+  S.confirm = null; $("confirmCard").hidden = true;
+}
+function confirmYes() { const c = S.confirm; hideConfirm(); if (c && c.onYes) c.onYes(); syncTimeline(); invalidate(); }
+function confirmNo() { hideConfirm(); syncTimeline(); }
+/* Reviewing never edits. Acting from the middle of a recording asks first. */
+function guardBranch(action) {
+  const end = S.trail.length - 1;
+  if (S.play) { S.play = 0; syncTimeline(); }
+  if (!S.review || S.undoRewind || S.cursor >= end - 1e-6) { exitReview(); action(); return; }
+  askConfirm("branch", "Walk from here? This replaces the later part of your route.",
+    "Keep route", "Walk from here", () => { commitWalk(); action(); });
+}
+/* Done leaves review at the end of the route. It never edits the trail. */
+function finishReview() {
+  hideConfirm(); S.play = 0; cancelPhase();
+  const end = S.trail.length - 1;
+  if (S.review && end > 0 && S.cursor < end - 1e-6) setCursor(end);
+  exitReview(); S.follow = true; S.manualPivot = null;
+  syncTimeline();
+}
+/* A heavier choice (card switch, import) that would clear the route. */
+function guardRoute(yesLabel, action) {
+  if (S.trail.length < 2) { action(); return; }
+  askConfirm("card", "Your current route will be cleared. Export a recording first to keep it.",
+    "Keep route", yesLabel, action);
 }
 
 function seekEvent(id) {
@@ -985,24 +1160,24 @@ function syncTimeline(immediate=true) {
 }
 function paintTimeline() {
   const n = Math.max(0, S.trail.length - 1);
-  if (playerEl.hidden !== (n < 1)) playerEl.hidden = n < 1;
   const model = replayModel(), total = model.distances[model.distances.length-1] || 0;
   const fraction = total ? ReplayCore.distanceAt(model,S.cursor)/total : 0;
   scrubEl.max = "100";
   if (!S.scrubDrag) scrubEl.value = String(fraction*100);
   scrubEl.style.setProperty("--p", fraction.toFixed(4));
   undoBtn.disabled = S.cursor <= 0;
+  $("btnReplay").disabled = n < 1;
   const pct = Math.round(fraction*100);
   countEl.textContent = pct + "%";
   scrubEl.setAttribute("aria-valuetext", pct + "% of recorded route");
-  speedBtn.textContent = S.replaySpeed + "×";
+  const sv = $("speedValue"); if (sv.textContent !== S.replaySpeed + "×") sv.textContent = S.replaySpeed + "×";
   backBtn.classList.toggle("on", S.play < 0);
   fwdBtn.classList.toggle("on", S.play > 0);
   syncReviewHUD();
 }
 function setCursor(t, place) {
   cancelPhase();
-  S.review = true; S.reviewDone = false; S.reviewEvent = null;
+  S.review = true; S.reviewDone = false; S.reviewEvent = null; S.undoRewind = false;
   const to = clamp(t, 0, Math.max(0, S.trail.length - 1));
   applySpins(S.cursor, to);                 // the card turns with the playhead
   S.cursor = to;
@@ -1012,6 +1187,7 @@ function setCursor(t, place) {
 /* Play the walk forwards (+1) or backwards (-1); pressing the same way stops it. */
 function play(dir) {
   if (!S.started || S.trail.length < 2) return;
+  hideConfirm(); S.undoRewind = false;
   if (S.play === dir) { S.play = 0; syncTimeline(); return; }
   if (S.phase && dir === S.reviewDir) { S.play = dir; syncTimeline(); return; }
   cancelPhase();
@@ -1043,8 +1219,9 @@ function cycleSpeed() {
 }
 function undoOnce() {
   if (!S.started || !S.trail.length) return;
-  S.play = 0;
+  S.play = 0; hideConfirm();
   setCursor(ReplayCore.advance(replayModel(), S.cursor, -S.H * .12));
+  S.undoRewind = true; syncTimeline();   // Undo is a walking tool: stay in walk mode
 }
 /* Invalidate retained geometry; route vertices are the sole source of truth. */
 function refreshTrace() {
@@ -1090,14 +1267,16 @@ function saveMarkers() {
 }
 function setMarkerMode(on) {
   S.placingMarker = !!on;
-  $("markerPlacementTip").hidden=!on;
+  if (on) { hideConfirm(); S.play = 0; }
+  const sw = $("placeSwatch");
+  if (sw) { sw.textContent = markerGlyphs[$("markerShape").value] || "●"; sw.style.color = $("markerColor").value; }
   $("btnMarkers").classList.toggle("on",!!on);
-  $("btnPlaceMarker").textContent = on ? "Click map to place · Esc to cancel" : "Place marker";
+  $("btnPlaceMarker").textContent = on ? "Tap the map to place it" : "Place marker";
   $("btnPlaceMarker").setAttribute("aria-pressed", String(!!on));
   $("markerHint").textContent = on ? "Click any copy of either face. This does not move the walker." :
-    "Choose a style, then place it on the map. Markers do not control the walker.";
+    "Choose a style, then place it on the map.";
   c.style.cursor = on ? "copy" : "crosshair";
-  invalidate();
+  syncMode(); invalidate();
 }
 const markerShapes = ["circle","diamond","square","triangle","star"];
 const markerGlyphs = {circle:"●",diamond:"◆",square:"■",triangle:"▲",star:"★"};
@@ -1186,6 +1365,10 @@ $("btnMarkers").addEventListener("click",()=>{
   $("btnMarkers").setAttribute("aria-expanded",String(!panel.hidden));if(panel.hidden)setMarkerMode(false);
 });
 $("btnCancelMarker").addEventListener("click",()=>setMarkerMode(false));
+$("btnPlaceStyle").addEventListener("click",()=>{
+  setMarkerMode(false);$("markerPanel").hidden=false;$("btnMarkers").setAttribute("aria-expanded","true");syncSheets();
+  $("markerShape").focus();
+});
 $("btnMarkersClose").addEventListener("click",()=>{
   $("markerPanel").hidden=true;$("btnMarkers").setAttribute("aria-expanded","false");setMarkerMode(false);
 });
@@ -1193,7 +1376,8 @@ $("btnPlaceMarker").addEventListener("click",()=>{
   if(!S.ready){toast("Load your card first.");return;}
   S.play=0;S.walker.tx=null;S.walker.ty=null;S.selectedMarker=null;
   setMarkerMode(!S.placingMarker);
-  if(S.placingMarker && view.w<700){$("markerPanel").hidden=true;$("btnMarkers").setAttribute("aria-expanded","false");}
+  // The place bar replaces the panel so the whole map is available to tap.
+  if(S.placingMarker){$("markerPanel").hidden=true;$("btnMarkers").setAttribute("aria-expanded","false");syncSheets();$("btnCancelMarker").focus({preventScroll:true});}
   syncMarkers();syncTimeline();
 });
 for(const id of ["markerShape","markerColor","markerLabel"]) $(id).addEventListener("input",updateMarkerStyle);
@@ -1243,7 +1427,7 @@ function update(dt) {
       // The speed control is for watching the walk back; holding undo is a scrub, and
       // stays at its own brisk rate whatever the replay is set to.
       const c0 = S.cursor;
-      cancelPhase(); S.review = true; S.reviewDone = false;
+      cancelPhase(); S.review = true; S.reviewDone = false; S.undoRewind = true;
       S.cursor = ReplayCore.advance(replayModel(), c0, -S.H * .9 * dt);
       applySpins(c0, S.cursor);
       placeWalker(S.cursor);
@@ -1476,8 +1660,11 @@ function spin(dir) {
   if (!S.ready) return;
   // A turn takes over from a replay, and (like walking) commits a rewound preview, so
   // the recorded turns always describe the walk that is actually there.
+  if (S.started && S.review && !S.undoRewind && S.cursor < S.trail.length - 1 - 1e-6) {
+    guardBranch(() => spin(dir)); return;        // reviewing never edits without asking
+  }
   if (S.started && S.review && S.cursor < S.trail.length - 1) commitWalk();
-  exitReview();
+  exitReview(); hideConfirm();
   S.recordBreak = true;
   if(!S.manualPivot) {const center=cardCenter();S.manualPivot={world:center,screen:w2s(center.x,center.y)};}
   S.rotTarget += dir * Math.PI / 2;
@@ -1533,12 +1720,14 @@ function frame(t) {
   update(dt);
   const changed=dirty||animating;
   if(changed){dirty=false;render();}
-  if(changed&&(t-lastHudT>=100||!animating)) {
+  // A pending HUD paint is never dropped: the last frame of a replay must still
+  // show the finished state even when nothing else is animating.
+  if((changed||hudPending)&&(t-lastHudT>=100||!animating)) {
     if(hudPending){paintTimeline();hudPending=false;}
     updateHUD();lastHudT=t;
   }
   inFrame=false;
-  if(dirty||animating||S.play||S.undoHeld||(S.started&&S.walker.tx!=null))scheduleFrame();
+  if(dirty||animating||hudPending||S.play||S.undoHeld||(S.started&&S.walker.tx!=null))scheduleFrame();
   else lastT=0;
 }
 function suspendFrames() {
@@ -1559,6 +1748,12 @@ function tap(wpt) {
   if (!S.ready) return;
   invalidate();
   if (S.placingMarker) { addMarker(wpt); return; }
+  if (S.confirm) { confirmNo(); return; }        // a tap elsewhere is "not now"
+  if (S.started && S.play) { S.play = 0; syncTimeline(); return; }   // tapping a replay pauses it
+  if (S.started && S.review && !S.undoRewind && S.cursor < S.trail.length - 1 - 1e-6) {
+    guardBranch(() => tap(wpt)); return;
+  }
+  if (S.started && S.review && !S.undoRewind) exitReview();
   S.recordBreak = true;
   if (!S.started) {
     S.started = true;
@@ -1622,7 +1817,12 @@ c.addEventListener("wheel", (e) => {
 
 window.addEventListener("keydown", (e) => {
   const k = e.key.toLowerCase();
-  if (k === "escape") { setMarkerMode(false); $("markerPanel").hidden = true; $("btnMarkers").setAttribute("aria-expanded", "false"); return; }
+  if (k === "escape") {
+    if (S.confirm) confirmNo();
+    else if (S.placingMarker) setMarkerMode(false);
+    else if (S.review && !S.undoRewind && S.trail.length > 1) finishReview();
+    return;
+  }
   // Focused timeline/menu controls own their keys; reviewing must not accidentally walk.
   const tag = e.target && e.target.tagName;
   if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA" ||
@@ -1681,11 +1881,23 @@ const loader = $("loader"), help = $("help");
 let pending = { front: null, back: null };   // { img, blob }
 
 function setHint() {}
-function toast(msg) {
+function toast(msg, ms = 2600) {
   const el = $("toast");
   el.textContent = msg; el.classList.add("show");
-  clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove("show"), 2200);
+  clearTimeout(toast._t); toast._t = setTimeout(() => el.classList.remove("show"), ms);
 }
+/* A toast that offers to take something back. Destructive actions use this
+   instead of an "Are you sure?" question. */
+function actionToast(msg, label, onAction, ms = 8000) {
+  const el = $("actionToast");
+  $("actionToastText").textContent = msg; $("actionToastBtn").textContent = label;
+  actionToast.fn = onAction; el.hidden = false;
+  el.style.setProperty("--toast-ms", ms + "ms");
+  el.classList.remove("run"); void el.offsetWidth; el.classList.add("run");
+  clearTimeout(actionToast._t); actionToast._t = setTimeout(hideActionToast, ms);
+}
+function hideActionToast() { $("actionToast").hidden = true; actionToast.fn = null; }
+$("actionToastBtn").addEventListener("click", () => { const fn = actionToast.fn; hideActionToast(); if (fn) fn(); });
 
 function markDrop(side, url) {
   $("drop" + (side === "front" ? "Front" : "Back")).classList.add("has");
@@ -1817,7 +2029,7 @@ function restoreSessionState(state){
   S.travelled=walkedTo(Math.max(0,S.trail.length-1));S.recordBreak=true;
   setAnchor(Math.floor(S.walker.x/S.W),Math.floor(S.walker.y/S.H));
   restoreMarkers(state.markers);setMarkerMode(false);invalidateReplay();refreshTrace();
-  $('btnTrail').classList.toggle('on',S.trailOn);
+  $('btnTrail').setAttribute('aria-checked',String(S.trailOn));
   loader.classList.add('hidden');updateHUD();invalidate();
 }
 async function importSessionFile(file){
@@ -1894,7 +2106,7 @@ $('btnMeasure')?.addEventListener('click',()=>{
 
 
 
-$("btnUpload").addEventListener("click", () => window.MazeUI.openImport());
+// btnUpload is wired in companion-ui.js (it asks before clearing a route).
 $("btnHelp").addEventListener("click", toggleHelp);
 $("btnHelpClose").addEventListener("click", toggleHelp);
 function toggleHelp() {
@@ -1906,8 +2118,7 @@ function toggleHelp() {
 $("btnTrail").addEventListener("click", toggleTrail);
 function toggleTrail() {
   S.trailOn = !S.trailOn;
-  $("btnTrail").classList.toggle("on", S.trailOn);
-  $("btnTrail").setAttribute("aria-pressed", String(S.trailOn));
+  $("btnTrail").setAttribute("aria-checked", String(S.trailOn));
   // switching it back on redraws whatever the walk recorded while it was off
   if (S.trailOn && S.trail.length) refreshTrace();
   invalidate();
@@ -1916,6 +2127,26 @@ function toggleTrail() {
 $("btnReset").addEventListener("click", doReset);
 function doReset() {
   if (!S.ready) return;
+  const snap = S.trail.length > 1 ? snapshotRoute() : null;
+  resetRoute();
+  if (snap) actionToast("Route cleared · markers kept", "Undo", () => restoreRoute(snap));
+}
+function snapshotRoute() {
+  return { trail: S.trail.map(p => ({ ...p })), spins: S.spins.map(sp => ({ ...sp })), rotQ0: S.rotQ0,
+    cursor: S.cursor, started: S.started, walker: { ...S.walker, tx: null, ty: null }, anchor: { ...S.anchor },
+    cam: { ...S.cam }, rotTarget: S.rotTarget, travelled: S.travelled };
+}
+function restoreRoute(snap) {
+  hideConfirm(); exitReview();
+  S.trail = snap.trail; S.spins = snap.spins; S.rotQ0 = snap.rotQ0; S.started = snap.started;
+  S.walker = { ...snap.walker }; S.cam = { ...snap.cam }; S.rotTarget = S.rot = snap.rotTarget;
+  S.travelled = snap.travelled; setAnchor(snap.anchor.i, snap.anchor.j);
+  S.cursor = Math.max(0, S.trail.length - 1); S.follow = true; S.recordBreak = true;
+  invalidateReplay(); refreshTrace(); syncTimeline(); invalidate();
+  toast("Route restored");
+}
+function resetRoute() {
+  hideConfirm();
   S.started = false;
   setAnchor(0, 0);
   S.walker.x = S.W / 2; S.walker.y = S.H / 2; S.walker.tx = null; S.walker.ty = null;
@@ -1951,7 +2182,19 @@ $("btnNextEvent").addEventListener("click", () => jumpEvent(1));
 $("eventSelect").addEventListener("change", e => {
   if (e.target.value !== "") seekEvent(Number(e.target.value));
 });
-$("btnReplayAgain").addEventListener("click", () => { S.cursor = S.reviewDir > 0 ? S.trail.length - 1 : 0; play(S.reviewDir); });
+$("btnReplayAgain").addEventListener("click", () => { S.cursor = S.reviewDir > 0 ? S.trail.length - 1 : 0; play(S.reviewDir || 1); });
+$("btnReplay").addEventListener("click", () => play(1));
+$("btnDone").addEventListener("click", finishReview);
+$("btnDoneComplete").addEventListener("click", finishReview);
+$("btnConfirmYes").addEventListener("click", confirmYes);
+$("btnConfirmNo").addEventListener("click", confirmNo);
+$("btnHintClose").addEventListener("click", () => { S.hintClosed = true; try { localStorage.setItem("ocm.hint.walk", "1"); } catch {} syncWalkHint(); });
+/* Sheets (Tools, Markers, Recording) share one backdrop on phones. */
+function syncSheets() {
+  const open = ["moreMenu", "markerPanel", "sessionPanel"].some(id => !$(id).hidden);
+  $("sheetBackdrop").hidden = !open;
+  document.body.setAttribute("data-sheet", open ? "1" : "0");
+}
 window.addEventListener("blur", () => { S.keys = Object.create(null); S.undoHeld = false; invalidate(); });
 syncTimeline();
 
@@ -1988,7 +2231,8 @@ updateHUD();
 window.OCM = { S, CFG, gl, foreground, render, update, applyImages, w2s, s2w, resize,
   artCv, uploadArt, fitView, loadDemo, camTarget, traceLayout, captureSession, restoreSessionState, importSessionFile,
   camGoal: () => S.camGoal, trailAt, walkedTo, setCursor, play, undoOnce, commitWalk,
-  refreshTrace, clearWalk, syncTimeline, recordPosition, addMarker, restoreMarkers, markerCopies, replayModel, advanceReplay, cardLight, cardCenter, spin, startNow, tap, seekEvent, orientationAt };
+  refreshTrace, clearWalk, syncTimeline, uiMode, finishReview, confirmYes, confirmNo, guardRoute, doReset,
+  restoreRoute, actionToast, syncSheets, uiInsets, setMarkerMode, recordPosition, addMarker, restoreMarkers, markerCopies, replayModel, advanceReplay, cardLight, cardCenter, spin, startNow, tap, seekEvent, orientationAt };
 
 (async () => {
   if (new URLSearchParams(location.search).has("demo")) { await loadDemo(true); return; }
@@ -2013,6 +2257,6 @@ window.OCM = { S, CFG, gl, foreground, render, update, applyImages, w2s, s2w, re
 scheduleFrame();
 })();
 </script>
-<script src="companion-ui.js?v=practice-artwork-3" defer></script>
+<script src="companion-ui.js?v=ui-redesign-1" defer></script>
 </body>
 </html>

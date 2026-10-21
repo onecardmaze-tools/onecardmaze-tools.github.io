@@ -14,9 +14,9 @@ collisions, or game rules.
 
 1. The page opens into the original, user-supplied practice maze, with a personal introduction over it. Its two 1061 × 1483 PNG faces are bundled unchanged in `assets/demo/`. The walker starts at the printed START ring. Follow the light path, match the edge letters and rotate at the spin signs; the tool records the route but does not enforce maze rules. The practice card starts at a closer scale on phones; uploaded cards retain their existing fit. Close the introduction to play, or choose **Import my card** to use your own images. The official free-demo link remains available below the game.
 2. Click/tap a location to walk there. **Q / E** or the large **Rotate left / Rotate right** buttons turn the card in 90° steps. WASD and arrow-key movement are intentionally disabled.
-3. Drag to pan and wheel/pinch to zoom. **Tools → Fit card** reframes the card; **Tools** also holds markers, recording import/export, trail visibility and reset.
-4. Once you have walked, the compact transport provides undo, reverse replay, forward replay, a timeline and speed. Event jumps live under **Tools → Replay events**.
-5. **About** reopens the personal introduction, unofficial attribution and links to the official game, demo and store.
+3. Drag to pan and wheel/pinch to zoom. **Tools** (top right) holds the route's events, recording import/export, markers, zoom and **Fit**, trail visibility, card import, the practice card and **Start over**.
+4. While walking, one dock shows **Rotate left · Undo · Replay · Rotate right**. On short landscape screens the rotate buttons move to rails at the sides. Replaying swaps the dock for a transport (**Done · Reverse · Play/Pause · timeline · Speed**); see [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) for every mode.
+5. The **unofficial OneCardMaze helper** chip (top left) reopens the personal introduction, unofficial attribution and links to the official game, demo and store.
 
 The interface is English, bright and deliberately quiet, with a light doodle feel. Its pale background takes a low-saturation hue from both card images, sampled only when the card changes. Neutral or conflicting palettes use neutral paper. No official game artwork is bundled or fetched by the practice demo.
 
@@ -40,13 +40,13 @@ and its markers. Demo markers last for the current session.
 
 ## Export, import and share a recording
 
-Open **Tools → Save / load recording → Export recording** to download one `.ocm.json` file containing
+Open **Tools → Save or load recording… → Export recording** to download one `.ocm.json` file containing
 both faces as lossless PNGs of the active card, the complete route, spin events,
 markers, playhead, zoom and camera. The back face uses the same dimensions as the
 front, as displayed in the app. No remote artwork URL is needed to restore it.
 Exporting during review preserves the entire future route. Animation/movement
 pauses when a file is imported; replay or continue walking from that playhead.
-Import is available from the initial image loader as well as **Save / load recording**.
+Import is available from the card import screen as well as **Save or load recording…**.
 
 Import replaces the current on-screen session, so export it first to keep it.
 Imported sessions last until reload and do not overwrite the previous IndexedDB
@@ -58,20 +58,21 @@ Performance sampling is no longer exposed in the player UI. Development benchmar
 
 ## Review a route
 
-After walking, the transport bar provides:
+Press **Replay** (or Space) to review. The dock becomes a transport:
 
 | Control | Behaviour |
 | --- | --- |
-| **Replay / Space** | Review in recording order; press again to pause |
+| **Replay / Space** | Start reviewing from the beginning, in recording order |
+| **Play · Pause / Space** | Play forward; press again to pause |
 | **Reverse / Shift+Space** | Review from end to start; press again to pause |
 | **Speed** | Cycle 0.1×, 0.2×, 0.5×, 1×, 2×, 4× (default 0.2×) |
-| **Timeline** | Preview any recorded position without changing the route |
-| **Tools → Replay events → Previous / Next** | Jump to the previous/next flip or spin in recording order |
-| **Tools → Replay events** | Jump directly to a numbered event |
-| **Undo / Z** | Step back; hold to rewind |
-| **Play again** | Restart the selected direction after playback completes |
+| **Timeline** | Preview any recorded position without changing the route. Amber shows progress; ticks mark spins and flips |
+| **Done / Esc** | Go back to walking at the end of the route, unchanged |
+| **Tools → Route events** | Jump to the previous/next flip or spin, or directly to a numbered event |
+| **Undo / Z** (while walking) | Step back; hold to rewind. Walking again replaces what you undid |
+| **Replay again** | Restart the same direction after playback completes |
 
-The game stays visible during replay; there is no explanatory overlay. A short completion message appears at the end. The timeline always represents position in the original recording.
+The game stays visible during replay; there is no explanatory overlay. When a replay finishes, a short message says whether it reached the start or the end, and the dock shrinks to **Replay again · Done**. Tapping the map during a replay pauses it. The timeline always represents position in the original recording.
 
 ### Three route layers
 
@@ -147,18 +148,21 @@ panning, or replaying. It is never assigned start/end/door semantics and never
 controls where the walker can go. Place as many as you need.
 
 Select a marker in the panel list to edit its shape, colour, or label everywhere
-at once, or remove it with **×**. **Reset** clears only the walk, preserving
-markers. Markers are stored only in your browser with the uploaded images.
+at once, or remove it with **×**. **Start over** clears only the walk, preserving
+markers, and offers **Undo** for 8 seconds. Markers are stored only in your browser with the uploaded images.
 
 Completion explicitly says **Replay complete** and whether it reached the recorded
-start or end. It preserves the full route and offers **Play again**; it does not
+start or end. It preserves the full route and offers **Replay again** and **Done**; it does not
 assign game outcomes.
 
 ### Recording versus preview
 
 Playing, reversing, seeking, pausing, and event jumps **do not change recorded
-points or turns**. Only explicitly walking or spinning from an earlier position
-branches the route and replaces its future. A fractional seek preserves its exact
+points or turns**. Walking or rotating from an earlier review position first asks
+**Walk from here?**; only confirming branches the route and replaces its future.
+Rewinding with Undo is the exception: like any undo, walking afterwards replaces
+what was undone without asking. Switching or importing a card asks before it
+clears a route. A fractional seek preserves its exact
 position as the new branch endpoint.
 
 ### Compact route storage
@@ -202,7 +206,11 @@ Append `?demo` to open the original practice card directly without the introduct
 
 ## Development and checks
 
-- `companion.css` and `companion-ui.js`: bright UI, introduction, accessible imports and quiet menus.
+- [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md): principles, modes, layout budgets, tokens,
+  components, copy rules and the design process for any UI change. Reference
+  screens are in `docs/design/`.
+- `companion.css` and `companion-ui.js`: tokens and components, introduction,
+  accessible imports, Tools and the other sheets.
 - `index.html`: controls, card-quad WebGL artwork, event state machine, camera,
   free-form markers and local image/marker storage.
 - `gpu-renderer.js`: retained GPU paths with analytic antialiasing, small glyph
@@ -217,6 +225,8 @@ Append `?demo` to open the original practice card directly without the introduct
 node tests/replay.test.js
 node tests/trace.test.js
 node tests/performance.test.js
+node tests/ui-mode.test.js     # modes and route safety
+node tests/ui-states.cjs       # browser QA at six viewports (needs Playwright)
 ```
 
 Coverage includes negative tiles, diagonal crossings, touching an edge without
@@ -249,6 +259,7 @@ Application code is available under the [MIT License](LICENSE).
 
 One Card Maze is a game by Simon Filice and Andrew Dobson. This unofficial tool
 ships no game artwork. Game names and third-party artwork belong to their owners;
-the code license does not grant rights to them. The practice demo uses original supplied artwork,
+the code license does not grant rights to them. The bundled Patrick Hand font
+(`assets/fonts/`) is by Patrick Wagesreiter under the SIL Open Font License 1.1. The practice demo uses original supplied artwork,
 not an official game maze. Get
 real mazes, demos and purchases from [the creators](https://www.onecardmaze.com/).
