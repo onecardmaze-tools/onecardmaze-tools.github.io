@@ -4,14 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>One Card Maze Helper · Unofficial</title>
-<meta name="app-version" content="2026-10-21-card-cache" />
+<meta name="app-version" content="2026-10-21-card-library" />
 <meta name="description" content="Free, open-source One Card Maze helper. Upload both sides of your maze card, explore connected edges, track your path, and replay your walk in your browser." />
 <link rel="canonical" href="https://onecardmaze-tools.github.io/" />
 <meta property="og:title" content="One Card Maze Helper · Unofficial" />
 <meta property="og:description" content="Explore both sides of your One Card Maze card with path tracking, rotation, undo, and replay. Free and open source." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://onecardmaze-tools.github.io/" />
-<link rel="stylesheet" href="companion.css?v=card-cache-1" />
+<link rel="stylesheet" href="companion.css?v=card-library-1" />
 </head>
 <body data-mode="walk" data-route="0">
 <!-- UI: see DESIGN-SYSTEM.md. One dock whose contents follow uiMode(); never stack bars. -->
@@ -103,6 +103,7 @@
   <div class="li static"><svg class="ic" aria-hidden="true"><use href="#i-fit"/></svg>Zoom<span class="seg" role="group" aria-label="Zoom"><button id="btnZoomOut" aria-label="Zoom out (−)">−</button><button id="btnFit" aria-label="Fit card (F)">Fit</button><button id="btnZoomIn" aria-label="Zoom in (+)">+</button></span></div>
   <button class="li" id="btnTrail" role="switch" aria-checked="true"><svg class="ic" aria-hidden="true"><use href="#i-trail"/></svg>Show trail<span class="switch" aria-hidden="true"></span></button>
   <div class="sec">Card</div>
+  <button class="li" id="btnCards"><svg class="ic" aria-hidden="true"><use href="#i-card"/></svg>Saved cards…</button>
   <button class="li" id="btnUpload"><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg>Import my card…</button>
   <button class="li" id="btnPractice"><svg class="ic" aria-hidden="true"><use href="#i-card"/></svg>Switch to practice card</button>
   <div class="hr"></div>
@@ -138,7 +139,8 @@
   <div class="panel sheet-like">
     <div class="sheet-grab" aria-hidden="true"></div>
     <button class="sheet-close" id="btnLoaderClose" aria-label="Close import">×</button><h2 class="sheet-title" id="importTitle">Bring your own card</h2>
-    <p class="sheet-lead">Choose photos or scans of both faces. Your last card is saved in this browser and opens automatically next time. Images are never uploaded.</p>
+    <p class="sheet-lead">Choose both faces to add a card to your saved collection. Images stay in this browser.</p>
+    <label class="card-name" for="cardName">Card name<input id="cardName" type="text" maxlength="80" placeholder="My maze card" /></label>
     <div class="drops">
       <label class="drop" id="dropFront">
         <input id="fileFront" type="file" accept="image/*" hidden />
@@ -152,7 +154,20 @@
       </label>
     </div>
     <button id="btnStart" class="primary wide" disabled>Use this card</button>
-    <div class="textlinks"><button class="linkish" id="btnImportWelcome">Import a recording instead</button><button class="linkish" id="btnDemo">Use practice card</button><button class="linkish" id="btnForget">Forget saved images</button></div>
+    <div class="textlinks"><button class="linkish" id="btnImportWelcome">Import a recording instead</button><button class="linkish" id="btnDemo">Use practice card</button><button class="linkish" id="btnSavedFromImport">Saved cards</button></div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="cardLibrary" role="dialog" aria-modal="true" aria-labelledby="libraryTitle">
+  <div class="panel sheet-like">
+    <div class="sheet-grab" aria-hidden="true"></div>
+    <button class="sheet-close" id="btnLibraryClose" aria-label="Close saved cards">×</button>
+    <h2 class="sheet-title" id="libraryTitle">Saved cards</h2>
+    <p class="sheet-lead">Choose a card to play. Each card keeps its own markers in this browser.</p>
+    <p id="libraryStatus" class="sheet-lead" role="status" aria-live="polite"></p>
+    <ul id="savedCards" class="saved-cards" aria-label="Saved cards"></ul>
+    <button id="btnLibraryImport" class="primary wide">Import another card</button>
+    <button id="btnLibraryPractice" class="linkish wide">Play the practice card</button>
   </div>
 </div>
 
@@ -181,10 +196,11 @@
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="session-codec.js?v=card-cache-1"></script>
-<script src="replay-core.js?v=card-cache-1"></script>
-<script src="trace-renderer.js?v=card-cache-1"></script>
-<script src="gpu-renderer.js?v=card-cache-1"></script>
+<script src="card-library.js?v=card-library-1"></script>
+<script src="session-codec.js?v=card-library-1"></script>
+<script src="replay-core.js?v=card-library-1"></script>
+<script src="trace-renderer.js?v=card-library-1"></script>
+<script src="gpu-renderer.js?v=card-library-1"></script>
 <script>
 (function () {
 "use strict";
@@ -514,7 +530,7 @@ function applyImages(front, back) {
 
   S.ready = true; S.demo = false;
   c.setAttribute("aria-label", "Maze map");
-  S.persistMarkers = false;
+  S.persistMarkers = false; S.savedCardId = null;
   S.markers = []; S.nextMarkerId = 1; S.selectedMarker = null; setMarkerMode(false); syncMarkers();
   S.cam = { x: S.W / 2, y: S.H / 2 };
   S.walker = { x: S.W / 2, y: S.H / 2, tx: null, ty: null };
@@ -555,48 +571,7 @@ function fitView() {
 }
 function clampZoom() { S.zoom = clamp(S.zoom, S.minZoom, S.maxZoom); }
 
-/* ============================================================
-   PERSISTENCE (IndexedDB)
-   ============================================================ */
-function idb() {
-  return new Promise((res, rej) => {
-    const r = indexedDB.open("ocm-walker", 1);
-    r.onupgradeneeded = () => r.result.createObjectStore("imgs");
-    r.onsuccess = () => res(r.result);
-    r.onerror = () => rej(r.error);
-  });
-}
-// Save both faces and their markers together: an interrupted write must never
-// leave a front face from one card paired with the back of another.
-async function idbWrite(entries, clear = false) {
-  const db = await idb();
-  try {
-    await new Promise((res, rej) => {
-      const tx = db.transaction("imgs", "readwrite");
-      tx.oncomplete = () => res();
-      tx.onerror = tx.onabort = () => rej(tx.error || new Error("Card storage unavailable"));
-      try {
-        const store = tx.objectStore("imgs");
-        if (clear) store.clear();
-        for (const [key, value] of entries) store.put(value, key);
-      } catch (error) { tx.abort(); rej(error); }
-    });
-  } finally { db.close(); }
-}
-function idbPut(key, value) { return idbWrite([[key, value]]); }
-async function idbGet(key) {
-  const db = await idb();
-  try {
-    return await new Promise((res, rej) => {
-      const tx = db.transaction("imgs", "readonly");
-      const rq = tx.objectStore("imgs").get(key);
-      tx.oncomplete = () => res(rq.result);
-      tx.onerror = tx.onabort = () => rej(tx.error || new Error("Card storage unavailable"));
-    });
-  } finally { db.close(); }
-}
-function idbClear() { return idbWrite([], true); }
-
+// Card images and per-card markers are stored by card-library.js.
 /* ============================================================
    CAMERA / TRANSFORMS
    ============================================================ */
@@ -1269,7 +1244,9 @@ let markerSaveQueue = Promise.resolve();
 function saveMarkers() {
   if (!S.persistMarkers) return;
   const snapshot = S.markers.map(m => ({ ...m }));
-  markerSaveQueue = markerSaveQueue.catch(() => {}).then(() => idbPut("markers", snapshot)).catch(() => {});
+  const id = S.savedCardId;
+  if (!id) return;
+  markerSaveQueue = markerSaveQueue.catch(() => {}).then(() => CardLibrary.saveMarkers(id, snapshot)).catch(() => {});
 }
 function setMarkerMode(on) {
   S.placingMarker = !!on;
@@ -1916,29 +1893,74 @@ async function handleFile(side, file) {
   const url = URL.createObjectURL(file);
   try {
     const img = await loadImage(url);
-    pending[side] = { img: img, blob: file };
+    if (pending[side]?.url) URL.revokeObjectURL(pending[side].url);
+    pending[side] = { img: img, blob: file, url };
+    if (side === "front" && !$("cardName").value) $("cardName").value = file.name.replace(/\.[^.]+$/, "").slice(0, 80);
     markDrop(side, url);
     await maybeActivate();
-  } catch { toast("Could not read that image"); }
+  } catch { URL.revokeObjectURL(url); toast("Could not read that image"); }
 }
 
-async function maybeActivate() {
-  if (pending.front && pending.back) {
-    applyImages(pending.front.img, pending.back.img);
-    S.persistMarkers = true;
-    const front = pending.front, back = pending.back;
-    toast("Card ready · saving in this browser…");
-    try {
-      await idbWrite([["front", front.blob], ["back", back.blob], ["markers", []]]);
-      if (pending.front === front && pending.back === back)
-        toast("Card saved in this browser · ready next time");
-    } catch {
-      if (pending.front === front && pending.back === back) {
-        S.persistMarkers = false;
-        toast("Card ready, but could not save in this browser. Keep the images for next time.", 6500);
-      }
-    }
+function maybeActivate() {
+  $("btnStart").disabled = !(pending.front && pending.back);
+}
+function prepareImport() {
+  for (const face of Object.values(pending)) if (face?.url) URL.revokeObjectURL(face.url);
+  pending = { front: null, back: null };
+  $("cardName").value = "";
+  for (const side of ["Front", "Back"]) {
+    $("drop" + side).classList.remove("has");
+    $("thumb" + side).removeAttribute("src");
+    $("file" + side).value = "";
   }
+  maybeActivate();
+}
+async function useSavedCard(id) {
+  try {
+    await markerSaveQueue;
+    const card = await CardLibrary.get(id);
+    if (!card) throw new Error("Card missing");
+    const urls = [URL.createObjectURL(card.front), URL.createObjectURL(card.back)];
+    let front, back;
+    try { [front, back] = await Promise.all(urls.map(loadImage)); }
+    finally { urls.forEach(url => URL.revokeObjectURL(url)); }
+    applyImages(front, back);
+    S.savedCardId = id; S.persistMarkers = true;
+    restoreMarkers(card.markers); startNow();
+    window.MazeUI?.closeLibrary();
+  } catch {
+    await window.MazeUI?.openLibrary();
+    $("libraryStatus").textContent = "Could not open that card. Try importing its images again.";
+  }
+}
+async function refreshSavedCards() {
+  const list = $("savedCards"); list.replaceChildren();
+  $("libraryStatus").textContent = "Loading saved cards…";
+  try {
+    const cards = await CardLibrary.list();
+    $("libraryStatus").textContent = cards.length ? "" : "No saved cards yet. Import both faces to add one.";
+    for (const card of cards) {
+      const row = document.createElement("li"), play = document.createElement("button"), remove = document.createElement("button");
+      play.className = "saved-card-play";
+      if (card.thumbnail) { const image = document.createElement("img"); image.src = card.thumbnail; image.alt = ""; play.appendChild(image); }
+      const name = document.createElement("span"); name.textContent = card.name; play.appendChild(name);
+      play.setAttribute("aria-label", "Play " + card.name);
+      play.addEventListener("click", () => {
+        window.MazeUI?.closeLibrary();
+        guardRoute("Switch card", () => useSavedCard(card.id));
+      });
+      remove.textContent = "Delete"; remove.setAttribute("aria-label", "Delete " + card.name);
+      remove.addEventListener("click", async () => {
+        if (!window.confirm('Delete “' + card.name + '” and its saved markers from this browser?')) return;
+        try {
+          await markerSaveQueue; await CardLibrary.remove(card.id);
+          if (S.savedCardId === card.id) { S.persistMarkers = false; S.savedCardId = null; }
+          await refreshSavedCards(); $("btnLibraryImport").focus();
+        } catch { $("libraryStatus").textContent = "Could not delete that card. Please try again."; }
+      });
+      row.appendChild(play); row.appendChild(remove); list.appendChild(row);
+    }
+  } catch { $("libraryStatus").textContent = "Saved cards are unavailable. Check this browser’s storage settings."; }
 }
 
 $("fileFront").addEventListener("change", (e) => handleFile("front", e.target.files[0]));
@@ -1962,6 +1984,7 @@ async function loadDemo(autoStart) {
       loadImage('assets/demo/front.png'),loadImage('assets/demo/back.png')
     ]);
     // Keep the current card intact until both images have decoded.
+    for(const face of Object.values(pending))if(face?.url)URL.revokeObjectURL(face.url);
     pending={front:null,back:null};
     for(const side of ['Front','Back']){
       $('drop'+side).classList.remove('has');$('thumb'+side).removeAttribute('src');
@@ -1990,23 +2013,29 @@ function startNow() {
   setHint("Click a spot to walk there.");
 }
 
-$("btnForget").addEventListener("click", async () => {
-  try { await idbClear(); } catch { toast("Could not clear saved images. Please try again."); return; }
-  S.persistMarkers=false;
-  pending = { front: null, back: null };
-  for (const side of ["Front", "Back"]) {
-    $("drop" + side).classList.remove("has");
-    $("thumb" + side).removeAttribute("src");
-    $("file" + side).value = "";
-  }
-  toast("Saved images cleared");
-});
-
-$("btnStart").addEventListener("click", () => {
-  if (!S.ready) return;
-  loader.classList.add("hidden");
-  invalidate();
-  if (!S.started) setHint("<b>Click anywhere</b> on the card to drop your walker and begin.");
+let cardImportBusy = false;
+$("btnStart").addEventListener("click", async () => {
+  if (cardImportBusy || !pending.front || !pending.back || $("btnStart").disabled) return;
+  cardImportBusy = true;
+  $("btnStart").disabled = true;
+  const front = pending.front, back = pending.back;
+  const card = { id: crypto.randomUUID(), name: $("cardName").value.trim() || "My maze card",
+    front: front.blob, back: back.blob, markers: [], createdAt: Date.now(), thumbnail: "" };
+  try {
+    const thumb = document.createElement("canvas"); thumb.width = 80; thumb.height = 112;
+    thumb.getContext("2d").drawImage(front.img, 0, 0, 80, 112);
+    card.thumbnail = thumb.toDataURL("image/jpeg", .7);
+  } catch {} // A thumbnail is optional; full card images remain unchanged.
+  await markerSaveQueue;
+  applyImages(front.img, back.img);
+  $("btnStart").disabled = true;
+  try {
+    await CardLibrary.save(card);
+    S.savedCardId = card.id; S.persistMarkers = true;
+    toast("Card saved in this browser · ready next time");
+  } catch { toast("Card ready, but could not save in this browser. Keep the images for next time.", 6500); }
+  startNow();
+  cardImportBusy = false;
 });
 
 /* User-triggered portable recordings. Artwork is copied from the active atlas,
@@ -2250,33 +2279,19 @@ window.OCM = { S, CFG, gl, foreground, render, update, applyImages, w2s, s2w, re
   artCv, uploadArt, fitView, loadDemo, camTarget, traceLayout, captureSession, restoreSessionState, importSessionFile,
   camGoal: () => S.camGoal, trailAt, walkedTo, setCursor, play, undoOnce, commitWalk,
   refreshTrace, clearWalk, syncTimeline, uiMode, finishReview, confirmYes, confirmNo, guardRoute, doReset,
-  restoreRoute, actionToast, syncSheets, uiInsets, setMarkerMode, recordPosition, addMarker, restoreMarkers, markerCopies, replayModel, advanceReplay, cardLight, cardCenter, spin, startNow, tap, seekEvent, orientationAt };
+  restoreRoute, actionToast, syncSheets, uiInsets, prepareImport, refreshSavedCards, useSavedCard, setMarkerMode, recordPosition, addMarker, restoreMarkers, markerCopies, replayModel, advanceReplay, cardLight, cardCenter, spin, startNow, tap, seekEvent, orientationAt };
 
 window.OCM.startup = (async () => {
-  if (new URLSearchParams(location.search).has("demo")) { await loadDemo(true); return; }
-  try {
-    const [fb, bb, markers] = await Promise.all([idbGet("front"), idbGet("back"), idbGet("markers")]);
-    if (fb && bb) {
-      const fu = URL.createObjectURL(fb), bu = URL.createObjectURL(bb);
-      const [fi, bi] = await Promise.all([loadImage(fu), loadImage(bu)]);
-      pending.front = { img: fi, blob: fb };
-      pending.back = { img: bi, blob: bb };
-      markDrop("front", fu); markDrop("back", bu);
-      applyImages(fi, bi);
-      S.persistMarkers = true;
-      restoreMarkers(markers);
-      startNow();
-      toast("Saved card restored");
-      return true;
-    }
-  } catch {} // Missing, unreadable or unavailable storage falls back to practice.
+  if (new URLSearchParams(location.search).has("demo")) { await loadDemo(true); return false; }
+  let cards = [];
+  try { cards = await CardLibrary.list(); } catch {}
   await loadDemo(true);
-  return false;
+  return cards.length > 0;
 })();
 
 scheduleFrame();
 })();
 </script>
-<script src="companion-ui.js?v=card-cache-1" defer></script>
+<script src="companion-ui.js?v=card-library-1" defer></script>
 </body>
 </html>

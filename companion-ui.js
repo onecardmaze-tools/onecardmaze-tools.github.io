@@ -6,7 +6,7 @@
   const $ = id => document.getElementById(id);
   const app = window.OCM;
   if (!app) return;
-  const intro = $('help'), loader = $('loader'), menu = $('moreMenu');
+  const intro = $('help'), loader = $('loader'), library = $('cardLibrary'), menu = $('moreMenu');
   const sheets = ['moreMenu', 'markerPanel', 'sessionPanel'];
   const opener = { moreMenu: 'btnMore', markerPanel: 'btnMarkers', sessionPanel: 'btnSession' };
   let importFocus = null;
@@ -40,18 +40,46 @@
     app.S.play = 0; app.S.undoHeld = false; app.S.walker.tx = app.S.walker.ty = null;
     app.syncTimeline();
     importFocus = document.activeElement;
+    library.classList.add('hidden');
+    app.prepareImport();
     loader.classList.remove('hidden');
     $('hud').inert = true; $('stage').inert = true;
-    $(app.S.ready && !$('btnStart').disabled ? 'btnStart' : 'fileFront').focus();
+    $('cardName').focus();
   }
   function closeImport() {
     loader.classList.add('hidden');
     $('hud').inert = false; $('stage').inert = false;
     (importFocus?.isConnected && importFocus.getClientRects().length ? importFocus : $('btnMore')).focus();
   }
-  window.MazeUI = { openImport, closeAll };
+  async function openLibrary() {
+    if (intro.open) intro.close();
+    closeAll(false);
+    importFocus = document.activeElement;
+    loader.classList.add('hidden'); library.classList.remove('hidden');
+    app.S.play = 0; app.S.undoHeld = false; app.S.walker.tx = app.S.walker.ty = null;
+    app.syncTimeline();
+    $('hud').inert = true; $('stage').inert = true;
+    $('btnLibraryImport').focus();
+    await app.refreshSavedCards();
+    if (!library.classList.contains('hidden'))
+      (library.querySelector('.saved-card-play') || $('btnLibraryImport')).focus();
+  }
+  function closeLibrary() {
+    library.classList.add('hidden');
+    $('hud').inert = false; $('stage').inert = false;
+    $('btnMore').focus();
+  }
+  window.MazeUI = { openImport, closeAll, openLibrary, closeLibrary };
+  $('btnCards').addEventListener('click', openLibrary);
+  $('btnLibraryClose').addEventListener('click', closeLibrary);
+  $('btnSavedFromImport').addEventListener('click', openLibrary);
+  $('btnLibraryImport').addEventListener('click', () => {
+    closeLibrary(); app.guardRoute('Import card', openImport);
+  });
+  $('btnLibraryPractice').addEventListener('click', () => {
+    closeLibrary(); app.guardRoute('Switch card', () => app.loadDemo(true));
+  });
   $('btnLoaderClose').addEventListener('click', closeImport);
-  $('btnStart').addEventListener('click', closeImport);
   $('btnDemo').addEventListener('click', closeImport);
   $('btnImportWelcome').addEventListener('click', () => { closeImport(); openSheet('sessionPanel', 'btnImportSession'); });
   $('btnIntroImport').addEventListener('click', openImport);
@@ -92,7 +120,7 @@
 
   // Upload/recording completion may close the existing loader from the engine.
   const observer = new MutationObserver(() => {
-    if (loader.classList.contains('hidden')) {
+    if (loader.classList.contains('hidden') && library.classList.contains('hidden')) {
       $('hud').inert = false; $('stage').inert = false;
     }
   });
@@ -113,11 +141,13 @@
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       // Close the top-most surface only; the engine handles Esc for modes.
+      if (!library.classList.contains('hidden')) { closeLibrary(); e.stopPropagation(); return; }
       if (!loader.classList.contains('hidden')) { closeImport(); e.stopPropagation(); return; }
       if (closeAll(true)) { e.stopPropagation(); return; }
     }
-    if (e.key !== 'Tab' || loader.classList.contains('hidden')) return;
-    const focusable = Array.from(loader.querySelectorAll('button,input,a')).filter(el => !el.disabled && el.getClientRects().length);
+    const modal = !library.classList.contains('hidden') ? library : !loader.classList.contains('hidden') ? loader : null;
+    if (e.key !== 'Tab' || !modal) return;
+    const focusable = Array.from(modal.querySelectorAll('button,input,a')).filter(el => !el.disabled && el.getClientRects().length);
     const first = focusable[0], last = focusable[focusable.length - 1];
     if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
@@ -128,6 +158,6 @@
   });
   // ?demo remains an explicit quick-open route, including benchmark fixtures.
   if (!new URLSearchParams(location.search).has('demo')) {
-    app.startup.then(restored => { if (!restored && !intro.open) intro.showModal(); });
+    app.startup.then(saved => { if (saved) openLibrary(); else if (!intro.open) intro.showModal(); });
   }
 })();

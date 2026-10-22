@@ -33,15 +33,19 @@ changes ease in and out, including when focus passes to the next card. Markers
 retain their high-contrast appearance on every copy.
 
 Uploaded images are saved only in your browser's IndexedDB and are never uploaded.
-The most recently imported pair opens automatically on your next visit in the
-same browser, without the introduction. A toast confirms that the card was saved;
-if browser storage is unavailable or full, you can still play and a message
-explains that it could not be saved. **Import my card → Forget saved images**
-removes the cached card and markers. Clearing site data also removes them.
-The route lasts for the current page session. Markers are saved locally alongside
-your uploaded card and restored on reload. Loading a different card clears its
-on-screen markers; loading the demo does not overwrite the saved uploaded card
-and its markers. Demo markers last for the current session.
+Import both faces, optionally name the card, then choose **Use this card** to
+add it to your collection. Importing another card keeps the previous cards.
+On your next visit, **Saved cards** opens with names and thumbnails so you can
+choose which card to play. You can also open it from **Tools → Saved cards…**.
+Each card keeps its own markers. The previous single-card cache migrates
+automatically as **Saved card**. **Delete** removes one card and its saved markers
+after confirmation; clearing site data removes the collection.
+
+A toast confirms saving; if browser storage is unavailable or full, you can
+still play and a message explains that the card could not be saved. Routes last
+for the current page session. Switching cards starts a fresh route and asks
+before discarding an existing walk. Practice cards and imported recordings do
+not overwrite the collection or its markers.
 
 ## Export, import and share a recording
 
@@ -214,6 +218,7 @@ Append `?demo` to open the original practice card directly without the introduct
 - [`DESIGN-SYSTEM.md`](DESIGN-SYSTEM.md): principles, modes, layout budgets, tokens,
   components, copy rules and the design process for any UI change. Reference
   screens are in `docs/design/`.
+- `card-library.js`: local multi-card storage, per-card markers and legacy cache migration.
 - `companion.css` and `companion-ui.js`: tokens and components, introduction,
   accessible imports, Tools and the other sheets.
 - `index.html`: controls, card-quad WebGL artwork, event state machine, camera,

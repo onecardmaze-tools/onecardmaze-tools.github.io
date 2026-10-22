@@ -235,6 +235,15 @@ button.wide{width:100%;margin-top:8px;min-height:48px}
 .drop.has .dtag{position:absolute;left:6px;top:6px;z-index:1;background:var(--paper);border-radius:4px;padding:3px 6px;font-size:15px}
 .textlinks{display:flex;flex-wrap:wrap;justify-content:center;gap:0 14px;margin-top:6px;font-size:var(--t-sm)}
 
+/* Saved cards reuse the import modal; no extra map chrome. */
+.card-name{display:flex;flex-direction:column;gap:var(--s1);font-size:var(--t-sm);color:var(--ink-2)}
+.card-name input{width:100%;min-height:var(--tap);font-size:var(--t-lg);padding:var(--s2) var(--s3);border:1px solid var(--edge);border-radius:var(--r-control);background:var(--paper)}
+.saved-cards{list-style:none;padding:0;margin:var(--s3) 0;display:flex;flex-direction:column;gap:var(--s2)}
+.saved-cards li{display:flex;align-items:center;gap:var(--s2)}
+.saved-card-play{display:flex;align-items:center;gap:var(--s3);flex:1;min-width:0;text-align:left;white-space:normal;overflow-wrap:anywhere}
+.saved-card-play img{width:calc(var(--tap) + var(--s4));height:calc(var(--tap) + var(--s4) * 2);object-fit:contain;flex-shrink:0;border-radius:var(--r-control);background:var(--bg)}
+.saved-card-play span{min-width:0}
+
 #help{border:1.5px solid var(--edge);border-radius:var(--r-surface);padding:0;background:var(--paper);color:var(--ink);
   width:min(480px,calc(100vw - 24px));max-height:calc(100vh - 24px);box-shadow:var(--shadow-surface),var(--shadow-float)}
 #help::backdrop{background:var(--scrim)}
