@@ -1,0 +1,872 @@
+{
+  "trace": "/private/tmp/ocm-20261022-unified-final-replay.json.gz",
+  "benchmark": "/Users/xuezhonghao/Projects/OneCardMaze/benchmarks/rendering-2026-10-22/fullsize-unified-events-interaction.json",
+  "traceMeasurementStartUs": 652263850106,
+  "analysisOnly": true,
+  "conclusions": [
+    "First 168.6 ms RAF gap aligns with CrGpuMain SkiaOutputSurfaceImplOnGpu::SwapBuffers from +541.887 to +739.309 ms: 197.422 ms wall time but only 4.464 ms thread CPU. This establishes an output/swap-path stall, not a 197 ms JavaScript or UI paint task.",
+    "While that swap remains outstanding, compositor BeginFrame notifications continue (+579.894 through +731.801 ms), but SendBeginMainFrame/RAF dispatch resumes only after swap completion (+739.383 ms finish swap, +739.768 ms SendBeginMainFrame, +739.859 ms RAF). This supports compositor/output backpressure causing the RAF gap.",
+    "Second 49 ms RAF gap coincides with long DrawToScheduleOverlay/pending-swap async stages: queued at +2081.919/+2097.886 ms, reaching overlay scheduling only at +2157.403/+2160.347 ms. Renderer main has no corresponding long JavaScript, layout or paint span. At +2131.737 ms DidNotSubmitInLastFrame explicitly reports is_waiting_on_main=false.",
+    "The first spin starts at +2064.3 ms with one 7.2 ms app frame; this precedes the second stall and warrants inspecting first-use spin marker/texture work. The trace does not establish it as the cause. The first larger stall happens before any spin, so spin alone cannot explain both.",
+    "No shader/compile events are recorded, and detailed gpu command/ANGLE/Metal/driver categories are absent. Neither cold shader compilation, GPU execution saturation, OS compositor wait, resource allocation nor descheduling can be distinguished reliably from this trace. Do not label this simply machine noise or assert shader compilation.",
+    "Recorded UI Paint/RasterTask maxima near both stalls are under 0.31 ms; therefore observed long UI paint/raster is not supported as the explanation. This does not exclude uninstrumented GPU/driver work."
+  ],
+  "windows": [
+    {
+      "rangeMs": [
+        500,
+        745
+      ],
+      "longFrame": {
+        "index": 31,
+        "sinceStartMs": 739.8999999761581,
+        "intervalMs": 168.60000000000014,
+        "cpuMs": 1.2000000476837158,
+        "previousCpuMs": 1.7000000476837158,
+        "callbackDelayMs": 7.999999976158051,
+        "state": {
+          "rotation": 0,
+          "cursor": 5.570005271583989,
+          "walker": [
+            473.19035319612726,
+            707.1305746026549
+          ],
+          "camera": [
+            375,
+            525
+          ],
+          "vertices": 48,
+          "tiles": 9,
+          "play": 1,
+          "phase": null,
+          "phaseElapsed": null,
+          "phaseEvent": null,
+          "eventDone": 0,
+          "follow": true,
+          "manualPivot": false,
+          "mode": "playing"
+        }
+      },
+      "previousSample": {
+        "t": 1250.3,
+        "entered": 1250.6999999284744,
+        "continued": true,
+        "intervalMs": 15.099999999999909,
+        "idleGapMs": null,
+        "render": 1,
+        "timeline": 0,
+        "hud": 0,
+        "ended": 1252.3999999761581,
+        "cpuMs": 1.7000000476837158,
+        "continuation": true,
+        "state": {
+          "rotation": 0,
+          "cursor": 5.0776073515358995,
+          "walker": [
+            440.1996925529053,
+            653.4592013174131
+          ],
+          "camera": [
+            375,
+            525
+          ],
+          "vertices": 48,
+          "tiles": 9,
+          "play": 1,
+          "phase": null,
+          "phaseElapsed": null,
+          "phaseEvent": null,
+          "eventDone": 0,
+          "follow": true,
+          "manualPivot": false,
+          "mode": "playing"
+        }
+      },
+      "currentSample": {
+        "t": 1418.9,
+        "entered": 1426.8999999761581,
+        "continued": true,
+        "intervalMs": 168.60000000000014,
+        "idleGapMs": null,
+        "render": 1,
+        "timeline": 1,
+        "hud": 1,
+        "ended": 1428.1000000238419,
+        "cpuMs": 1.2000000476837158,
+        "continuation": true,
+        "state": {
+          "rotation": 0,
+          "cursor": 5.570005271583989,
+          "walker": [
+            473.19035319612726,
+            707.1305746026549
+          ],
+          "camera": [
+            375,
+            525
+          ],
+          "vertices": 48,
+          "tiles": 9,
+          "play": 1,
+          "phase": null,
+          "phaseElapsed": null,
+          "phaseEvent": null,
+          "eventDone": 0,
+          "follow": true,
+          "manualPivot": false,
+          "mode": "playing"
+        }
+      },
+      "longSynchronousEvents": [
+        {
+          "name": "SkiaOutputSurfaceImplOnGpu::SwapBuffers",
+          "thread": "CrGpuMain",
+          "pid": 41997,
+          "tid": 16636787,
+          "traceTsUs": 652264391993,
+          "sinceStartMs": 541.887,
+          "durationMs": 197.422,
+          "threadCpuMs": 4.464,
+          "args": {}
+        },
+        {
+          "name": "Graphics.Pipeline",
+          "thread": "CrGpuMain",
+          "pid": 41997,
+          "tid": 16636787,
+          "traceTsUs": 652264392003,
+          "sinceStartMs": 541.897,
+          "durationMs": 197.393,
+          "threadCpuMs": 4.455,
+          "args": {
+            "chrome_graphics_pipeline": {
+              "display_trace_id": -3060874152630432934,
+              "step": "STEP_BUFFER_SWAP_POST_SUBMIT"
+            },
+            "current_task": {
+              "event_offset_from_task_start_time_us": 18,
+              "task_start_time_us": 652264391987
+            }
+          }
+        },
+        {
+          "name": "ProxyMain::BeginMainFrame",
+          "thread": "CrRendererMain",
+          "pid": 42104,
+          "tid": 16639393,
+          "traceTsUs": 652264363846,
+          "sinceStartMs": 513.74,
+          "durationMs": 2.836,
+          "threadCpuMs": 2.803,
+          "args": {
+            "begin_frame_id": 79,
+            "main_frame_pipeline": {
+              "main_frame_id": 2001881254482755946,
+              "step": "BEGIN_MAIN_FRAME"
+            }
+          }
+        },
+        {
+          "name": "ProxyMain::BeginMainFrame",
+          "thread": "CrRendererMain",
+          "pid": 42104,
+          "tid": 16639393,
+          "traceTsUs": 652264589901,
+          "sinceStartMs": 739.795,
+          "durationMs": 2.521,
+          "threadCpuMs": 2.465,
+          "args": {
+            "begin_frame_id": 92,
+            "main_frame_pipeline": {
+              "main_frame_id": 2001881254482755875,
+              "step": "BEGIN_MAIN_FRAME"
+            }
+          }
+        },
+        {
+          "name": "ProxyMain::BeginMainFrame",
+          "thread": "CrRendererMain",
+          "pid": 42104,
+          "tid": 16639393,
+          "traceTsUs": 652264413642,
+          "sinceStartMs": 563.536,
+          "durationMs": 2.06,
+          "threadCpuMs": 2.02,
+          "args": {
+            "begin_frame_id": 82,
+            "main_frame_pipeline": {
+              "main_frame_id": 2001881254482755855,
+              "step": "BEGIN_MAIN_FRAME"
+            }
+          }
+        },
+        {
+          "name": "FireAnimationFrame",
+          "thread": "CrRendererMain",
+          "pid": 42104,
+          "tid": 16639393,
+          "traceTsUs": 652264413692,
+          "sinceStartMs": 563.586,
+          "durationMs": 1.771,
+          "threadCpuMs": 1.747,
+          "args": {
+            "data": {
+              "frame": "32C1952EDBCA571797A1B930F6103BAA",
+              "id": 36
+            }
+          }
+        },
+        {
+          "name": "FunctionCall",
+          "thread": "CrRendererMain",
+          "pid": 42104,
+          "tid": 16639393,
+          "traceTsUs": 652264413707,
+          "sinceStartMs": 563.601,
+          "durationMs": 1.75,
+          "threadCpuMs": 1.727,
+          "args": {
+            "data": {
+              "columnNumber": 15,
+              "frame": "32C1952EDBCA571797A1B930F6103BAA",
+              "functionName": "frame",
+              "isolate": "9464749213759463486",
+              "lineNumber": 1783,
+              "sampleTraceId": 2283019930255633,
+              "scriptId": "11",
+              "url": "http://127.0.0.1:63217/?demo"
+            }
+          }
+        },
+        {
+          "name": "ProxyMain::BeginMainFrame",
+          "thread": "CrRendererMain",
+          "pid": 42104,
+          "tid": 16639393,
+          "traceTsUs": 652264380402,
+          "sinceStartMs": 530.296,
+          "durationMs": 1.711,
+          "threadCpuMs": 1.681,
+          "args": {
+            "begin_frame_id": 80,
+            "main_frame_pipeline": {
+              "main_frame_id": 2001881254482755961,
+              "step": "BEGIN_MAIN_FRAME"
+            }
+          }
+        }
+      ],
+      "longAsyncStages": [
+        {
+          "name": "Graphics.Pipeline.DrawAndSwap",
+          "thread": "VizCompositorThread",
+          "pid": 41997,
+          "tid": 16636882,
+          "traceTsUs": 652264367693,
+          "sinceStartMs": 517.587,
+          "durationMs": 37.193,
+          "threadCpuMs": 0.0,
+          "args": {}
+        },
+        {
+          "name": "DisplayScheduler:pending_swaps",
+          "thread": "VizCompositorThread",
+          "pid": 41997,
+          "tid": 16636882,
+          "traceTsUs": 652264382767,
+          "sinceStartMs": 532.661,
+          "durationMs": 206.864,
+          "threadCpuMs": 0.0,
+          "args": {}
+        },
+        {
+          "name": "DrawToScheduleOverlay",
+          "thread": "VizCompositorThread",
+          "pid": 41997,
+          "tid": 16636882,
+          "traceTsUs": 652264400672,
+          "sinceStartMs": 550.566,
+          "durationMs": 191.027,
+          "threadCpuMs": 0.0,
+          "args": {}
+        },
+        {
+          "name": "StartDrawToSwapStart",
+          "thread": "Compositor",
+          "pid": 42104,
+          "tid": 16639433,
+          "traceTsUs": 652264400672,
+          "sinceStartMs": 550.566,
+          "durationMs": 191.103,
+          "threadCpuMs": 0.0,
+          "args": {}
+        },
+        {
+          "name": "DisplayScheduler:pending_swaps",
+          "thread": "VizCompositorThread",
+          "pid": 41997,
+          "tid": 16636882,
+          "traceTsUs": 652264400710,
+          "sinceStartMs": 550.604,
+          "durationMs": 191.323,
+          "threadCpuMs": 0.0,
+          "args": {}
+        },
+        {
+          "name": "Graphics.Pipeline.DrawAndSwap",
+          "thread": "VizCompositorThread",
+          "pid": 41997,
+          "tid": 16636882,
+          "traceTsUs": 652264382700,
+          "sinceStartMs": 532.594,
+          "durationMs": 238.858,
+          "threadCpuMs": 0.0,
+          "args": {}
+        },
+        {
+          "name": "Graphics.Pipeline.DrawAndSwap",
+          "thread": "VizCompositorThread",
+          "pid": 41997,
+          "tid": 16636882,
+          "traceTsUs": 652264400644,
+          "sinceStartMs": 550.538,
+          "durationMs": 220.919,
+          "threadCpuMs": 0.0,
+          "args": {}
+        },
+        {
+          "name": "Graphics.Pipeline.DrawAndSwap",
+          "thread": "VizCompositorThread",
+          "pid": 41997,
+          "tid": 16636882,
+          "traceTsUs": 652264589716,
+          "sinceStartMs": 739.61,
+          "durationMs": 48.514,
+          "threadCpuMs": 0.0,
+          "args": {}
+        }
+      ],
+      "mainThreadPaintAndRaster": {
+        "Paint": {
+          "count": 4,
+          "maxMs": 0.147
+        },
+        "PrePaint": {
+          "count": 6,
+          "maxMs": 0.159
+        },
+        "Layout": {
+          "count": 2,
+          "maxMs": 0.259
+        },
+        "UpdateLayoutTree": {
+          "count": 2,
+          "maxMs": 0.295
+        },
+        "RasterTask": {
+          "count": 2,
+          "maxMs": 0.293
+        },
+        "GpuRasterBuffer::Playback": {
+          "count": 2,
+          "maxMs": 0.286
+        },
+        "FireAnimationFrame": {
+          "count": 5,
+          "maxMs": 1.771
+        }
+      }
+    },
+    {
+      "rangeMs": [
+        2040,
+        2165
+      ],
+      "longFrame": {
+        "index": 114,
+        "sinceStartMs": 2158,
+        "intervalMs": 49,
+        "cpuMs": 1.600000023841858,
+        "previousCpuMs": 1.5,
+        "callbackDelayMs": 11.199999999999818,
+        "state": {
+          "rotation": 0,
+          "cursor": 11,
+          "walker": [
+            297,
+            459
+          ],
+          "camera": [
+            375,
+            525
+          ],
+          "vertices": 48,
+          "tiles": 9,
+          "play": 1,
+          "phase": "spin",
+          "phaseElapsed": 0.08280000000000018,
+          "phaseEvent": 0,
+          "eventDone": 1,
+          "follow": true,
+          "manualPivot": false,
+          "mode": "playing"
+        }
+      },
+      "previousSample": {
+        "t": 2784.8,
+        "entered": 2785,
+        "continued": true,
+        "intervalMs": 16.100000000000364,
+        "idleGapMs": null,
+        "render": 1,
+        "timeline": 0,
+        "hud": 0,
+        "ended": 2786.5,
+        "cpuMs": 1.5,
+        "continuation": true,
+        "state": {
+          "rotation": 0,
+          "cursor": 11,
+          "walker": [
+            297,
+            459
+          ],
+          "camera": [
+            375,
+            525
+          ],
+          "vertices": 48,
+          "tiles": 9,
+          "play": 1,
+          "phase": "spin",
+          "phaseElapsed": 0.03380000000000018,
+          "phaseEvent": 0,
+          "eventDone": 1,
+          "follow": true,
+          "manualPivot": false,
+          "mode": "playing"
+        }
+      },
+      "currentSample": {
+        "t": 2833.8,
+        "entered": 2845,
+        "continued": true,
+        "intervalMs": 49,
+        "idleGapMs": null,
+        "render": 1,
+        "timeline": 1,
+        "hud": 1,
+        "ended": 2846.600000023842,
+        "cpuMs": 1.600000023841858,
+        "continuation": true,
+        "state": {
+          "rotation": 0,
+          "cursor": 11,
+          "walker": [
+            297,
+            459
+          ],
+          "camera": [
+            375,
+            525
+          ],
+          "vertices": 48,
+          "tiles": 9,
+          "play": 1,
+          "phase": "spin",
+          "phaseElapsed": 0.08280000000000018,
+          "phaseEvent": 0,
+          "eventDone": 1,
+          "follow": true,
+          "manualPivot": false,
+          "mode": "playing"
+        }
+      },
+      "longSynchronousEvents": [
+        {
+          "name": "ProxyMain::BeginMainFrame",
+          "thread": "CrRendererMain",
+          "pid": 42104,
+          "tid": 16639393,
+          "traceTsUs": 652265914373,
+          "sinceStartMs": 2064.267,
+          "durationMs": 7.473,
+          "threadCpuMs": 7.45,
+          "args": {
+            "begin_frame_id": 172,
+            "main_frame_pipeline": {
+              "main_frame_id": 2001881254482759017,
+              "step": "BEGIN_MAIN_FRAME"
+            }
+          }
+        },
+        {
+          "name": "FireAnimationFrame",
+          "thread": "CrRendererMain",
+          "pid": 42104,
+          "tid": 16639393,
+          "traceTsUs": 652265914426,
+          "sinceStartMs": 2064.32,
+          "durationMs": 7.222,
+          "threadCpuMs": 7.218,
+          "args": {
+            "data": {
+              "frame": "32C1952EDBCA571797A1B930F6103BAA",
+              "id": 117
+            }
+          }
+        },
+        {
+          "name": "FunctionCall",
+          "thread": "CrRendererMain",
+          "pid": 42104,
+          "tid": 16639393,
+          "traceTsUs": 652265914443,
+          "sinceStartMs": 2064.337,
+          "durationMs": 7.197,
+          "threadCpuMs": 7.194,
+          "args": {
+            "data": {
+              "columnNumber": 15,
+              "frame": "32C1952EDBCA571797A1B930F6103BAA",
+              "functionName": "frame",
+              "isolate": "9464749213759463486",
+              "lineNumber": 1783,
+              "sampleTraceId": 2283019930258795,
+              "scriptId": "11",
+              "url": "http://127.0.0.1:63217/?demo"
+            }
+          }
+        },
+        {
+          "name": "SkiaOutputSurfaceImplOnGpu::SwapBuffers",
+          "thread": "CrGpuMain",
+          "pid": 41997,
+          "tid": 16636787,
+          "traceTsUs": 652266010441,
+          "sinceStartMs": 2160.335,
+          "durationMs": 3.03,
+          "threadCpuMs": 0.221,
+          "args": {}
+        },
+        {
+          "name": "ProxyMain::BeginMainFrame",
+          "thread": "CrRendererMain",
+          "pid": 42104,
+          "tid": 16639393,
+          "traceTsUs": 652266007965,
+          "sinceStartMs": 2157.859,
+          "durationMs": 3.022,
+          "threadCpuMs": 2.961,
+          "args": {
+            "begin_frame_id": 177,
+            "main_frame_pipeline": {
+              "main_frame_id": 2001881254482758942,
+              "step": "BEGIN_MAIN_FRAME"
+            }
+          }
+        },
+        {
+          "name": "Graphics.Pipeline",
+          "thread": "CrGpuMain",
+          "pid": 41997,
+          "tid": 16636787,
+          "traceTsUs": 652266010448,
+          "sinceStartMs": 2160.342,
+          "durationMs": 3.017,
+          "threadCpuMs": 0.212,
+          "args": {
+            "chrome_graphics_pipeline": {
+              "display_trace_id": -3060874152630433450,
+              "step": "STEP_BUFFER_SWAP_POST_SUBMIT"
+            },
+            "current_task": {
+              "event_offset_from_task_start_time_us": 12,
+              "task_start_time_us": 652266010438
+            }
+          }
+        },
+        {
+          "name": "ProxyMain::BeginMainFrame",
+          "thread": "CrRendererMain",
+          "pid": 42104,
+          "tid": 16639393,
+          "traceTsUs": 652265932107,
+          "sinceStartMs": 2082.001,
+          "durationMs": 2.165,
+          "threadCpuMs": 2.144,
+          "args": {
+            "begin_frame_id": 173,
+            "main_frame_pipeline": {
+              "main_frame_id": 2001881254482758913,
+              "step": "BEGIN_MAIN_FRAME"
+            }
+          }
+        },
+        {
+          "name": "FireAnimationFrame",
+          "thread": "CrRendererMain",
+          "pid": 42104,
+          "tid": 16639393,
+          "traceTsUs": 652265932152,
+          "sinceStartMs": 2082.046,
+          "durationMs": 1.911,
+          "threadCpuMs": 1.908,
+          "args": {
+            "data": {
+              "frame": "32C1952EDBCA571797A1B930F6103BAA",
+              "id": 118
+            }
+          }
+        }
+      ],
+      "longAsyncStages": [
+        {
+          "name": "DrawToScheduleOverlay",
+          "thread": "VizCompositorThread",
+          "pid": 41997,
+          "tid": 16636882,
+          "traceTsUs": 652265932025,
+          "sinceStartMs": 2081.919,
+          "durationMs": 75.484,
+          "threadCpuMs": 0.0,
+          "args": {}
+        },
+        {
+          "name": "StartDrawToSwapStart",
+          "thread": "Compositor",
+          "pid": 42104,
+          "tid": 16639433,
+          "traceTsUs": 652265932025,
+          "sinceStartMs": 2081.919,
+          "durationMs": 75.514,
+          "threadCpuMs": 0.0,
+          "args": {}
+        },
+        {
+          "name": "DisplayScheduler:pending_swaps",
+          "thread": "VizCompositorThread",
+          "pid": 41997,
+          "tid": 16636882,
+          "traceTsUs": 652265932068,
+          "sinceStartMs": 2081.962,
+          "durationMs": 75.71,
+          "threadCpuMs": 0.0,
+          "args": {}
+        },
+        {
+          "name": "DrawToScheduleOverlay",
+          "thread": "VizCompositorThread",
+          "pid": 41997,
+          "tid": 16636882,
+          "traceTsUs": 652265947992,
+          "sinceStartMs": 2097.886,
+          "durationMs": 62.461,
+          "threadCpuMs": 0.0,
+          "args": {}
+        },
+        {
+          "name": "StartDrawToSwapStart",
+          "thread": "Compositor",
+          "pid": 42104,
+          "tid": 16639433,
+          "traceTsUs": 652265947992,
+          "sinceStartMs": 2097.886,
+          "durationMs": 62.809,
+          "threadCpuMs": 0.0,
+          "args": {}
+        },
+        {
+          "name": "DisplayScheduler:pending_swaps",
+          "thread": "VizCompositorThread",
+          "pid": 41997,
+          "tid": 16636882,
+          "traceTsUs": 652265948029,
+          "sinceStartMs": 2097.923,
+          "durationMs": 65.516,
+          "threadCpuMs": 0.0,
+          "args": {}
+        },
+        {
+          "name": "Graphics.Pipeline.DrawAndSwap",
+          "thread": "VizCompositorThread",
+          "pid": 41997,
+          "tid": 16636882,
+          "traceTsUs": 652265947970,
+          "sinceStartMs": 2097.864,
+          "durationMs": 90.128,
+          "threadCpuMs": 0.0,
+          "args": {}
+        },
+        {
+          "name": "Graphics.Pipeline.DrawAndSwap",
+          "thread": "VizCompositorThread",
+          "pid": 41997,
+          "tid": 16636882,
+          "traceTsUs": 652265931999,
+          "sinceStartMs": 2081.893,
+          "durationMs": 106.099,
+          "threadCpuMs": 0.0,
+          "args": {}
+        },
+        {
+          "name": "Graphics.Pipeline.DrawAndSwap",
+          "thread": "VizCompositorThread",
+          "pid": 41997,
+          "tid": 16636882,
+          "traceTsUs": 652266014697,
+          "sinceStartMs": 2164.591,
+          "durationMs": 40.068,
+          "threadCpuMs": 0.0,
+          "args": {}
+        },
+        {
+          "name": "Graphics.Pipeline.DrawAndSwap",
+          "thread": "VizCompositorThread",
+          "pid": 41997,
+          "tid": 16636882,
+          "traceTsUs": 652266007860,
+          "sinceStartMs": 2157.754,
+          "durationMs": 46.905,
+          "threadCpuMs": 0.0,
+          "args": {}
+        }
+      ],
+      "mainThreadPaintAndRaster": {
+        "Paint": {
+          "count": 2,
+          "maxMs": 0.129
+        },
+        "PrePaint": {
+          "count": 6,
+          "maxMs": 0.324
+        },
+        "Layout": {
+          "count": 1,
+          "maxMs": 0.232
+        },
+        "UpdateLayoutTree": {
+          "count": 1,
+          "maxMs": 0.281
+        },
+        "RasterTask": {
+          "count": 1,
+          "maxMs": 0.307
+        },
+        "GpuRasterBuffer::Playback": {
+          "count": 1,
+          "maxMs": 0.301
+        },
+        "FireAnimationFrame": {
+          "count": 6,
+          "maxMs": 7.222
+        }
+      }
+    }
+  ],
+  "firstSpinFrame": {
+    "index": 111,
+    "sinceStartMs": 2064.2999999523163,
+    "sample": {
+      "t": 2751,
+      "entered": 2751.2999999523163,
+      "continued": true,
+      "intervalMs": 16.40000000000009,
+      "idleGapMs": null,
+      "render": 1,
+      "timeline": 0,
+      "hud": 0,
+      "ended": 2758.5,
+      "cpuMs": 7.200000047683716,
+      "continuation": true,
+      "state": {
+        "rotation": 0,
+        "cursor": 11,
+        "walker": [
+          297,
+          459
+        ],
+        "camera": [
+          375,
+          525
+        ],
+        "vertices": 48,
+        "tiles": 9,
+        "play": 1,
+        "phase": "spin",
+        "phaseElapsed": 0,
+        "phaseEvent": 0,
+        "eventDone": 1,
+        "follow": true,
+        "manualPivot": false,
+        "mode": "playing"
+      }
+    }
+  },
+  "presentation": {
+    "trace": "/private/tmp/ocm-20261022-unified-final-replay.json.gz",
+    "measuredMs": 30001.648,
+    "method": "Chromium presentation-feedback counters, complete tracker intervals inside OCM measurement marks; JSAnimation and RAF overlap and must not be added together.",
+    "trackers": {
+      "JSAnimation": {
+        "expected": 838,
+        "droppedV3": 10,
+        "droppedV4": 9,
+        "intervals": 823,
+        "producedV3": 828,
+        "dropPercentV3": 1.1933174224343674,
+        "dropPercentV4": 1.0739856801909309
+      },
+      "RAF": {
+        "expected": 838,
+        "droppedV3": 10,
+        "droppedV4": 9,
+        "intervals": 823,
+        "producedV3": 828,
+        "dropPercentV3": 1.1933174224343674,
+        "dropPercentV4": 1.0739856801909309
+      }
+    },
+    "droppedIntervals": [
+      {
+        "kind": "JSAnimation",
+        "atMs": 788.124,
+        "durationMs": 16.457,
+        "expected": 10,
+        "droppedV3": 9,
+        "droppedV4": 9
+      },
+      {
+        "kind": "RAF",
+        "atMs": 788.124,
+        "durationMs": 16.457,
+        "expected": 10,
+        "droppedV3": 9,
+        "droppedV4": 9
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 2204.659,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 1,
+        "droppedV4": 0
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2204.659,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 1,
+        "droppedV4": 0
+      }
+    ]
+  },
+  "followupRecommendations": [
+    "Preserve both cold stalls in final acceptance metrics; steady-state 16.7 ms alone does not satisfy stable 60 FPS from first interaction.",
+    "For the next explicitly authorized capture, add supported gpu service / command buffer / ANGLE categories plus scheduler task/CPU sampling; record time spent waiting for fences, swapping, resource uploads and shader program/pipeline creation. Keep the same cold fixture and full-size window. Existing viz/cc trace localizes the wait but lacks the lower-level cause.",
+    "Add low-overhead user timing marks around first-use overlay raster/texture upload and shader initialization (including first replay spin label/ring) before trying a warmup fix. Compare timing to queued DrawToScheduleOverlay and SwapBuffers spans. Do not treat the spin label correlation as proven.",
+    "Investigate output/swap-resource pressure or first-use resource transitions before further reducing routine JavaScript/DOM work; the captured application frame CPU is already small and main-frame dispatch is waiting on downstream progress.",
+    "If testing a warmup/preallocation change, report cold end-to-end input/presentation latency as well as warm cadence; do not move the same 197 ms stall into an unmeasured mandatory setup step and call it fixed."
+  ]
+}

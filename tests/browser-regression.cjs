@@ -10,10 +10,10 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const root=path.resolve(process.env.OCM_ROOT||path.join(__dirname,'..'));
 const baseline=process.env.OCM_BASELINE_ROOT&&path.resolve(process.env.OCM_BASELINE_ROOT);
 const output=path.resolve(process.env.OCM_OUTPUT_DIR||path.join(root,'benchmarks/browser-regression'));
-const width=+(process.env.OCM_WIDTH||1504),height=+(process.env.OCM_HEIGHT||1492),dpr=+(process.env.OCM_DPR||2);
+const width=+(process.env.OCM_WIDTH||3008),height=+(process.env.OCM_HEIGHT||1492),dpr=+(process.env.OCM_DPR||2);
 fs.mkdirSync(output,{recursive:true});
 const results={conditions:{width,height,dpr,method:'Deterministic browser functional checks and screenshot coverage comparisons; not a performance benchmark'},runs:[],comparisons:[]};
-function serve(root){const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+(new URL(req.url,'http://localhost').pathname==='/'?'/index.html':decodeURIComponent(new URL(req.url,'http://localhost').pathname)));if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return;}try{res.setHeader('Content-Type',file.endsWith('.html')?'text/html':file.endsWith('.js')?'text/javascript':'application/octet-stream');res.end(fs.readFileSync(file));}catch{res.writeHead(404).end();}});return new Promise(resolve=>server.listen(0,'127.0.0.1',()=>resolve(server)));}
+function serve(root){const server=http.createServer((req,res)=>{const file=path.resolve(root,'.'+(new URL(req.url,'http://localhost').pathname==='/'?'/index.html':decodeURIComponent(new URL(req.url,'http://localhost').pathname)));if(!file.startsWith(root+path.sep)){res.writeHead(403).end();return;}try{res.setHeader('Content-Type',file.endsWith('.html')?'text/html':file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':file.endsWith('.png')?'image/png':file.endsWith('.woff2')?'font/woff2':'application/octet-stream');res.end(fs.readFileSync(file));}catch{res.writeHead(404).end();}});return new Promise(resolve=>server.listen(0,'127.0.0.1',()=>resolve(server)));}
 function initProbe(){
  const nativeRAF=requestAnimationFrame.bind(window),nativeCancel=cancelAnimationFrame.bind(window),pending=new Set(),contexts=[];
  window.__probe={contexts,callbacks:0,pending,pause(){this.paused=true;for(const id of pending)nativeCancel(id);pending.clear();},resume(){this.paused=false;},paused:false};
@@ -161,7 +161,7 @@ function backendAssertions() {
 async function run(browser,which,dir){const server=await serve(dir),context=await browser.newContext({viewport:{width,height},deviceScaleFactor:dpr}),page=await context.newPage();const run={which,root:dir,scenes:[],errors:[],checks:{}};results.runs.push(run);
  page.on('pageerror',e=>run.errors.push(e.message));await page.addInitScript(initProbe);
  try{
- await page.goto('http://127.0.0.1:'+server.address().port+'/');await page.bringToFront();await page.waitForFunction(()=>window.OCM);await page.evaluate(fixture);if(which==='current')assert.equal(await page.evaluate(()=>OCM.foreground.mode),'webgl-analytic');await page.waitForTimeout(1000);await page.evaluate(()=>__probe.pause());
+ await page.goto('http://127.0.0.1:'+server.address().port+'/?demo');await page.bringToFront();await page.waitForFunction(()=>window.OCM);await page.evaluate(async()=>{await OCM.startup;const help=document.getElementById('help');if(help?.open)help.close();});await page.evaluate(fixture);if(which==='current')assert.equal(await page.evaluate(()=>OCM.foreground.mode),'webgl-analytic');await page.waitForTimeout(1000);await page.evaluate(()=>__probe.pause());
  async function shot(name,change){if(change)await page.evaluate(change);await page.evaluate(()=>OCM.render());await page.evaluate(geometryAssertions);run.checks.gl=await page.evaluate(assertGL);const file=path.join(output,which+'-'+name+'.png');await page.screenshot({path:file,animations:'disabled'});run.scenes.push({name,file,viewport:page.viewportSize(),regions:await page.evaluate(()=>OCM.S.markers.flatMap(m=>OCM.markerCopies(m).filter(p=>p.x>60&&p.x<innerWidth-60&&p.y>60&&p.y<innerHeight-60).map(p=>({shape:m.shape,x:p.x,y:p.y,width:110,height:90}))))});}
  await shot('dense-0');
  await shot('dense-rotation',()=>{OCM.S.rot=OCM.S.rotTarget=.43;});

@@ -1,0 +1,102 @@
+[
+  {
+    "originalTrace": "ocm-20261022-paired-after-replay.json.gz",
+    "originalSha256": "6133b5d43e2659c79996a0cac0dca4d1a7c5956256d196ee03f7fb341c51148f",
+    "originalBytes": 3410129,
+    "archivedTrace": "paired-after-replay-presentation.json.gz",
+    "archivedSha256": "85a684f75d324d05d13c8fc868ac8fa349494a2fa462768ec9fc79b12c81d159",
+    "eventsOriginal": 159363,
+    "eventsArchived": 4305,
+    "presentationCountersVerifiedIdentical": true
+  },
+  {
+    "originalTrace": "ocm-20261022-paired-after-rotate.json.gz",
+    "originalSha256": "525f9884e1db62955db439500b9a20a0e6baf6d88a9ea776da12d72480073320",
+    "originalBytes": 3505395,
+    "archivedTrace": "paired-after-rotate-presentation.json.gz",
+    "archivedSha256": "24c2966c5811d91ef6b57af884541ba9e5f748ebc740f392a4e112baf282b6b9",
+    "eventsOriginal": 164454,
+    "eventsArchived": 4423,
+    "presentationCountersVerifiedIdentical": true
+  },
+  {
+    "originalTrace": "ocm-20261022-paired-after-walk.json.gz",
+    "originalSha256": "dbdeee19b0b84adc5dd2772a378bf4859a8b869123acbdf8e5b669f8fea2526a",
+    "originalBytes": 3399865,
+    "archivedTrace": "paired-after-walk-presentation.json.gz",
+    "archivedSha256": "3a28d5d5393c48385d13a81dbc401705d13409780910094c3b4dc3e5d1964b93",
+    "eventsOriginal": 161693,
+    "eventsArchived": 4248,
+    "presentationCountersVerifiedIdentical": true
+  },
+  {
+    "originalTrace": "ocm-20261022-paired-before-replay.json.gz",
+    "originalSha256": "5587f3836f8116f1ccdef5d84888df0d655de3a3e92283f2b0f587d2c2900111",
+    "originalBytes": 2356564,
+    "archivedTrace": "paired-before-replay-presentation.json.gz",
+    "archivedSha256": "c0d9f36ca8b5fe6bd11b20fbc78a3b85169a0e8d29e31ec7119aae1daa1c42e1",
+    "eventsOriginal": 110319,
+    "eventsArchived": 2428,
+    "presentationCountersVerifiedIdentical": true
+  },
+  {
+    "originalTrace": "ocm-20261022-paired-before-rotate.json.gz",
+    "originalSha256": "3e211b386ae437dbfe15606c82075e16540df93db3a3cefce377288a72a2590b",
+    "originalBytes": 1810839,
+    "archivedTrace": "paired-before-rotate-presentation.json.gz",
+    "archivedSha256": "6f22ef79cd4dfef6aa7487e9a6b0a9dbc34c13ea58310b2623312fba43e32529",
+    "eventsOriginal": 86592,
+    "eventsArchived": 2038,
+    "presentationCountersVerifiedIdentical": true
+  },
+  {
+    "originalTrace": "ocm-20261022-paired-before-walk.json.gz",
+    "originalSha256": "aefe0dbb0bc4f37c36a3e16a386387149e6ec20dd7ae321d561096d1b4a1dc0d",
+    "originalBytes": 2666765,
+    "archivedTrace": "paired-before-walk-presentation.json.gz",
+    "archivedSha256": "42a8717fec09f96bb6578b16d07c11fd1a820699ad3913a4286cc549b539be58",
+    "eventsOriginal": 131025,
+    "eventsArchived": 3105,
+    "presentationCountersVerifiedIdentical": true
+  },
+  {
+    "originalTrace": "ocm-20261022-replay-final-replay.json.gz",
+    "originalSha256": "968c71e8493d8fdae518d9daf30aed509834a7d8c984ecca867ba734e35d1222",
+    "originalBytes": 14785087,
+    "archivedTrace": "replay-final-replay-presentation.json.gz",
+    "archivedSha256": "17917b48fec704dddd6240bee0c4be6f34765d5f5dadf5a425150571e1a11af5",
+    "eventsOriginal": 727718,
+    "eventsArchived": 19598,
+    "presentationCountersVerifiedIdentical": true
+  },
+  {
+    "originalTrace": "ocm-20261022-unified-final-replay.json.gz",
+    "originalSha256": "146ef58c0791d2df6deef8a6b42ca772fcc7b06ac20d39daf36fcb6b1a36f0fc",
+    "originalBytes": 4798104,
+    "archivedTrace": "unified-final-replay-presentation.json.gz",
+    "archivedSha256": "9b120d000d2ce081f4fba229d51c69cb20782daf33934765b6e04ce68144f836",
+    "eventsOriginal": 226329,
+    "eventsArchived": 7675,
+    "presentationCountersVerifiedIdentical": true
+  },
+  {
+    "originalTrace": "ocm-20261022-unified-final-rotate.json.gz",
+    "originalSha256": "03a5b3e64ba13470d31b77ac0f0f05d4c731ecdf1cafc4e34bde8b41dd1f14aa",
+    "originalBytes": 10422040,
+    "archivedTrace": "unified-final-rotate-presentation.json.gz",
+    "archivedSha256": "b09cfd48827d2d1b12f9fe32e1ce21254d82a2d91e80fce5b018217f11d5fa89",
+    "eventsOriginal": 525726,
+    "eventsArchived": 16541,
+    "presentationCountersVerifiedIdentical": true
+  },
+  {
+    "originalTrace": "ocm-20261022-unified-final-walk.json.gz",
+    "originalSha256": "540007e12062cd0d6078a76bcb8d1b68640dfaa0c3f6eb3d6fa5e78851a7e436",
+    "originalBytes": 9964517,
+    "archivedTrace": "unified-final-walk-presentation.json.gz",
+    "archivedSha256": "35ebcf37a4f9b9e2ecea353a53352b95648d00a9342758c3154cdc284b6a1964",
+    "eventsOriginal": 476322,
+    "eventsArchived": 15640,
+    "presentationCountersVerifiedIdentical": true
+  }
+]

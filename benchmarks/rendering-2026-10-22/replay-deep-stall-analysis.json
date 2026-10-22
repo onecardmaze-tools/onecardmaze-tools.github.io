@@ -1,0 +1,1164 @@
+{
+  "inputs": {
+    "fullUI": "/private/tmp/ocm-20261022-replay-final-replay.json.gz",
+    "hiddenUI": "/private/tmp/ocm-20261022-no-ui-replay.json.gz"
+  },
+  "analysisOnly": true,
+  "comparisonCaveat": "Different capture times and input methods (click vs Space); removing UI changes rasterization, compositing and input handling together. Correlation is not proof of one CSS element or shader. Durations are host trace spans, not direct GPU execution times.",
+  "traces": {
+    "fullUI": {
+      "measuredMs": 30003.312,
+      "traceStartUs": 653100028293,
+      "earlyFirst500msByName": {
+        "WebGL": {
+          "count": 73,
+          "wallSumMs": 46.679,
+          "threadCpuSumMs": 44.665,
+          "maxWallMs": 2.156
+        },
+        "RendererRasterWorker": {
+          "count": 74,
+          "wallSumMs": 118.289,
+          "threadCpuSumMs": 92.598,
+          "maxWallMs": 18.306
+        },
+        "RasterDecoderImpl::DoEndRasterCHROMIUM::Flush": {
+          "count": 70,
+          "wallSumMs": 76.759,
+          "threadCpuSumMs": 53.701,
+          "maxWallMs": 17.541
+        },
+        "Paint": {
+          "count": 8,
+          "wallSumMs": 1.376,
+          "threadCpuSumMs": 1.367,
+          "maxWallMs": 0.385
+        },
+        "RasterTask": {
+          "count": 4,
+          "wallSumMs": 1.163,
+          "threadCpuSumMs": 1.148,
+          "maxWallMs": 0.61
+        },
+        "CALayerTreeCoordinator::ApplyBackpressure": {
+          "count": 20,
+          "wallSumMs": 213.665,
+          "threadCpuSumMs": 5.38,
+          "maxWallMs": 129.025
+        },
+        "CALayerTreeCoordinator::ApplyBackpressure::Metal": {
+          "count": 194,
+          "wallSumMs": 213.284,
+          "threadCpuSumMs": 5.314,
+          "maxWallMs": 1.342
+        },
+        "IOSurfaceImageBacking::WaitForCommandsToBeScheduled::ANGLE": {
+          "count": 20,
+          "wallSumMs": 1.001,
+          "threadCpuSumMs": 0.211,
+          "maxWallMs": 0.313
+        },
+        "IOSurfaceImageBacking::WaitForCommandsToBeScheduled::Dawn": {
+          "count": 4,
+          "wallSumMs": 0.076,
+          "threadCpuSumMs": 0.019,
+          "maxWallMs": 0.068
+        }
+      },
+      "earlyPaintNodes": {
+        "#document": 4,
+        "DIV id='player' class='dock dock-player'": 4
+      },
+      "firstInputAndFrameEvents": [
+        {
+          "name": "EventDispatch",
+          "thread": "CrRendererMain",
+          "pid": 44286,
+          "tid": 16668630,
+          "sinceStartMs": 19.673,
+          "durationMs": 0.02,
+          "threadCpuMs": 0.018,
+          "args": {
+            "data": {
+              "type": "__playwright_reset_targets__"
+            }
+          }
+        },
+        {
+          "name": "EventDispatch",
+          "thread": "CrRendererMain",
+          "pid": 44286,
+          "tid": 16668630,
+          "sinceStartMs": 19.7,
+          "durationMs": 0.002,
+          "threadCpuMs": 0.002,
+          "args": {
+            "data": {
+              "type": "__playwright_mark_target__"
+            }
+          }
+        },
+        {
+          "name": "EventDispatch",
+          "thread": "CrRendererMain",
+          "pid": 44286,
+          "tid": 16668630,
+          "sinceStartMs": 39.054,
+          "durationMs": 0.004,
+          "threadCpuMs": 0.004,
+          "args": {
+            "data": {
+              "type": "pointerout"
+            }
+          }
+        },
+        {
+          "name": "EventDispatch",
+          "thread": "CrRendererMain",
+          "pid": 44286,
+          "tid": 16668630,
+          "sinceStartMs": 39.066,
+          "durationMs": 0.002,
+          "threadCpuMs": 0.002,
+          "args": {
+            "data": {
+              "type": "pointerover"
+            }
+          }
+        },
+        {
+          "name": "EventDispatch",
+          "thread": "CrRendererMain",
+          "pid": 44286,
+          "tid": 16668630,
+          "sinceStartMs": 39.074,
+          "durationMs": 0.002,
+          "threadCpuMs": 0.001,
+          "args": {
+            "data": {
+              "type": "mouseout"
+            }
+          }
+        },
+        {
+          "name": "EventDispatch",
+          "thread": "CrRendererMain",
+          "pid": 44286,
+          "tid": 16668630,
+          "sinceStartMs": 39.078,
+          "durationMs": 0.002,
+          "threadCpuMs": 0.001,
+          "args": {
+            "data": {
+              "type": "mouseover"
+            }
+          }
+        },
+        {
+          "name": "EventDispatch",
+          "thread": "CrRendererMain",
+          "pid": 44286,
+          "tid": 16668630,
+          "sinceStartMs": 39.082,
+          "durationMs": 0.001,
+          "threadCpuMs": 0.001,
+          "args": {
+            "data": {
+              "type": "pointermove"
+            }
+          }
+        },
+        {
+          "name": "EventDispatch",
+          "thread": "CrRendererMain",
+          "pid": 44286,
+          "tid": 16668630,
+          "sinceStartMs": 39.085,
+          "durationMs": 0.479,
+          "threadCpuMs": 0.477,
+          "args": {
+            "data": {
+              "type": "mousemove"
+            }
+          }
+        },
+        {
+          "name": "EventDispatch",
+          "thread": "CrRendererMain",
+          "pid": 44286,
+          "tid": 16668630,
+          "sinceStartMs": 39.75,
+          "durationMs": 0.255,
+          "threadCpuMs": 0.239,
+          "args": {
+            "data": {
+              "type": "pointerdown"
+            }
+          }
+        },
+        {
+          "name": "EventDispatch",
+          "thread": "CrRendererMain",
+          "pid": 44286,
+          "tid": 16668630,
+          "sinceStartMs": 40.009,
+          "durationMs": 0.021,
+          "threadCpuMs": 0.018,
+          "args": {
+            "data": {
+              "type": "mousedown"
+            }
+          }
+        },
+        {
+          "name": "EventDispatch",
+          "thread": "CrRendererMain",
+          "pid": 44286,
+          "tid": 16668630,
+          "sinceStartMs": 40.104,
+          "durationMs": 0.002,
+          "threadCpuMs": 0.001,
+          "args": {
+            "data": {
+              "type": "focus"
+            }
+          }
+        },
+        {
+          "name": "EventDispatch",
+          "thread": "CrRendererMain",
+          "pid": 44286,
+          "tid": 16668630,
+          "sinceStartMs": 40.107,
+          "durationMs": 0.001,
+          "threadCpuMs": 0.001,
+          "args": {
+            "data": {
+              "type": "focusin"
+            }
+          }
+        },
+        {
+          "name": "EventDispatch",
+          "thread": "CrRendererMain",
+          "pid": 44286,
+          "tid": 16668630,
+          "sinceStartMs": 40.109,
+          "durationMs": 0.001,
+          "threadCpuMs": 0.001,
+          "args": {
+            "data": {
+              "type": "DOMFocusIn"
+            }
+          }
+        },
+        {
+          "name": "EventDispatch",
+          "thread": "CrRendererMain",
+          "pid": 44286,
+          "tid": 16668630,
+          "sinceStartMs": 40.283,
+          "durationMs": 0.109,
+          "threadCpuMs": 0.105,
+          "args": {
+            "data": {
+              "type": "pointerup"
+            }
+          }
+        },
+        {
+          "name": "EventDispatch",
+          "thread": "CrRendererMain",
+          "pid": 44286,
+          "tid": 16668630,
+          "sinceStartMs": 40.398,
+          "durationMs": 0.014,
+          "threadCpuMs": 0.012,
+          "args": {
+            "data": {
+              "type": "mouseup"
+            }
+          }
+        },
+        {
+          "name": "EventDispatch",
+          "thread": "CrRendererMain",
+          "pid": 44286,
+          "tid": 16668630,
+          "sinceStartMs": 40.426,
+          "durationMs": 6.319,
+          "threadCpuMs": 6.301,
+          "args": {
+            "data": {
+              "type": "click"
+            }
+          }
+        }
+      ],
+      "shaderCompileUploadEventNames": {},
+      "longestBackpressureEvents": [
+        {
+          "name": "CALayerTreeCoordinator::ApplyBackpressure",
+          "thread": "CrGpuMain",
+          "pid": 44279,
+          "tid": 16668473,
+          "sinceStartMs": 305.907,
+          "durationMs": 129.025,
+          "threadCpuMs": 1.489,
+          "args": {}
+        },
+        {
+          "name": "CALayerTreeCoordinator::ApplyBackpressure",
+          "thread": "CrGpuMain",
+          "pid": 44279,
+          "tid": 16668473,
+          "sinceStartMs": 684.16,
+          "durationMs": 41.734,
+          "threadCpuMs": 0.691,
+          "args": {}
+        },
+        {
+          "name": "CALayerTreeCoordinator::ApplyBackpressure",
+          "thread": "CrGpuMain",
+          "pid": 44279,
+          "tid": 16668473,
+          "sinceStartMs": 14753.507,
+          "durationMs": 33.668,
+          "threadCpuMs": 0.634,
+          "args": {}
+        },
+        {
+          "name": "CALayerTreeCoordinator::ApplyBackpressure",
+          "thread": "CrGpuMain",
+          "pid": 44279,
+          "tid": 16668473,
+          "sinceStartMs": 17738.97,
+          "durationMs": 31.526,
+          "threadCpuMs": 0.533,
+          "args": {}
+        },
+        {
+          "name": "CALayerTreeCoordinator::ApplyBackpressure",
+          "thread": "CrGpuMain",
+          "pid": 44279,
+          "tid": 16668473,
+          "sinceStartMs": 20891.72,
+          "durationMs": 30.047,
+          "threadCpuMs": 0.303,
+          "args": {}
+        }
+      ],
+      "firstMajorBackpressure": {
+        "name": "CALayerTreeCoordinator::ApplyBackpressure",
+        "thread": "CrGpuMain",
+        "pid": 44279,
+        "tid": 16668473,
+        "sinceStartMs": 305.907,
+        "durationMs": 129.025,
+        "threadCpuMs": 1.489,
+        "args": {}
+      },
+      "firstMajorMetalChildren": {
+        "count": 105,
+        "wallSumMs": 128.813,
+        "threadCpuSumMs": 1.45,
+        "maxWallMs": 1.342
+      },
+      "firstMajorMetalFirst": {
+        "name": "CALayerTreeCoordinator::ApplyBackpressure::Metal",
+        "thread": "CrGpuMain",
+        "pid": 44279,
+        "tid": 16668473,
+        "sinceStartMs": 305.908,
+        "durationMs": 1.051,
+        "threadCpuMs": 0.012,
+        "args": {}
+      },
+      "firstMajorMetalLast": {
+        "name": "CALayerTreeCoordinator::ApplyBackpressure::Metal",
+        "thread": "CrGpuMain",
+        "pid": 44279,
+        "tid": 16668473,
+        "sinceStartMs": 434.929,
+        "durationMs": 0.001,
+        "threadCpuMs": 0.001,
+        "args": {}
+      },
+      "secondLongFrameWindow": [
+        {
+          "name": "Scheduler::RunTask",
+          "thread": "CrGpuMain",
+          "pid": 44279,
+          "tid": 16668473,
+          "sinceStartMs": 20823.122,
+          "durationMs": 64.61,
+          "threadCpuMs": 0.332,
+          "args": {}
+        },
+        {
+          "name": "SkiaOutputSurfaceImplOnGpu::SwapBuffers",
+          "thread": "CrGpuMain",
+          "pid": 44279,
+          "tid": 16668473,
+          "sinceStartMs": 20823.125,
+          "durationMs": 64.6,
+          "threadCpuMs": 0.325,
+          "args": {}
+        },
+        {
+          "name": "Graphics.Pipeline",
+          "thread": "CrGpuMain",
+          "pid": 44279,
+          "tid": 16668473,
+          "sinceStartMs": 20823.128,
+          "durationMs": 64.591,
+          "threadCpuMs": 0.318,
+          "args": {
+            "chrome_graphics_pipeline": {
+              "display_trace_id": 6980672320662854662,
+              "step": "STEP_BUFFER_SWAP_POST_SUBMIT"
+            },
+            "current_task": {
+              "event_offset_from_task_start_time_us": 8,
+              "task_start_time_us": 653120851415
+            }
+          }
+        },
+        {
+          "name": "SkiaOutputDevice->ScheduleOverlays()",
+          "thread": "CrGpuMain",
+          "pid": 44279,
+          "tid": 16668473,
+          "sinceStartMs": 20823.13,
+          "durationMs": 55.148,
+          "threadCpuMs": 0.065,
+          "args": {
+            "num_overlays": 11
+          }
+        },
+        {
+          "name": "IOSurfaceImageBacking::WaitForCommandsToBeScheduled",
+          "thread": "CrGpuMain",
+          "pid": 44279,
+          "tid": 16668473,
+          "sinceStartMs": 20823.158,
+          "durationMs": 55.101,
+          "threadCpuMs": 0.02,
+          "args": {}
+        },
+        {
+          "name": "IOSurfaceImageBacking::WaitForCommandsToBeScheduled::Dawn",
+          "thread": "CrGpuMain",
+          "pid": 44279,
+          "tid": 16668473,
+          "sinceStartMs": 20823.159,
+          "durationMs": 55.096,
+          "threadCpuMs": 0.019,
+          "args": {}
+        },
+        {
+          "name": "Scheduler::RunTask",
+          "thread": "CrGpuMain",
+          "pid": 44279,
+          "tid": 16668473,
+          "sinceStartMs": 20891.686,
+          "durationMs": 30.221,
+          "threadCpuMs": 0.465,
+          "args": {}
+        },
+        {
+          "name": "SkiaOutputSurfaceImplOnGpu::SwapBuffers",
+          "thread": "CrGpuMain",
+          "pid": 44279,
+          "tid": 16668473,
+          "sinceStartMs": 20891.688,
+          "durationMs": 30.214,
+          "threadCpuMs": 0.459,
+          "args": {}
+        },
+        {
+          "name": "Graphics.Pipeline",
+          "thread": "CrGpuMain",
+          "pid": 44279,
+          "tid": 16668473,
+          "sinceStartMs": 20891.691,
+          "durationMs": 30.205,
+          "threadCpuMs": 0.453,
+          "args": {
+            "chrome_graphics_pipeline": {
+              "display_trace_id": 6980672320662854716,
+              "step": "STEP_BUFFER_SWAP_POST_SUBMIT"
+            },
+            "current_task": {
+              "event_offset_from_task_start_time_us": 7,
+              "task_start_time_us": 653120919979
+            }
+          }
+        },
+        {
+          "name": "ImageTransportSurfaceOverlayMac::Present",
+          "thread": "CrGpuMain",
+          "pid": 44279,
+          "tid": 16668473,
+          "sinceStartMs": 20891.718,
+          "durationMs": 30.177,
+          "threadCpuMs": 0.43,
+          "args": {}
+        },
+        {
+          "name": "CALayerTreeCoordinator::ApplyBackpressure",
+          "thread": "CrGpuMain",
+          "pid": 44279,
+          "tid": 16668473,
+          "sinceStartMs": 20891.72,
+          "durationMs": 30.047,
+          "threadCpuMs": 0.303,
+          "args": {}
+        },
+        {
+          "name": "Scheduler::RunTask",
+          "thread": "CrGpuMain",
+          "pid": 44279,
+          "tid": 16668473,
+          "sinceStartMs": 20924.225,
+          "durationMs": 10.558,
+          "threadCpuMs": 0.304,
+          "args": {}
+        }
+      ]
+    },
+    "hiddenUI": {
+      "measuredMs": 20003.141,
+      "traceStartUs": 652983045547,
+      "earlyFirst500msByName": {
+        "WebGL": {
+          "count": 330,
+          "wallSumMs": 86.857,
+          "threadCpuSumMs": 81.177,
+          "maxWallMs": 2.121
+        },
+        "RendererRasterWorker": {
+          "count": 102,
+          "wallSumMs": 169.476,
+          "threadCpuSumMs": 131.482,
+          "maxWallMs": 22.321
+        },
+        "RasterDecoderImpl::DoEndRasterCHROMIUM::Flush": {
+          "count": 98,
+          "wallSumMs": 91.369,
+          "threadCpuSumMs": 64.114,
+          "maxWallMs": 21.796
+        },
+        "Paint": {
+          "count": 5,
+          "wallSumMs": 0.116,
+          "threadCpuSumMs": 0.114,
+          "maxWallMs": 0.025
+        },
+        "RasterTask": {
+          "count": 0,
+          "wallSumMs": 0.0,
+          "threadCpuSumMs": 0.0,
+          "maxWallMs": 0
+        },
+        "CALayerTreeCoordinator::ApplyBackpressure": {
+          "count": 29,
+          "wallSumMs": 93.879,
+          "threadCpuSumMs": 1.347,
+          "maxWallMs": 42.601
+        },
+        "CALayerTreeCoordinator::ApplyBackpressure::Metal": {
+          "count": 107,
+          "wallSumMs": 93.614,
+          "threadCpuSumMs": 1.272,
+          "maxWallMs": 1.298
+        },
+        "IOSurfaceImageBacking::WaitForCommandsToBeScheduled::ANGLE": {
+          "count": 29,
+          "wallSumMs": 1.896,
+          "threadCpuSumMs": 0.314,
+          "maxWallMs": 0.451
+        },
+        "IOSurfaceImageBacking::WaitForCommandsToBeScheduled::Dawn": {
+          "count": 0,
+          "wallSumMs": 0.0,
+          "threadCpuSumMs": 0.0,
+          "maxWallMs": 0
+        }
+      },
+      "earlyPaintNodes": {
+        "#document": 5
+      },
+      "firstInputAndFrameEvents": [
+        {
+          "name": "EventDispatch",
+          "thread": "CrRendererMain",
+          "pid": 44178,
+          "tid": 16665577,
+          "sinceStartMs": 1.848,
+          "durationMs": 1.049,
+          "threadCpuMs": 1.043,
+          "args": {
+            "data": {
+              "type": "keydown"
+            }
+          }
+        },
+        {
+          "name": "FunctionCall",
+          "thread": "CrRendererMain",
+          "pid": 44178,
+          "tid": 16665577,
+          "sinceStartMs": 2.979,
+          "durationMs": 3.29,
+          "threadCpuMs": 2.486,
+          "args": {
+            "data": {
+              "columnNumber": 15,
+              "frame": "ACB1C9DEA6E1C0A8585D3775848B9A0D",
+              "functionName": "frame",
+              "isolate": "12001888547298677645",
+              "lineNumber": 1787,
+              "sampleTraceId": 2324515654953778,
+              "scriptId": "11",
+              "url": "http://127.0.0.1:49442/?demo"
+            }
+          }
+        },
+        {
+          "name": "EventDispatch",
+          "thread": "CrRendererMain",
+          "pid": 44178,
+          "tid": 16665577,
+          "sinceStartMs": 12.772,
+          "durationMs": 0.078,
+          "threadCpuMs": 0.077,
+          "args": {
+            "data": {
+              "type": "keyup"
+            }
+          }
+        },
+        {
+          "name": "FunctionCall",
+          "thread": "CrRendererMain",
+          "pid": 44178,
+          "tid": 16665577,
+          "sinceStartMs": 13.428,
+          "durationMs": 2.088,
+          "threadCpuMs": 2.068,
+          "args": {
+            "data": {
+              "columnNumber": 15,
+              "frame": "ACB1C9DEA6E1C0A8585D3775848B9A0D",
+              "functionName": "frame",
+              "isolate": "12001888547298677645",
+              "lineNumber": 1787,
+              "sampleTraceId": 2324515654953761,
+              "scriptId": "11",
+              "url": "http://127.0.0.1:49442/?demo"
+            }
+          }
+        },
+        {
+          "name": "FunctionCall",
+          "thread": "CrRendererMain",
+          "pid": 44178,
+          "tid": 16665577,
+          "sinceStartMs": 29.781,
+          "durationMs": 2.596,
+          "threadCpuMs": 2.366,
+          "args": {
+            "data": {
+              "columnNumber": 15,
+              "frame": "ACB1C9DEA6E1C0A8585D3775848B9A0D",
+              "functionName": "frame",
+              "isolate": "12001888547298677645",
+              "lineNumber": 1787,
+              "sampleTraceId": 2324515654953812,
+              "scriptId": "11",
+              "url": "http://127.0.0.1:49442/?demo"
+            }
+          }
+        },
+        {
+          "name": "FunctionCall",
+          "thread": "CrRendererMain",
+          "pid": 44178,
+          "tid": 16665577,
+          "sinceStartMs": 48.316,
+          "durationMs": 1.58,
+          "threadCpuMs": 1.561,
+          "args": {
+            "data": {
+              "columnNumber": 15,
+              "frame": "ACB1C9DEA6E1C0A8585D3775848B9A0D",
+              "functionName": "frame",
+              "isolate": "12001888547298677645",
+              "lineNumber": 1787,
+              "sampleTraceId": 2324515654953806,
+              "scriptId": "11",
+              "url": "http://127.0.0.1:49442/?demo"
+            }
+          }
+        },
+        {
+          "name": "FunctionCall",
+          "thread": "CrRendererMain",
+          "pid": 44178,
+          "tid": 16665577,
+          "sinceStartMs": 63.404,
+          "durationMs": 1.705,
+          "threadCpuMs": 1.686,
+          "args": {
+            "data": {
+              "columnNumber": 15,
+              "frame": "ACB1C9DEA6E1C0A8585D3775848B9A0D",
+              "functionName": "frame",
+              "isolate": "12001888547298677645",
+              "lineNumber": 1787,
+              "sampleTraceId": 2324515654953854,
+              "scriptId": "11",
+              "url": "http://127.0.0.1:49442/?demo"
+            }
+          }
+        },
+        {
+          "name": "FunctionCall",
+          "thread": "CrRendererMain",
+          "pid": 44178,
+          "tid": 16665577,
+          "sinceStartMs": 81.613,
+          "durationMs": 1.756,
+          "threadCpuMs": 1.732,
+          "args": {
+            "data": {
+              "columnNumber": 15,
+              "frame": "ACB1C9DEA6E1C0A8585D3775848B9A0D",
+              "functionName": "frame",
+              "isolate": "12001888547298677645",
+              "lineNumber": 1787,
+              "sampleTraceId": 2324515654953825,
+              "scriptId": "11",
+              "url": "http://127.0.0.1:49442/?demo"
+            }
+          }
+        },
+        {
+          "name": "FunctionCall",
+          "thread": "CrRendererMain",
+          "pid": 44178,
+          "tid": 16665577,
+          "sinceStartMs": 96.857,
+          "durationMs": 2.219,
+          "threadCpuMs": 2.173,
+          "args": {
+            "data": {
+              "columnNumber": 15,
+              "frame": "ACB1C9DEA6E1C0A8585D3775848B9A0D",
+              "functionName": "frame",
+              "isolate": "12001888547298677645",
+              "lineNumber": 1787,
+              "sampleTraceId": 2324515654953877,
+              "scriptId": "11",
+              "url": "http://127.0.0.1:49442/?demo"
+            }
+          }
+        },
+        {
+          "name": "FunctionCall",
+          "thread": "CrRendererMain",
+          "pid": 44178,
+          "tid": 16665577,
+          "sinceStartMs": 115.068,
+          "durationMs": 2.204,
+          "threadCpuMs": 2.189,
+          "args": {
+            "data": {
+              "columnNumber": 15,
+              "frame": "ACB1C9DEA6E1C0A8585D3775848B9A0D",
+              "functionName": "frame",
+              "isolate": "12001888547298677645",
+              "lineNumber": 1787,
+              "sampleTraceId": 2324515654953868,
+              "scriptId": "11",
+              "url": "http://127.0.0.1:49442/?demo"
+            }
+          }
+        },
+        {
+          "name": "FunctionCall",
+          "thread": "CrRendererMain",
+          "pid": 44178,
+          "tid": 16665577,
+          "sinceStartMs": 129.954,
+          "durationMs": 2.0,
+          "threadCpuMs": 1.985,
+          "args": {
+            "data": {
+              "columnNumber": 15,
+              "frame": "ACB1C9DEA6E1C0A8585D3775848B9A0D",
+              "functionName": "frame",
+              "isolate": "12001888547298677645",
+              "lineNumber": 1787,
+              "sampleTraceId": 2324515654953918,
+              "scriptId": "11",
+              "url": "http://127.0.0.1:49442/?demo"
+            }
+          }
+        },
+        {
+          "name": "FunctionCall",
+          "thread": "CrRendererMain",
+          "pid": 44178,
+          "tid": 16665577,
+          "sinceStartMs": 146.992,
+          "durationMs": 1.959,
+          "threadCpuMs": 1.943,
+          "args": {
+            "data": {
+              "columnNumber": 15,
+              "frame": "ACB1C9DEA6E1C0A8585D3775848B9A0D",
+              "functionName": "frame",
+              "isolate": "12001888547298677645",
+              "lineNumber": 1787,
+              "sampleTraceId": 2324515654953888,
+              "scriptId": "11",
+              "url": "http://127.0.0.1:49442/?demo"
+            }
+          }
+        },
+        {
+          "name": "FunctionCall",
+          "thread": "CrRendererMain",
+          "pid": 44178,
+          "tid": 16665577,
+          "sinceStartMs": 163.068,
+          "durationMs": 1.296,
+          "threadCpuMs": 1.284,
+          "args": {
+            "data": {
+              "columnNumber": 15,
+              "frame": "ACB1C9DEA6E1C0A8585D3775848B9A0D",
+              "functionName": "frame",
+              "isolate": "12001888547298677645",
+              "lineNumber": 1787,
+              "sampleTraceId": 2324515654953939,
+              "scriptId": "11",
+              "url": "http://127.0.0.1:49442/?demo"
+            }
+          }
+        },
+        {
+          "name": "FunctionCall",
+          "thread": "CrRendererMain",
+          "pid": 44178,
+          "tid": 16665577,
+          "sinceStartMs": 179.723,
+          "durationMs": 1.119,
+          "threadCpuMs": 1.105,
+          "args": {
+            "data": {
+              "columnNumber": 15,
+              "frame": "ACB1C9DEA6E1C0A8585D3775848B9A0D",
+              "functionName": "frame",
+              "isolate": "12001888547298677645",
+              "lineNumber": 1787,
+              "sampleTraceId": 2324515654953927,
+              "scriptId": "11",
+              "url": "http://127.0.0.1:49442/?demo"
+            }
+          }
+        },
+        {
+          "name": "FunctionCall",
+          "thread": "CrRendererMain",
+          "pid": 44178,
+          "tid": 16665577,
+          "sinceStartMs": 197.918,
+          "durationMs": 1.236,
+          "threadCpuMs": 1.222,
+          "args": {
+            "data": {
+              "columnNumber": 15,
+              "frame": "ACB1C9DEA6E1C0A8585D3775848B9A0D",
+              "functionName": "frame",
+              "isolate": "12001888547298677645",
+              "lineNumber": 1787,
+              "sampleTraceId": 2324515654953969,
+              "scriptId": "11",
+              "url": "http://127.0.0.1:49442/?demo"
+            }
+          }
+        }
+      ],
+      "shaderCompileUploadEventNames": {},
+      "longestBackpressureEvents": [
+        {
+          "name": "CALayerTreeCoordinator::ApplyBackpressure",
+          "thread": "CrGpuMain",
+          "pid": 44170,
+          "tid": 16665429,
+          "sinceStartMs": 239.157,
+          "durationMs": 42.601,
+          "threadCpuMs": 0.672,
+          "args": {}
+        },
+        {
+          "name": "CALayerTreeCoordinator::ApplyBackpressure",
+          "thread": "CrGpuMain",
+          "pid": 44170,
+          "tid": 16665429,
+          "sinceStartMs": 20.079,
+          "durationMs": 9.812,
+          "threadCpuMs": 0.118,
+          "args": {}
+        },
+        {
+          "name": "CALayerTreeCoordinator::ApplyBackpressure",
+          "thread": "CrGpuMain",
+          "pid": 44170,
+          "tid": 16665429,
+          "sinceStartMs": 33.838,
+          "durationMs": 8.72,
+          "threadCpuMs": 0.091,
+          "args": {}
+        },
+        {
+          "name": "CALayerTreeCoordinator::ApplyBackpressure",
+          "thread": "CrGpuMain",
+          "pid": 44170,
+          "tid": 16665429,
+          "sinceStartMs": 294.615,
+          "durationMs": 8.471,
+          "threadCpuMs": 0.066,
+          "args": {}
+        },
+        {
+          "name": "CALayerTreeCoordinator::ApplyBackpressure",
+          "thread": "CrGpuMain",
+          "pid": 44170,
+          "tid": 16665429,
+          "sinceStartMs": 151.741,
+          "durationMs": 6.373,
+          "threadCpuMs": 0.137,
+          "args": {}
+        }
+      ],
+      "firstMajorBackpressure": {
+        "name": "CALayerTreeCoordinator::ApplyBackpressure",
+        "thread": "CrGpuMain",
+        "pid": 44170,
+        "tid": 16665429,
+        "sinceStartMs": 239.157,
+        "durationMs": 42.601,
+        "threadCpuMs": 0.672,
+        "args": {}
+      },
+      "firstMajorMetalChildren": {
+        "count": 37,
+        "wallSumMs": 42.481,
+        "threadCpuSumMs": 0.64,
+        "maxWallMs": 1.29
+      },
+      "firstMajorMetalFirst": {
+        "name": "CALayerTreeCoordinator::ApplyBackpressure::Metal",
+        "thread": "CrGpuMain",
+        "pid": 44170,
+        "tid": 16665429,
+        "sinceStartMs": 239.158,
+        "durationMs": 1.051,
+        "threadCpuMs": 0.014,
+        "args": {}
+      },
+      "firstMajorMetalLast": {
+        "name": "CALayerTreeCoordinator::ApplyBackpressure::Metal",
+        "thread": "CrGpuMain",
+        "pid": 44170,
+        "tid": 16665429,
+        "sinceStartMs": 281.754,
+        "durationMs": 0.002,
+        "threadCpuMs": 0.002,
+        "args": {}
+      },
+      "secondLongFrameWindow": []
+    }
+  },
+  "benchmarkReplay": [
+    {
+      "fixture": {
+        "art": [
+          750,
+          1050
+        ],
+        "vertices": 48,
+        "tiles": 9,
+        "viewport": [
+          3008,
+          1492
+        ],
+        "dpr": 2,
+        "zoom": 0.888095238095238,
+        "replaySpeed": 1,
+        "follow": true,
+        "spins": [
+          {
+            "i": 11,
+            "q": 1
+          },
+          {
+            "i": 23,
+            "q": 2
+          },
+          {
+            "i": 35,
+            "q": 3
+          }
+        ],
+        "replayProfile": "events",
+        "projectedSegments": 235
+      },
+      "summary": {
+        "durationMs": 30003.200000047684,
+        "frames": 1770,
+        "continuousRafMs": {
+          "n": 1767,
+          "median": 16.600000000002183,
+          "p95": 18,
+          "p99": 18.5,
+          "max": 101.29999999999995,
+          "mean": 16.72182682512733,
+          "over25ms": 2
+        },
+        "idleGapsMs": {
+          "n": 2,
+          "median": 217.96600000000035,
+          "p95": 217.96600000000035,
+          "p99": 217.96600000000035,
+          "max": 217.96600000000035,
+          "mean": 200.76600000000053,
+          "over25ms": 2
+        },
+        "frameCpuMs": {
+          "n": 1770,
+          "median": 1,
+          "p95": 1.5,
+          "p99": 1.8000000715255737,
+          "max": 5.899999976158142,
+          "mean": 1.0672316398324266,
+          "over25ms": 0
+        },
+        "postFirstFrameCpuMs": {
+          "n": 1769,
+          "median": 1,
+          "p95": 1.5,
+          "p99": 1.8000000715255737,
+          "max": 5.899999976158142,
+          "mean": 1.0663651794683737,
+          "over25ms": 0
+        },
+        "longContinuousFrames": [
+          {
+            "index": 18,
+            "sinceStartMs": 435.7000000476837,
+            "intervalMs": 101.29999999999995,
+            "cpuMs": 1.2000000476837158,
+            "previousCpuMs": 0.8999999761581421,
+            "callbackDelayMs": 2.0999999523162387,
+            "state": {
+              "rotation": 0,
+              "cursor": 3.4241351360144154,
+              "walker": [
+                329.41705411296584,
+                473.2307298255713
+              ],
+              "camera": [
+                375,
+                525
+              ],
+              "vertices": 48,
+              "tiles": 9,
+              "play": 1,
+              "phase": null,
+              "phaseElapsed": null,
+              "phaseEvent": null,
+              "eventDone": 0,
+              "follow": true,
+              "manualPivot": false,
+              "mode": "playing"
+            }
+          },
+          {
+            "index": 1234,
+            "sinceStartMs": 20888.100000023842,
+            "intervalMs": 33.79999999999927,
+            "cpuMs": 0.8999999761581421,
+            "previousCpuMs": 0.7000000476837158,
+            "callbackDelayMs": 4.999999928473699,
+            "state": {
+              "rotation": 9.42477796076938,
+              "cursor": 23.0580167373213,
+              "walker": [
+                564.887121400527,
+                884.5897650181302
+              ],
+              "camera": [
+                375,
+                525
+              ],
+              "vertices": 48,
+              "tiles": 9,
+              "play": 1,
+              "phase": null,
+              "phaseElapsed": null,
+              "phaseEvent": null,
+              "eventDone": 2,
+              "follow": true,
+              "manualPivot": false,
+              "mode": "playing"
+            }
+          }
+        ],
+        "counts": {
+          "render": 1768,
+          "timeline": 267,
+          "hud": 272
+        },
+        "verticesRange": [
+          48,
+          48
+        ],
+        "rotationRange": [
+          0,
+          12.566370614359172
+        ],
+        "cursorRange": [
+          0.15756733441538867,
+          47
+        ]
+      },
+      "firstInput": {
+        "type": "pointerup",
+        "key": null,
+        "time": 937.5,
+        "eventTime": 936,
+        "trusted": true,
+        "target": ""
+      }
+    }
+  ],
+  "conclusions": [
+    "The full-UI first long frame is specifically localized to macOS CoreAnimation/Metal output backpressure: ApplyBackpressure lasts 129.025 ms inside ImageTransportSurfaceOverlayMac::Present / SwapBuffers at +305.907 ms, with only 1.489 ms thread CPU. Nested ApplyBackpressure::Metal intervals account for essentially all the wall time. This is not a 100 ms main-thread UI paint or application JavaScript task.",
+    "ANGLE WaitForCommandsToBeScheduled immediately before the stalled Present is only 0.008 ms. This argues against that specific app-ANGLE scheduling wait being the direct long section; it does not exclude earlier app GPU work contributing to outstanding Metal work.",
+    "The hidden-UI capture also has CoreAnimation/Metal backpressure (largest early occurrence roughly 42.6 ms). Therefore the phenomenon is not exclusively created by visible UI and absence of >25 ms RAF samples does not mean no downstream waits occurred.",
+    "Visible UI adds main-thread paint and compositor raster for #player (first 500 ms Paint 1.376 ms vs hidden UI 0.116 ms, RasterTask 4 vs 0), but recorded GPU RendererRasterWorker aggregate is actually LOWER in full UI (118.289 ms vs 169.476 ms). The traces use different input methods and have different WebGL service-call counts (73 vs 330 in the first 500 ms), so these windows are not equivalent work samples. The hidden-UI intervention is suggestive but does not establish UI as the owner of the Metal backlog or identify a CSS shader/texture upload.",
+    "No explicitly named shader compilation/upload event is recorded in either capture. Deep trace gives a much narrower wait location but still no named shader compile duration or resource ID tying the wait to a specific app/UI pipeline. It is not justified to conclude Skia shader compilation or app path tessellation from this data.",
+    "Retain the measured cold stall. Do not improve the reported score by hiding UI or omitting the first seconds. Any rendering change should be tested with the complete UI and click-driven replay again."
+  ],
+  "recommendations": [
+    "Use the hidden-UI intervention only to choose an investigation direction, not to claim UI causality. Match the real input method, input-relative time window and actual app/render work counts before comparing UI raster/compositing contributions. Current deep captures locate the wait but their early workload mix differs.",
+    "If pursuing exact attribution, inspect Metal command-buffer/fence ownership or native GPU signposts for the outstanding work waited by CALayerTreeCoordinator, and annotate app image/atlas uploads separately. Current host trace lacks that ownership.",
+    "Keep application AA/path logic changes separate from UI/compositor experiments; this trace does not implicate path geometry CPU or the brief ANGLE schedule wait.",
+    "No further CPU/GPU analysis or measurement is running after this report is written."
+  ]
+}

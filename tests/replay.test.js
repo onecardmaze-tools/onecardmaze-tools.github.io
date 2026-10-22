@@ -57,8 +57,8 @@ const sandbox = { console, ReplayCore:core, TraceRenderer:require('../trace-rend
   requestAnimationFrame:noop,cancelAnimationFrame:noop,performance:{now:()=>0},setTimeout:noop,clearTimeout:noop,
   URLSearchParams,URL,location:{search:''},Float32Array,Uint8ClampedArray,
   Option:function(text,value){this.text=text;this.value=value;},Path2D:function(){this.moveTo=noop;this.lineTo=noop;this.addPath=noop;}};
-sandbox.GPURenderer={create(canvas){return {canvas,context:context2d,Path:sandbox.Path2D,
-  mode:'test-vector-adapter',flush:noop,resize:noop,clearRasterCache:noop};}};
+sandbox.GPURenderer={create(canvas,options={}){if(options.gl)throw Error("Canvas2D test adapter uses a separate surface");return {canvas,context:context2d,Path:sandbox.Path2D,
+  mode:'test-vector-adapter',flush:noop,endFrame:noop,resize:noop,clearRasterCache:noop};}};
 sandbox.window=sandbox;
 vm.createContext(sandbox);
 const html=fs.readFileSync(require('path').join(__dirname,'../index.html'),'utf8');

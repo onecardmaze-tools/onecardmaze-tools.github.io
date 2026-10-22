@@ -1,0 +1,11 @@
+--- a/companion.css
++++ b/companion.css
+@@ -98,7 +98,7 @@
+ .dbtn:disabled{opacity:.38}
+ 
+ /* replay transport */
+-#player{max-width:640px;align-items:stretch}
++#player{max-width:640px;align-items:stretch;will-change:transform}
+ #player .dbtn{flex:0 0 54px}
+ .timeline{flex:1 1 auto;min-width:64px;display:flex;flex-direction:column;justify-content:center;gap:2px;padding:0 4px}
+ .tl-label{display:flex;gap:5px;font-size:var(--t-xs);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

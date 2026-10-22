@@ -1,0 +1,2150 @@
+{
+  "root": "/Users/xuezhonghao/Projects/OneCardMaze",
+  "results": [
+    {
+      "appVersion": "2026-10-21-card-library",
+      "stylesheets": [
+        "http://127.0.0.1:55259/companion.css?v=card-library-1"
+      ],
+      "visibilityChanges": [],
+      "mode": "empty",
+      "workload": "rotate",
+      "cycles": 5,
+      "gpuTimers": true,
+      "nativeDriver": true,
+      "driver": "native-raf-callback-update-render",
+      "nativeConditions": {
+        "dt": 0.016666666666666666,
+        "simulationClock": "fixed 1/60 second per callback; dropped frames slow simulated time",
+        "rotate": "rotTarget follows original angle ramp; actual rotation eased by production update",
+        "walk": "production tap() between four in-card waypoints; recording, following camera, lighting and cards updated",
+        "replay": "production play(1), speed 1, added recorded spin at route vertex 1; real event state machine; no cursor writes",
+        "waypoints": [
+          {
+            "x": 220,
+            "y": 300
+          },
+          {
+            "x": 550,
+            "y": 300
+          },
+          {
+            "x": 550,
+            "y": 780
+          },
+          {
+            "x": 220,
+            "y": 780
+          }
+        ],
+        "observed": {
+          "updateCalls": 600,
+          "inputCommands": 0,
+          "playCalls": 0,
+          "rotationMin": 0.36421472726417575,
+          "rotationMax": 3.033765539251281,
+          "cameraXMin": 375,
+          "cameraXMax": 375,
+          "cameraYMin": 525,
+          "cameraYMax": 525,
+          "walkerXMin": 549,
+          "walkerXMax": 549,
+          "walkerYMin": 183,
+          "walkerYMax": 183,
+          "maxVertices": 48,
+          "maxTiles": 9,
+          "phaseFrames": {},
+          "walkDistance": 0,
+          "replayCursorMin": null,
+          "replayCursorMax": null
+        },
+        "updateCpuMs": {
+          "n": 600,
+          "median": 0,
+          "p95": 0.10000002384185791,
+          "p99": 0.10000002384185791,
+          "max": 0.20000004768371582,
+          "mean": 0.028333333134651185
+        },
+        "renderCpuMs": {
+          "n": 600,
+          "median": 0,
+          "p95": 0,
+          "p99": 0.10000002384185791,
+          "max": 0.10000002384185791,
+          "mean": 0.0013333334525426229
+        },
+        "callbackDelayMs": {
+          "n": 600,
+          "median": 0.2999999761577783,
+          "p95": 1.4000000715259375,
+          "p99": 1.7999999761577783,
+          "max": 2.100000023841858,
+          "mean": 0.4913333575725513
+        },
+        "notes": "48 initial route vertices, artwork, zoom and viewport match legacy; motion/camera/event workload differs. HUD frame() throttling is not reproduced. Application RAF scheduling is suspended; all measured update/render operations are synchronous inside one native RAF callback."
+      },
+      "framesPerCycle": 120,
+      "warmupFrames": 20,
+      "measurementNote": "RAF callback cadence and CPU/GPU query timings; not confirmed presented frames, energy, or power. Cycle resets are included in rafMs, and their affected intervals are separated in resetBoundaryRafMs. GPU query scopes on separate contexts are not an additive critical-path measurement.",
+      "viewport": [
+        1504,
+        1492
+      ],
+      "dpr": 2,
+      "backing": [
+        3008,
+        2984
+      ],
+      "vertices": 48,
+      "projectedSegments": 235,
+      "canonicalStamps": 28,
+      "canonicalChevrons": 28,
+      "tiles": 9,
+      "zoom": 0.888095238095238,
+      "renderer": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) UHD Graphics 630, Unspecified Version)",
+      "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "traceSurface": null,
+      "cpuMs": {
+        "n": 600,
+        "median": 0,
+        "p95": 0.10000002384185791,
+        "p99": 0.10000002384185791,
+        "max": 0.20000004768371582,
+        "mean": 0.03433333337306976
+      },
+      "rafMs": {
+        "n": 600,
+        "median": 16.69999999999891,
+        "p95": 17.400000000001455,
+        "p99": 17.600000000000364,
+        "max": 17.700000000000728,
+        "mean": 16.667666666666662
+      },
+      "steadyRafMs": {
+        "n": 596,
+        "median": 16.69999999999891,
+        "p95": 17.400000000001455,
+        "p99": 17.600000000000364,
+        "max": 17.700000000000728,
+        "mean": 16.66610738255033
+      },
+      "resetBoundaryRafMs": {
+        "n": 4,
+        "median": 17,
+        "p95": 17.600000000000364,
+        "p99": 17.600000000000364,
+        "max": 17.600000000000364,
+        "mean": 16.90000000000009
+      },
+      "glGpuMs": {
+        "n": 600,
+        "median": 0,
+        "p95": 0,
+        "p99": 0,
+        "max": 0,
+        "mean": 0
+      },
+      "overlayGpuMs": {
+        "n": 600,
+        "median": 0,
+        "p95": 0,
+        "p99": 0,
+        "max": 0,
+        "mean": 0
+      },
+      "overlayDisjoint": false,
+      "overlayBefore": {
+        "frames": 6,
+        "draws": 174,
+        "vertices": 28248,
+        "uploads": 90,
+        "cachedDraws": 106,
+        "cacheHits": 31,
+        "cacheMisses": 22,
+        "pathBytes": 132480
+      },
+      "overlayAfter": {
+        "frames": 6,
+        "draws": 174,
+        "vertices": 28248,
+        "uploads": 90,
+        "cachedDraws": 106,
+        "cacheHits": 31,
+        "cacheMisses": 22,
+        "pathBytes": 132480
+      },
+      "disjoint": false,
+      "staticClears": 0,
+      "over25ms": 0,
+      "steadyOver25ms": 0,
+      "elapsedMeasuredMs": 9983.800000000001,
+      "reset": {
+        "count": 4,
+        "cpuMs": {
+          "n": 4,
+          "median": 0.5,
+          "p95": 0.7999999523162842,
+          "p99": 0.7999999523162842,
+          "max": 0.7999999523162842,
+          "mean": 0.5249999761581421
+        },
+        "artGpuMs": {
+          "n": 4,
+          "median": 0,
+          "p95": 0,
+          "p99": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "overlayGpuMs": {
+          "n": 4,
+          "median": 0,
+          "p95": 0,
+          "p99": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "records": [
+          {
+            "cycle": 1,
+            "cpuMs": 0.7999999523162842
+          },
+          {
+            "cycle": 2,
+            "cpuMs": 0.3999999761581421
+          },
+          {
+            "cycle": 3,
+            "cpuMs": 0.3999999761581421
+          },
+          {
+            "cycle": 4,
+            "cpuMs": 0.5
+          }
+        ]
+      },
+      "timerQueries": {
+        "art": {
+          "api": "webgl2",
+          "unavailable": 0
+        },
+        "overlay": {
+          "api": "webgl2",
+          "unavailable": 0,
+          "sharedWithArt": false
+        }
+      },
+      "perCycle": [
+        {
+          "cycle": 0,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0.10000002384185791,
+            "p99": 0.10000002384185791,
+            "max": 0.20000004768371582,
+            "mean": 0.03750000099341075
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.699999999999818,
+            "p95": 17.5,
+            "p99": 17.5,
+            "max": 17.600000000000364,
+            "mean": 16.66583333333333
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0,
+            "mean": 0
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0,
+            "mean": 0
+          }
+        },
+        {
+          "cycle": 1,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0.10000002384185791,
+            "p99": 0.10000002384185791,
+            "max": 0.20000004768371582,
+            "mean": 0.03916666706403096
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.600000000000364,
+            "p95": 17.399999999999636,
+            "p99": 17.69999999999891,
+            "max": 17.69999999999891,
+            "mean": 16.669166666666662
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0,
+            "mean": 0
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0,
+            "mean": 0
+          }
+        },
+        {
+          "cycle": 2,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0.10000002384185791,
+            "p99": 0.20000004768371582,
+            "max": 0.20000004768371582,
+            "mean": 0.03916666706403096
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.69999999999891,
+            "p95": 17.5,
+            "p99": 17.600000000000364,
+            "max": 17.69999999999891,
+            "mean": 16.660833333333343
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0,
+            "mean": 0
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0,
+            "mean": 0
+          }
+        },
+        {
+          "cycle": 3,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0.10000002384185791,
+            "p99": 0.10000002384185791,
+            "max": 0.10000002384185791,
+            "mean": 0.029999998211860657
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.69999999999891,
+            "p95": 17.400000000001455,
+            "p99": 17.5,
+            "max": 17.5,
+            "mean": 16.67333333333333
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0,
+            "mean": 0
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0,
+            "mean": 0
+          }
+        },
+        {
+          "cycle": 4,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0.10000002384185791,
+            "p99": 0.10000002384185791,
+            "max": 0.10000002384185791,
+            "mean": 0.025833333532015484
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.700000000000728,
+            "p95": 17.399999999999636,
+            "p99": 17.600000000000364,
+            "max": 17.700000000000728,
+            "mean": 16.669166666666676
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0,
+            "mean": 0
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0,
+            "mean": 0
+          }
+        }
+      ],
+      "glErrors": [],
+      "round": 0
+    },
+    {
+      "appVersion": "2026-10-21-card-library",
+      "stylesheets": [
+        "http://127.0.0.1:55259/companion.css?v=card-library-1"
+      ],
+      "visibilityChanges": [],
+      "mode": "art-only",
+      "workload": "rotate",
+      "cycles": 5,
+      "gpuTimers": true,
+      "nativeDriver": true,
+      "driver": "native-raf-callback-update-render",
+      "nativeConditions": {
+        "dt": 0.016666666666666666,
+        "simulationClock": "fixed 1/60 second per callback; dropped frames slow simulated time",
+        "rotate": "rotTarget follows original angle ramp; actual rotation eased by production update",
+        "walk": "production tap() between four in-card waypoints; recording, following camera, lighting and cards updated",
+        "replay": "production play(1), speed 1, added recorded spin at route vertex 1; real event state machine; no cursor writes",
+        "waypoints": [
+          {
+            "x": 220,
+            "y": 300
+          },
+          {
+            "x": 550,
+            "y": 300
+          },
+          {
+            "x": 550,
+            "y": 780
+          },
+          {
+            "x": 220,
+            "y": 780
+          }
+        ],
+        "observed": {
+          "updateCalls": 600,
+          "inputCommands": 0,
+          "playCalls": 0,
+          "rotationMin": 0.36421472726417575,
+          "rotationMax": 3.033765539251281,
+          "cameraXMin": 375,
+          "cameraXMax": 375,
+          "cameraYMin": 525,
+          "cameraYMax": 525,
+          "walkerXMin": 549,
+          "walkerXMax": 549,
+          "walkerYMin": 183,
+          "walkerYMax": 183,
+          "maxVertices": 48,
+          "maxTiles": 9,
+          "phaseFrames": {},
+          "walkDistance": 0,
+          "replayCursorMin": null,
+          "replayCursorMax": null
+        },
+        "updateCpuMs": {
+          "n": 600,
+          "median": 0,
+          "p95": 0.10000002384185791,
+          "p99": 0.10000002384185791,
+          "max": 0.20000004768371582,
+          "mean": 0.030999999245007834
+        },
+        "renderCpuMs": {
+          "n": 600,
+          "median": 0.10000002384185791,
+          "p95": 0.20000004768371582,
+          "p99": 0.20000004768371582,
+          "max": 0.30000007152557373,
+          "mean": 0.09333333154519399
+        },
+        "callbackDelayMs": {
+          "n": 600,
+          "median": 0.20000002384176696,
+          "p95": 0.4000000238411303,
+          "p99": 0.5999999761588697,
+          "max": 1.0999999761579602,
+          "mean": 0.24449997762840628
+        },
+        "notes": "48 initial route vertices, artwork, zoom and viewport match legacy; motion/camera/event workload differs. HUD frame() throttling is not reproduced. Application RAF scheduling is suspended; all measured update/render operations are synchronous inside one native RAF callback."
+      },
+      "framesPerCycle": 120,
+      "warmupFrames": 20,
+      "measurementNote": "RAF callback cadence and CPU/GPU query timings; not confirmed presented frames, energy, or power. Cycle resets are included in rafMs, and their affected intervals are separated in resetBoundaryRafMs. GPU query scopes on separate contexts are not an additive critical-path measurement.",
+      "viewport": [
+        1504,
+        1492
+      ],
+      "dpr": 2,
+      "backing": [
+        3008,
+        2984
+      ],
+      "vertices": 48,
+      "projectedSegments": 235,
+      "canonicalStamps": 28,
+      "canonicalChevrons": 28,
+      "tiles": 9,
+      "zoom": 0.888095238095238,
+      "renderer": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) UHD Graphics 630, Unspecified Version)",
+      "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "traceSurface": null,
+      "cpuMs": {
+        "n": 600,
+        "median": 0.10000002384185791,
+        "p95": 0.20000004768371582,
+        "p99": 0.30000007152557373,
+        "max": 0.30000007152557373,
+        "mean": 0.13249999682108562
+      },
+      "rafMs": {
+        "n": 600,
+        "median": 16.699999999999818,
+        "p95": 17.5,
+        "p99": 17.59999999999991,
+        "max": 17.600000000000364,
+        "mean": 16.66716666666667
+      },
+      "steadyRafMs": {
+        "n": 596,
+        "median": 16.699999999999818,
+        "p95": 17.5,
+        "p99": 17.59999999999991,
+        "max": 17.600000000000364,
+        "mean": 16.667617449664437
+      },
+      "resetBoundaryRafMs": {
+        "n": 4,
+        "median": 16.699999999999818,
+        "p95": 17.100000000000364,
+        "p99": 17.100000000000364,
+        "max": 17.100000000000364,
+        "mean": 16.59999999999991
+      },
+      "glGpuMs": {
+        "n": 600,
+        "median": 8.800584,
+        "p95": 10.647249,
+        "p99": 12.08925,
+        "max": 13.408332,
+        "mean": 8.419398523333328
+      },
+      "overlayGpuMs": {
+        "n": 600,
+        "median": 0,
+        "p95": 0,
+        "p99": 0,
+        "max": 0,
+        "mean": 0
+      },
+      "overlayDisjoint": false,
+      "overlayBefore": {
+        "frames": 7,
+        "draws": 180,
+        "vertices": 28320,
+        "uploads": 95,
+        "cachedDraws": 108,
+        "cacheHits": 31,
+        "cacheMisses": 23,
+        "pathBytes": 133248
+      },
+      "overlayAfter": {
+        "frames": 7,
+        "draws": 180,
+        "vertices": 28320,
+        "uploads": 95,
+        "cachedDraws": 108,
+        "cacheHits": 31,
+        "cacheMisses": 23,
+        "pathBytes": 133248
+      },
+      "disjoint": false,
+      "staticClears": 0,
+      "over25ms": 0,
+      "steadyOver25ms": 0,
+      "elapsedMeasuredMs": 9983.7,
+      "reset": {
+        "count": 4,
+        "cpuMs": {
+          "n": 4,
+          "median": 0.5,
+          "p95": 0.7999999523162842,
+          "p99": 0.7999999523162842,
+          "max": 0.7999999523162842,
+          "mean": 0.4999999701976776
+        },
+        "artGpuMs": {
+          "n": 4,
+          "median": 6.878833,
+          "p95": 7.262167,
+          "p99": 7.262167,
+          "max": 7.262167,
+          "mean": 6.830582999999999
+        },
+        "overlayGpuMs": {
+          "n": 4,
+          "median": 0,
+          "p95": 0,
+          "p99": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "records": [
+          {
+            "cycle": 1,
+            "cpuMs": 0.7999999523162842
+          },
+          {
+            "cycle": 2,
+            "cpuMs": 0.2999999523162842
+          },
+          {
+            "cycle": 3,
+            "cpuMs": 0.5
+          },
+          {
+            "cycle": 4,
+            "cpuMs": 0.3999999761581421
+          }
+        ]
+      },
+      "timerQueries": {
+        "art": {
+          "api": "webgl2",
+          "unavailable": 0
+        },
+        "overlay": {
+          "api": "webgl2",
+          "unavailable": 0,
+          "sharedWithArt": false
+        }
+      },
+      "perCycle": [
+        {
+          "cycle": 0,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 0.10000002384185791,
+            "p95": 0.20000004768371582,
+            "p99": 0.2999999523162842,
+            "max": 0.30000007152557373,
+            "mean": 0.14416666527589161
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.700000000000045,
+            "p95": 17.5,
+            "p99": 17.59999999999991,
+            "max": 17.600000000000364,
+            "mean": 16.671666666666667
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 9.086832,
+            "p95": 11.473749,
+            "p99": 11.780083,
+            "max": 11.863167,
+            "mean": 8.642812733333335
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0,
+            "mean": 0
+          }
+        },
+        {
+          "cycle": 1,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 0.10000002384185791,
+            "p95": 0.20000004768371582,
+            "p99": 0.20000004768371582,
+            "max": 0.2999999523162842,
+            "mean": 0.1200000007947286
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.699999999999818,
+            "p95": 17.5,
+            "p99": 17.59999999999991,
+            "max": 17.59999999999991,
+            "mean": 16.67083333333333
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 9.010666,
+            "p95": 10.158249,
+            "p99": 10.682582,
+            "max": 10.721666,
+            "mean": 8.438114775000003
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0,
+            "mean": 0
+          }
+        },
+        {
+          "cycle": 2,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 0.10000002384185791,
+            "p95": 0.20000004768371582,
+            "p99": 0.30000007152557373,
+            "max": 0.30000007152557373,
+            "mean": 0.13499999642372132
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.699999999999818,
+            "p95": 17.400000000000546,
+            "p99": 17.599999999999454,
+            "max": 17.599999999999454,
+            "mean": 16.665000000000003
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 8.827749,
+            "p95": 9.716,
+            "p99": 10.267165,
+            "max": 10.999166,
+            "mean": 8.278781466666665
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0,
+            "mean": 0
+          }
+        },
+        {
+          "cycle": 3,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 0.10000002384185791,
+            "p95": 0.20000004768371582,
+            "p99": 0.2999999523162842,
+            "max": 0.2999999523162842,
+            "mean": 0.12083333035310109
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.699999999999818,
+            "p95": 17.400000000001455,
+            "p99": 17.600000000000364,
+            "max": 17.600000000000364,
+            "mean": 16.665000000000003
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 8.462416,
+            "p95": 10.31475,
+            "p99": 10.723083,
+            "max": 12.08925,
+            "mean": 8.093901483333335
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0,
+            "mean": 0
+          }
+        },
+        {
+          "cycle": 4,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 0.10000002384185791,
+            "p95": 0.20000004768371582,
+            "p99": 0.30000007152557373,
+            "max": 0.30000007152557373,
+            "mean": 0.14249999125798543
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.69999999999891,
+            "p95": 17.400000000001455,
+            "p99": 17.600000000000364,
+            "max": 17.600000000000364,
+            "mean": 16.663333333333338
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 8.521916,
+            "p95": 11.825666,
+            "p99": 13.151332,
+            "max": 13.408332,
+            "mean": 8.643382158333333
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0,
+            "mean": 0
+          }
+        }
+      ],
+      "glErrors": [],
+      "round": 0
+    },
+    {
+      "appVersion": "2026-10-21-card-library",
+      "stylesheets": [
+        "http://127.0.0.1:55259/companion.css?v=card-library-1"
+      ],
+      "visibilityChanges": [],
+      "mode": "no-art",
+      "workload": "rotate",
+      "cycles": 5,
+      "gpuTimers": true,
+      "nativeDriver": true,
+      "driver": "native-raf-callback-update-render",
+      "nativeConditions": {
+        "dt": 0.016666666666666666,
+        "simulationClock": "fixed 1/60 second per callback; dropped frames slow simulated time",
+        "rotate": "rotTarget follows original angle ramp; actual rotation eased by production update",
+        "walk": "production tap() between four in-card waypoints; recording, following camera, lighting and cards updated",
+        "replay": "production play(1), speed 1, added recorded spin at route vertex 1; real event state machine; no cursor writes",
+        "waypoints": [
+          {
+            "x": 220,
+            "y": 300
+          },
+          {
+            "x": 550,
+            "y": 300
+          },
+          {
+            "x": 550,
+            "y": 780
+          },
+          {
+            "x": 220,
+            "y": 780
+          }
+        ],
+        "observed": {
+          "updateCalls": 600,
+          "inputCommands": 0,
+          "playCalls": 0,
+          "rotationMin": 0.36421472726417575,
+          "rotationMax": 3.033765539251281,
+          "cameraXMin": 375,
+          "cameraXMax": 375,
+          "cameraYMin": 525,
+          "cameraYMax": 525,
+          "walkerXMin": 549,
+          "walkerXMax": 549,
+          "walkerYMin": 183,
+          "walkerYMax": 183,
+          "maxVertices": 48,
+          "maxTiles": 9,
+          "phaseFrames": {},
+          "walkDistance": 0,
+          "replayCursorMin": null,
+          "replayCursorMax": null
+        },
+        "updateCpuMs": {
+          "n": 600,
+          "median": 0,
+          "p95": 0.10000002384185791,
+          "p99": 0.10000002384185791,
+          "max": 0.20000004768371582,
+          "mean": 0.026833332578341165
+        },
+        "renderCpuMs": {
+          "n": 600,
+          "median": 0.7999999523162842,
+          "p95": 1.100000023841858,
+          "p99": 1.399999976158142,
+          "max": 1.7999999523162842,
+          "mean": 0.8275000009934107
+        },
+        "callbackDelayMs": {
+          "n": 600,
+          "median": 0.20000007152520993,
+          "p95": 0.40000007152593753,
+          "p99": 1.0000000238419489,
+          "max": 7.200000071525665,
+          "mean": 0.2893333561817773
+        },
+        "notes": "48 initial route vertices, artwork, zoom and viewport match legacy; motion/camera/event workload differs. HUD frame() throttling is not reproduced. Application RAF scheduling is suspended; all measured update/render operations are synchronous inside one native RAF callback."
+      },
+      "framesPerCycle": 120,
+      "warmupFrames": 20,
+      "measurementNote": "RAF callback cadence and CPU/GPU query timings; not confirmed presented frames, energy, or power. Cycle resets are included in rafMs, and their affected intervals are separated in resetBoundaryRafMs. GPU query scopes on separate contexts are not an additive critical-path measurement.",
+      "viewport": [
+        1504,
+        1492
+      ],
+      "dpr": 2,
+      "backing": [
+        3008,
+        2984
+      ],
+      "vertices": 48,
+      "projectedSegments": 235,
+      "canonicalStamps": 28,
+      "canonicalChevrons": 28,
+      "tiles": 9,
+      "zoom": 0.888095238095238,
+      "renderer": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) UHD Graphics 630, Unspecified Version)",
+      "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "traceSurface": null,
+      "cpuMs": {
+        "n": 600,
+        "median": 0.8000000715255737,
+        "p95": 1.1999999284744263,
+        "p99": 1.4000000953674316,
+        "max": 1.7999999523162842,
+        "mean": 0.8615000007549921
+      },
+      "rafMs": {
+        "n": 600,
+        "median": 16.699999999999818,
+        "p95": 17.399999999999636,
+        "p99": 17.59999999999991,
+        "max": 17.700000000000728,
+        "mean": 16.667333333333335
+      },
+      "steadyRafMs": {
+        "n": 596,
+        "median": 16.699999999999818,
+        "p95": 17.399999999999636,
+        "p99": 17.59999999999991,
+        "max": 17.700000000000728,
+        "mean": 16.66694630872483
+      },
+      "resetBoundaryRafMs": {
+        "n": 4,
+        "median": 16.600000000000364,
+        "p95": 17.199999999999818,
+        "p99": 17.199999999999818,
+        "max": 17.199999999999818,
+        "mean": 16.725000000000136
+      },
+      "glGpuMs": {
+        "n": 600,
+        "median": 0,
+        "p95": 0,
+        "p99": 0,
+        "max": 0,
+        "mean": 0
+      },
+      "overlayGpuMs": {
+        "n": 600,
+        "median": 8.006582,
+        "p95": 9.241499,
+        "p99": 10.140415,
+        "max": 11.398917,
+        "mean": 8.04416433833334
+      },
+      "overlayDisjoint": false,
+      "overlayBefore": {
+        "frames": 17,
+        "draws": 240,
+        "vertices": 29040,
+        "uploads": 145,
+        "cachedDraws": 128,
+        "cacheHits": 31,
+        "cacheMisses": 33,
+        "pathBytes": 140928
+      },
+      "overlayAfter": {
+        "frames": 641,
+        "draws": 39682,
+        "vertices": 8264070,
+        "uploads": 16452,
+        "cachedDraws": 25604,
+        "cacheHits": 10428,
+        "cacheMisses": 2374,
+        "pathBytes": 1006464
+      },
+      "disjoint": false,
+      "staticClears": 0,
+      "over25ms": 0,
+      "steadyOver25ms": 0,
+      "elapsedMeasuredMs": 9984.3,
+      "reset": {
+        "count": 4,
+        "cpuMs": {
+          "n": 4,
+          "median": 4,
+          "p95": 4.700000047683716,
+          "p99": 4.700000047683716,
+          "max": 4.700000047683716,
+          "mean": 3.324999988079071
+        },
+        "artGpuMs": {
+          "n": 4,
+          "median": 0,
+          "p95": 0,
+          "p99": 0,
+          "max": 0,
+          "mean": 0
+        },
+        "overlayGpuMs": {
+          "n": 4,
+          "median": 8.280082,
+          "p95": 8.927166,
+          "p99": 8.927166,
+          "max": 8.927166,
+          "mean": 8.10206125
+        },
+        "records": [
+          {
+            "cycle": 1,
+            "cpuMs": 4.700000047683716
+          },
+          {
+            "cycle": 2,
+            "cpuMs": 2.399999976158142
+          },
+          {
+            "cycle": 3,
+            "cpuMs": 4
+          },
+          {
+            "cycle": 4,
+            "cpuMs": 2.1999999284744263
+          }
+        ]
+      },
+      "timerQueries": {
+        "art": {
+          "api": "webgl2",
+          "unavailable": 0
+        },
+        "overlay": {
+          "api": "webgl2",
+          "unavailable": 0,
+          "sharedWithArt": false
+        }
+      },
+      "perCycle": [
+        {
+          "cycle": 0,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1,
+            "p95": 1.399999976158142,
+            "p99": 1.600000023841858,
+            "max": 1.600000023841858,
+            "mean": 0.9825000047683716
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.700000000000045,
+            "p95": 17.40000000000009,
+            "p99": 17.5,
+            "max": 17.59999999999991,
+            "mean": 16.668333333333337
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0,
+            "mean": 0
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 8.368915,
+            "p95": 9.708667,
+            "p99": 10.251833,
+            "max": 11.398917,
+            "mean": 8.385977216666667
+          }
+        },
+        {
+          "cycle": 1,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 0.8000000715255737,
+            "p95": 1.100000023841858,
+            "p99": 1.1999999284744263,
+            "max": 1.399999976158142,
+            "mean": 0.8599999974171321
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.699999999999818,
+            "p95": 17.399999999999636,
+            "p99": 17.400000000000546,
+            "max": 17.400000000000546,
+            "mean": 16.665000000000003
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0,
+            "mean": 0
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 8.047334,
+            "p95": 9.201416,
+            "p99": 9.445166,
+            "max": 9.589666,
+            "mean": 8.060878641666667
+          }
+        },
+        {
+          "cycle": 2,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 0.8999999761581421,
+            "p95": 1.100000023841858,
+            "p99": 1.3000000715255737,
+            "max": 1.399999976158142,
+            "mean": 0.871666669845581
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.699999999999818,
+            "p95": 17.5,
+            "p99": 17.600000000000364,
+            "max": 17.699999999999818,
+            "mean": 16.668333333333333
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0,
+            "mean": 0
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 8.004417,
+            "p95": 9.01025,
+            "p99": 9.317415,
+            "max": 9.341416,
+            "mean": 7.9708543916666645
+          }
+        },
+        {
+          "cycle": 3,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 0.7999999523162842,
+            "p95": 1,
+            "p99": 1.2999999523162842,
+            "max": 1.7999999523162842,
+            "mean": 0.7941666662693023
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.700000000000728,
+            "p95": 17.399999999999636,
+            "p99": 17.5,
+            "max": 17.600000000000364,
+            "mean": 16.66583333333334
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0,
+            "mean": 0
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 7.811833,
+            "p95": 8.657083,
+            "p99": 8.803167,
+            "max": 9.055333,
+            "mean": 7.852991175
+          }
+        },
+        {
+          "cycle": 4,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 0.7999999523162842,
+            "p95": 1.100000023841858,
+            "p99": 1.1999999284744263,
+            "max": 1.1999999284744263,
+            "mean": 0.7991666654745738
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.69999999999891,
+            "p95": 17.399999999999636,
+            "p99": 17.600000000000364,
+            "max": 17.700000000000728,
+            "mean": 16.669166666666662
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 0,
+            "p95": 0,
+            "p99": 0,
+            "max": 0,
+            "mean": 0
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 7.929167,
+            "p95": 9.292667,
+            "p99": 10.195167,
+            "max": 10.408082,
+            "mean": 7.950120266666669
+          }
+        }
+      ],
+      "glErrors": [],
+      "round": 0
+    },
+    {
+      "appVersion": "2026-10-21-card-library",
+      "stylesheets": [
+        "http://127.0.0.1:55259/companion.css?v=card-library-1"
+      ],
+      "visibilityChanges": [],
+      "mode": "full",
+      "workload": "rotate",
+      "cycles": 5,
+      "gpuTimers": true,
+      "nativeDriver": true,
+      "driver": "native-raf-callback-update-render",
+      "nativeConditions": {
+        "dt": 0.016666666666666666,
+        "simulationClock": "fixed 1/60 second per callback; dropped frames slow simulated time",
+        "rotate": "rotTarget follows original angle ramp; actual rotation eased by production update",
+        "walk": "production tap() between four in-card waypoints; recording, following camera, lighting and cards updated",
+        "replay": "production play(1), speed 1, added recorded spin at route vertex 1; real event state machine; no cursor writes",
+        "waypoints": [
+          {
+            "x": 220,
+            "y": 300
+          },
+          {
+            "x": 550,
+            "y": 300
+          },
+          {
+            "x": 550,
+            "y": 780
+          },
+          {
+            "x": 220,
+            "y": 780
+          }
+        ],
+        "observed": {
+          "updateCalls": 600,
+          "inputCommands": 0,
+          "playCalls": 0,
+          "rotationMin": 0.36421472726417575,
+          "rotationMax": 3.033765539251281,
+          "cameraXMin": 375,
+          "cameraXMax": 375,
+          "cameraYMin": 525,
+          "cameraYMax": 525,
+          "walkerXMin": 549,
+          "walkerXMax": 549,
+          "walkerYMin": 183,
+          "walkerYMax": 183,
+          "maxVertices": 48,
+          "maxTiles": 9,
+          "phaseFrames": {},
+          "walkDistance": 0,
+          "replayCursorMin": null,
+          "replayCursorMax": null
+        },
+        "updateCpuMs": {
+          "n": 600,
+          "median": 0,
+          "p95": 0.10000002384185791,
+          "p99": 0.20000004768371582,
+          "max": 0.30000007152557373,
+          "mean": 0.050666667222976684
+        },
+        "renderCpuMs": {
+          "n": 600,
+          "median": 1.100000023841858,
+          "p95": 1.7999999523162842,
+          "p99": 2.200000047683716,
+          "max": 2.5,
+          "mean": 1.1484999986489615
+        },
+        "callbackDelayMs": {
+          "n": 600,
+          "median": 0.5000000953677954,
+          "p95": 1.0000000715253918,
+          "p99": 4.100000071524846,
+          "max": 12.100000047683807,
+          "mean": 0.6271667147080112
+        },
+        "notes": "48 initial route vertices, artwork, zoom and viewport match legacy; motion/camera/event workload differs. HUD frame() throttling is not reproduced. Application RAF scheduling is suspended; all measured update/render operations are synchronous inside one native RAF callback."
+      },
+      "framesPerCycle": 120,
+      "warmupFrames": 20,
+      "measurementNote": "RAF callback cadence and CPU/GPU query timings; not confirmed presented frames, energy, or power. Cycle resets are included in rafMs, and their affected intervals are separated in resetBoundaryRafMs. GPU query scopes on separate contexts are not an additive critical-path measurement.",
+      "viewport": [
+        1504,
+        1492
+      ],
+      "dpr": 2,
+      "backing": [
+        3008,
+        2984
+      ],
+      "vertices": 48,
+      "projectedSegments": 235,
+      "canonicalStamps": 28,
+      "canonicalChevrons": 28,
+      "tiles": 9,
+      "zoom": 0.888095238095238,
+      "renderer": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) UHD Graphics 630, Unspecified Version)",
+      "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "traceSurface": null,
+      "cpuMs": {
+        "n": 600,
+        "median": 1.1999999284744263,
+        "p95": 1.899999976158142,
+        "p99": 2.3000000715255737,
+        "max": 2.600000023841858,
+        "mean": 1.2126666649182638
+      },
+      "rafMs": {
+        "n": 600,
+        "median": 16.699999999999818,
+        "p95": 17.400000000001455,
+        "p99": 17.600000000000364,
+        "max": 17.700000000000728,
+        "mean": 16.66650000000001
+      },
+      "steadyRafMs": {
+        "n": 596,
+        "median": 16.699999999999818,
+        "p95": 17.400000000001455,
+        "p99": 17.600000000000364,
+        "max": 17.700000000000728,
+        "mean": 16.66459731543625
+      },
+      "resetBoundaryRafMs": {
+        "n": 4,
+        "median": 17.099999999999454,
+        "p95": 17.399999999999636,
+        "p99": 17.399999999999636,
+        "max": 17.399999999999636,
+        "mean": 16.949999999999477
+      },
+      "glGpuMs": {
+        "n": 600,
+        "median": 7.595001,
+        "p95": 9.761749,
+        "p99": 10.435667,
+        "max": 10.690665,
+        "mean": 7.13951630833334
+      },
+      "overlayGpuMs": {
+        "n": 600,
+        "median": 6.178667,
+        "p95": 8.287583,
+        "p99": 9.251416,
+        "max": 10.300749,
+        "mean": 6.369643949999995
+      },
+      "overlayDisjoint": false,
+      "overlayBefore": {
+        "frames": 10,
+        "draws": 198,
+        "vertices": 28536,
+        "uploads": 110,
+        "cachedDraws": 114,
+        "cacheHits": 31,
+        "cacheMisses": 26,
+        "pathBytes": 135552
+      },
+      "overlayAfter": {
+        "frames": 634,
+        "draws": 39640,
+        "vertices": 8263566,
+        "uploads": 16417,
+        "cachedDraws": 25590,
+        "cacheHits": 10428,
+        "cacheMisses": 2367,
+        "pathBytes": 1006464
+      },
+      "disjoint": false,
+      "staticClears": 0,
+      "over25ms": 0,
+      "steadyOver25ms": 0,
+      "elapsedMeasuredMs": 9983.3,
+      "reset": {
+        "count": 4,
+        "cpuMs": {
+          "n": 4,
+          "median": 3.8000000715255737,
+          "p95": 5.399999976158142,
+          "p99": 5.399999976158142,
+          "max": 5.399999976158142,
+          "mean": 4.025000035762787
+        },
+        "artGpuMs": {
+          "n": 4,
+          "median": 5.666333,
+          "p95": 6.28625,
+          "p99": 6.28625,
+          "max": 6.28625,
+          "mean": 5.711020499999999
+        },
+        "overlayGpuMs": {
+          "n": 4,
+          "median": 7.106331,
+          "p95": 7.352915,
+          "p99": 7.352915,
+          "max": 7.352915,
+          "mean": 6.58064475
+        },
+        "records": [
+          {
+            "cycle": 1,
+            "cpuMs": 5.399999976158142
+          },
+          {
+            "cycle": 2,
+            "cpuMs": 3.200000047683716
+          },
+          {
+            "cycle": 3,
+            "cpuMs": 3.700000047683716
+          },
+          {
+            "cycle": 4,
+            "cpuMs": 3.8000000715255737
+          }
+        ]
+      },
+      "timerQueries": {
+        "art": {
+          "api": "webgl2",
+          "unavailable": 0
+        },
+        "overlay": {
+          "api": "webgl2",
+          "unavailable": 0,
+          "sharedWithArt": false
+        }
+      },
+      "perCycle": [
+        {
+          "cycle": 0,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1.2999999523162842,
+            "p95": 1.9000000953674316,
+            "p99": 2.200000047683716,
+            "max": 2.5,
+            "mean": 1.3233333319425582
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.699999999999818,
+            "p95": 17.399999999999864,
+            "p99": 17.5,
+            "max": 17.699999999999818,
+            "mean": 16.666666666666668
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 7.491917,
+            "p95": 9.689749,
+            "p99": 10.261,
+            "max": 10.287666,
+            "mean": 7.156150841666665
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 6.446084,
+            "p95": 8.799583,
+            "p99": 9.610833,
+            "max": 9.752832,
+            "mean": 6.561157133333334
+          }
+        },
+        {
+          "cycle": 1,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1.399999976158142,
+            "p95": 2.299999952316284,
+            "p99": 2.5999999046325684,
+            "max": 2.600000023841858,
+            "mean": 1.4300000021855037
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.699999999999818,
+            "p95": 17.5,
+            "p99": 17.600000000000364,
+            "max": 17.700000000000273,
+            "mean": 16.66416666666667
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 7.840333,
+            "p95": 9.829999,
+            "p99": 10.207416,
+            "max": 10.232749,
+            "mean": 7.250252875000004
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 6.297082,
+            "p95": 8.60725,
+            "p99": 9.007498,
+            "max": 9.287582,
+            "mean": 6.428889083333332
+          }
+        },
+        {
+          "cycle": 2,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1.0999999046325684,
+            "p95": 1.7000000476837158,
+            "p99": 2.100000023841858,
+            "max": 2.399999976158142,
+            "mean": 1.1316666632890702
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.699999999999818,
+            "p95": 17.399999999999636,
+            "p99": 17.5,
+            "max": 17.599999999999454,
+            "mean": 16.6725
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 7.736167,
+            "p95": 9.846083,
+            "p99": 10.468667,
+            "max": 10.517998,
+            "mean": 7.1914724
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 6.199166,
+            "p95": 8.053416,
+            "p99": 8.898083,
+            "max": 9.126833,
+            "mean": 6.414859216666665
+          }
+        },
+        {
+          "cycle": 3,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1.100000023841858,
+            "p95": 1.600000023841858,
+            "p99": 1.7999999523162842,
+            "max": 1.7999999523162842,
+            "mean": 1.112499992052714
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.600000000000364,
+            "p95": 17.5,
+            "p99": 17.699999999999818,
+            "max": 17.700000000000728,
+            "mean": 16.66666666666666
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 7.554583,
+            "p95": 9.913,
+            "p99": 10.62575,
+            "max": 10.690665,
+            "mean": 7.047498199999997
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 6.05725,
+            "p95": 8.028917,
+            "p99": 9.251416,
+            "max": 10.300749,
+            "mean": 6.254449558333332
+          }
+        },
+        {
+          "cycle": 4,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1,
+            "p95": 1.5,
+            "p99": 2,
+            "max": 2.200000047683716,
+            "mean": 1.0658333351214726
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.700000000000728,
+            "p95": 17.400000000001455,
+            "p99": 17.5,
+            "max": 17.5,
+            "mean": 16.6625
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 7.485582,
+            "p95": 9.706334,
+            "p99": 10.233832,
+            "max": 10.506249,
+            "mean": 7.052207224999999
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 6.056832,
+            "p95": 7.762082,
+            "p99": 8.287583,
+            "max": 9.78325,
+            "mean": 6.188864758333332
+          }
+        }
+      ],
+      "glErrors": [],
+      "round": 0
+    },
+    {
+      "appVersion": "2026-10-21-card-library",
+      "stylesheets": [
+        "http://127.0.0.1:55259/companion.css?v=card-library-1"
+      ],
+      "visibilityChanges": [],
+      "mode": "full",
+      "workload": "rotate",
+      "cycles": 5,
+      "gpuTimers": true,
+      "nativeDriver": true,
+      "driver": "native-raf-callback-update-render",
+      "nativeConditions": {
+        "dt": 0.016666666666666666,
+        "simulationClock": "fixed 1/60 second per callback; dropped frames slow simulated time",
+        "rotate": "rotTarget follows original angle ramp; actual rotation eased by production update",
+        "walk": "production tap() between four in-card waypoints; recording, following camera, lighting and cards updated",
+        "replay": "production play(1), speed 1, added recorded spin at route vertex 1; real event state machine; no cursor writes",
+        "waypoints": [
+          {
+            "x": 220,
+            "y": 300
+          },
+          {
+            "x": 550,
+            "y": 300
+          },
+          {
+            "x": 550,
+            "y": 780
+          },
+          {
+            "x": 220,
+            "y": 780
+          }
+        ],
+        "observed": {
+          "updateCalls": 600,
+          "inputCommands": 0,
+          "playCalls": 0,
+          "rotationMin": 0.36421472726417575,
+          "rotationMax": 3.033765539251281,
+          "cameraXMin": 375,
+          "cameraXMax": 375,
+          "cameraYMin": 525,
+          "cameraYMax": 525,
+          "walkerXMin": 549,
+          "walkerXMax": 549,
+          "walkerYMin": 183,
+          "walkerYMax": 183,
+          "maxVertices": 48,
+          "maxTiles": 9,
+          "phaseFrames": {},
+          "walkDistance": 0,
+          "replayCursorMin": null,
+          "replayCursorMax": null
+        },
+        "updateCpuMs": {
+          "n": 600,
+          "median": 0,
+          "p95": 0.10000002384185791,
+          "p99": 0.19999992847442627,
+          "max": 0.20000004768371582,
+          "mean": 0.037500001589457196
+        },
+        "renderCpuMs": {
+          "n": 600,
+          "median": 1,
+          "p95": 1.600000023841858,
+          "p99": 2,
+          "max": 2.600000023841858,
+          "mean": 1.0668333303928375
+        },
+        "callbackDelayMs": {
+          "n": 600,
+          "median": 0.4000000476835339,
+          "p95": 0.8000000953670678,
+          "p99": 1.400000047683534,
+          "max": 6.000000047682988,
+          "mean": 0.46183338316282174
+        },
+        "notes": "48 initial route vertices, artwork, zoom and viewport match legacy; motion/camera/event workload differs. HUD frame() throttling is not reproduced. Application RAF scheduling is suspended; all measured update/render operations are synchronous inside one native RAF callback."
+      },
+      "framesPerCycle": 120,
+      "warmupFrames": 20,
+      "measurementNote": "RAF callback cadence and CPU/GPU query timings; not confirmed presented frames, energy, or power. Cycle resets are included in rafMs, and their affected intervals are separated in resetBoundaryRafMs. GPU query scopes on separate contexts are not an additive critical-path measurement.",
+      "viewport": [
+        1504,
+        1492
+      ],
+      "dpr": 2,
+      "backing": [
+        3008,
+        2984
+      ],
+      "vertices": 48,
+      "projectedSegments": 235,
+      "canonicalStamps": 28,
+      "canonicalChevrons": 28,
+      "tiles": 9,
+      "zoom": 0.888095238095238,
+      "renderer": "ANGLE (Intel, ANGLE Metal Renderer: Intel(R) UHD Graphics 630, Unspecified Version)",
+      "ua": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.0.0 Safari/537.36",
+      "traceSurface": null,
+      "cpuMs": {
+        "n": 600,
+        "median": 1.100000023841858,
+        "p95": 1.7000000476837158,
+        "p99": 2.100000023841858,
+        "max": 2.700000047683716,
+        "mean": 1.1153333312273026
+      },
+      "rafMs": {
+        "n": 600,
+        "median": 16.69999999999891,
+        "p95": 17.399999999999636,
+        "p99": 17.600000000000364,
+        "max": 17.700000000000728,
+        "mean": 16.665500000000005
+      },
+      "steadyRafMs": {
+        "n": 596,
+        "median": 16.69999999999891,
+        "p95": 17.399999999999636,
+        "p99": 17.600000000000364,
+        "max": 17.700000000000728,
+        "mean": 16.663926174496645
+      },
+      "resetBoundaryRafMs": {
+        "n": 4,
+        "median": 17,
+        "p95": 17.399999999999636,
+        "p99": 17.399999999999636,
+        "max": 17.399999999999636,
+        "mean": 16.899999999999636
+      },
+      "glGpuMs": {
+        "n": 600,
+        "median": 7.48775,
+        "p95": 9.507333,
+        "p99": 10.0205,
+        "max": 10.777999,
+        "mean": 7.072850735000002
+      },
+      "overlayGpuMs": {
+        "n": 600,
+        "median": 5.963248,
+        "p95": 8.044497,
+        "p99": 9.650915,
+        "max": 10.177584,
+        "mean": 6.153358279999999
+      },
+      "overlayDisjoint": false,
+      "overlayBefore": {
+        "frames": 13,
+        "draws": 216,
+        "vertices": 28752,
+        "uploads": 125,
+        "cachedDraws": 120,
+        "cacheHits": 31,
+        "cacheMisses": 29,
+        "pathBytes": 137856
+      },
+      "overlayAfter": {
+        "frames": 637,
+        "draws": 39658,
+        "vertices": 8263782,
+        "uploads": 16432,
+        "cachedDraws": 25596,
+        "cacheHits": 10428,
+        "cacheMisses": 2370,
+        "pathBytes": 1006464
+      },
+      "disjoint": false,
+      "staticClears": 0,
+      "over25ms": 0,
+      "steadyOver25ms": 0,
+      "elapsedMeasuredMs": 9983.6,
+      "reset": {
+        "count": 4,
+        "cpuMs": {
+          "n": 4,
+          "median": 4,
+          "p95": 5.200000047683716,
+          "p99": 5.200000047683716,
+          "max": 5.200000047683716,
+          "mean": 3.975000023841858
+        },
+        "artGpuMs": {
+          "n": 4,
+          "median": 6.04,
+          "p95": 7.020583,
+          "p99": 7.020583,
+          "max": 7.020583,
+          "mean": 6.165187250000001
+        },
+        "overlayGpuMs": {
+          "n": 4,
+          "median": 7.604249,
+          "p95": 8.117583,
+          "p99": 8.117583,
+          "max": 8.117583,
+          "mean": 7.167604
+        },
+        "records": [
+          {
+            "cycle": 1,
+            "cpuMs": 4
+          },
+          {
+            "cycle": 2,
+            "cpuMs": 3.200000047683716
+          },
+          {
+            "cycle": 3,
+            "cpuMs": 3.5
+          },
+          {
+            "cycle": 4,
+            "cpuMs": 5.200000047683716
+          }
+        ]
+      },
+      "timerQueries": {
+        "art": {
+          "api": "webgl2",
+          "unavailable": 0
+        },
+        "overlay": {
+          "api": "webgl2",
+          "unavailable": 0,
+          "sharedWithArt": false
+        }
+      },
+      "perCycle": [
+        {
+          "cycle": 0,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1.100000023841858,
+            "p95": 1.7999999523162842,
+            "p99": 2,
+            "max": 2.5,
+            "mean": 1.1625
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.600000000000364,
+            "p95": 17.399999999999864,
+            "p99": 17.5,
+            "max": 17.699999999999818,
+            "mean": 16.660833333333333
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 7.426001,
+            "p95": 9.457833,
+            "p99": 9.618417,
+            "max": 9.763165,
+            "mean": 7.028059141666664
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 5.944416,
+            "p95": 8.081416,
+            "p99": 9.3545,
+            "max": 9.969499,
+            "mean": 6.129433608333339
+          }
+        },
+        {
+          "cycle": 1,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1,
+            "p95": 1.399999976158142,
+            "p99": 1.5,
+            "max": 2.299999952316284,
+            "mean": 1.0549999952316285
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.600000000000364,
+            "p95": 17.400000000000546,
+            "p99": 17.699999999999818,
+            "max": 17.700000000000273,
+            "mean": 16.66583333333333
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 7.407749,
+            "p95": 9.195082,
+            "p99": 9.554833,
+            "max": 9.852833,
+            "mean": 6.9086501249999985
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 5.776416,
+            "p95": 7.324334,
+            "p99": 7.930666,
+            "max": 8.114416,
+            "mean": 5.898272483333331
+          }
+        },
+        {
+          "cycle": 2,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1,
+            "p95": 1.4000000953674316,
+            "p99": 1.7000000476837158,
+            "max": 1.7000000476837158,
+            "mean": 1.0274999966224034
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.699999999999818,
+            "p95": 17.300000000000182,
+            "p99": 17.399999999999636,
+            "max": 17.5,
+            "mean": 16.66916666666667
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 7.444498,
+            "p95": 9.601916,
+            "p99": 10.02,
+            "max": 10.0205,
+            "mean": 6.973004391666671
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 5.779748,
+            "p95": 7.269082,
+            "p99": 7.713833,
+            "max": 8.881832,
+            "mean": 5.9537828333333325
+          }
+        },
+        {
+          "cycle": 3,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1.1999999284744263,
+            "p95": 1.9000000953674316,
+            "p99": 2.100000023841858,
+            "max": 2.100000023841858,
+            "mean": 1.2499999980131784
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.69999999999891,
+            "p95": 17.400000000000546,
+            "p99": 17.699999999999818,
+            "max": 17.700000000000728,
+            "mean": 16.6725
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 7.723166,
+            "p95": 9.791415,
+            "p99": 10.403249,
+            "max": 10.777999,
+            "mean": 7.357025133333334
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 6.480584,
+            "p95": 9.321833,
+            "p99": 9.962582,
+            "max": 10.177584,
+            "mean": 6.647157175000002
+          }
+        },
+        {
+          "cycle": 4,
+          "verticesStart": 48,
+          "verticesEnd": 48,
+          "cpuMs": {
+            "n": 120,
+            "median": 1,
+            "p95": 1.600000023841858,
+            "p99": 2.600000023841858,
+            "max": 2.700000047683716,
+            "mean": 1.0816666662693024
+          },
+          "rafMs": {
+            "n": 120,
+            "median": 16.69999999999891,
+            "p95": 17.399999999999636,
+            "p99": 17.5,
+            "max": 17.600000000000364,
+            "mean": 16.65916666666667
+          },
+          "over25ms": 0,
+          "artGpuMs": {
+            "n": 120,
+            "median": 7.603166,
+            "p95": 9.638332,
+            "p99": 10.142498,
+            "max": 10.183915,
+            "mean": 7.097514883333333
+          },
+          "overlayGpuMs": {
+            "n": 120,
+            "median": 5.944249,
+            "p95": 7.7765,
+            "p99": 9.218833,
+            "max": 9.941666,
+            "mean": 6.138145300000003
+          }
+        }
+      ],
+      "glErrors": [],
+      "round": 0
+    }
+  ]
+}

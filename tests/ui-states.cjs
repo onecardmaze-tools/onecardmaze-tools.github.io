@@ -104,7 +104,7 @@ async function audit(pg, vp, step, opts = {}) {
 
 srv.listen(0, async () => {
   const base = `http://127.0.0.1:${srv.address().port}/`;
-  const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+  const browser = await chromium.launch({ executablePath: process.env.CHROME_PATH || undefined, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
   const summary = [];
   for (const [vp, w, h, touch, budget] of VIEWPORTS) {
     const land = w > h && h <= 500;

@@ -1,0 +1,7 @@
+phone-320  walk chrome 12.4% of height, 9.2% of area
+phone-375  walk chrome 11.3% of height, 7.6% of area
+phone-390  walk chrome 11.4% of height, 7.7% of area
+land-844   walk chrome 39.1% of height, 7.7% of area
+land-667   walk chrome 40.7% of height, 10.1% of area
+desktop    walk chrome 11.8% of height, 4.0% of area
+PASS: modes, overlap, tap targets, coverage, focus and route safety at 6 viewports

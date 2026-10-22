@@ -1,0 +1,186 @@
+--- a/index.html
++++ b/index.html
+@@ -378,17 +378,34 @@
+   vec3 col = art * uColorMix.x + uBg * uColorMix.y;
+   gl_FragColor = vec4(col, edgeMask(edge, uCOutScale, uCOutBias)*uCAmt);
+ }`;
++// The interior has its own compiled program so drivers cannot flatten it
++// back into the expensive edge shader. UVs use the unchanged vertex shader.
++const INTERIOR_FS = `
++precision OCM_PRECISION float;
++varying OCM_PRECISION vec2 vArt;
++uniform sampler2D uArt;
++uniform vec2 uColorMix;
++uniform vec3 uBg;
++uniform float uCAmt;
++void main() {
++  vec3 art=texture2D(uArt,vArt).rgb;
++  gl_FragColor=vec4(art*uColorMix.x+uBg*uColorMix.y,uCAmt);
++}`;
++const INTERIOR_UNIFORMS=["uView","uCam","uZoom","uRotation","uCard","uCIdx","uArt","uColorMix","uBg","uCAmt"];
+ const UNIFORMS = ["uView","uCam","uZoom","uRotation","uCard",
+   "uCIdx","uCOutScale","uCOutBias","uCSeamScale","uCSeamBias",
+   "uBorderEnabled","uColorMix","uBg","uEdgePxScale","uCAmt","uSeamDark","uArt"];
+-let prog = null, bgProg = null, quadBuf = null, cardFloatPrecision = 0;
+-const U = {}, BU = {};
++let prog = null, bgProg = null, interiorProg = null, quadBuf = null, partitionBuf = null, cardFloatPrecision = 0;
++const U = {}, BU = {}, IU = {};
+ const NCARD = 18;
+ const cardIdx = new Float32Array(NCARD * 2);
+ const cardOut = new Float32Array(NCARD * 4);
+ const cardSeam = new Float32Array(NCARD * 4);
+ const cardBright = new Float32Array(NCARD);
+ const cardAmt = new Float32Array(NCARD);
++const partitionData=new Float32Array(NCARD*5*6*2);
++const partitionEdges=new Int32Array(NCARD),partitionEdgeCounts=new Int32Array(NCARD),partitionInterior=new Int32Array(NCARD);
++let lastPartitionKey="";
+ // Two tiny programs share one immutable quad. No per-pixel card search, camera
+ // inversion, or card-count-dependent loop is left in the fragment shader.
+ function buildProgram() {
+@@ -421,10 +438,13 @@
+       for (const shader of shaders) gl.deleteShader(shader);
+     }
+   };
+-  let nextProgram = null, nextBackground = null, nextQuad = null;
++  let nextProgram = null, nextBackground = null, nextInterior = null, nextQuad = null, nextPartition = null;
+   try {
+     nextProgram = link(VS, FS);
+     nextBackground = link(BGVS, BGFS);
++    nextInterior = link(VS, INTERIOR_FS);
++    nextPartition = gl.createBuffer();
++    if(!nextPartition)throw new Error("Could not allocate the card partition geometry");
+     nextQuad = gl.createBuffer();
+     if (!nextQuad) throw new Error("Could not allocate the card geometry");
+     gl.bindBuffer(gl.ARRAY_BUFFER, nextQuad);
+@@ -433,16 +453,22 @@
+   } catch (error) {
+     if (nextProgram) gl.deleteProgram(nextProgram);
+     if (nextBackground) gl.deleteProgram(nextBackground);
++    if (nextInterior) gl.deleteProgram(nextInterior);
++    if (nextPartition) gl.deleteBuffer(nextPartition);
+     if (nextQuad) gl.deleteBuffer(nextQuad);
+     throw error;
+   }
+   // Install only a complete resource set; rebuilding never leaks old programs.
+   if (prog) gl.deleteProgram(prog);
+   if (bgProg) gl.deleteProgram(bgProg);
++  if (interiorProg) gl.deleteProgram(interiorProg);
++  if (partitionBuf) gl.deleteBuffer(partitionBuf);
+   if (quadBuf) gl.deleteBuffer(quadBuf);
+-  prog = nextProgram; bgProg = nextBackground; quadBuf = nextQuad;
++  prog = nextProgram; bgProg = nextBackground; interiorProg = nextInterior; quadBuf = nextQuad; partitionBuf = nextPartition;
++  lastPartitionKey="";
+   for (const name of UNIFORMS) U[name] = gl.getUniformLocation(prog, name);
+   for (const name of ["uView", "uBg"]) BU[name] = gl.getUniformLocation(bgProg, name);
++  for (const name of INTERIOR_UNIFORMS) IU[name] = gl.getUniformLocation(interiorProg, name);
+ }
+ try { buildProgram(); } catch (e) {
+   $("errMsg").textContent = "The card shader failed to build: " + e;
+@@ -1550,6 +1576,57 @@
+   return true;
+ }
+ 
++// The four bands and interior use identical boundary vertices, with no overlap
++// and no gap. Low fragment precision or an empty interior retains one full quad.
++function partitionEdgeLimit(outer,seam,size,zoom) {
++  let limit=0;
++  if(outer>0)limit=Math.max(limit,1/Math.fround(size/outer));
++  if(seam>0)limit=Math.max(limit,1/Math.fround(size/seam));
++  if(seam>SEAM_BORDER_EPS)limit=Math.max(limit,Math.fround(1.8)/Math.fround(size*zoom));
++  return Number.isFinite(limit)?Math.fround(limit+16*2**-23):2;
++}
++function updateCardPartitions(count) {
++  const key=[count,cardFloatPrecision,S.W,S.H,S.zoom,...cardOut,...cardSeam].join(',');
++  if(key===lastPartitionKey)return;
++  let cursor=0;
++  const rect=(left,top,right,bottom)=>{
++    if(!(left<right&&top<bottom))return;
++    // Shared float32 positions also make the half-open triangle edge rule
++    // choose exactly one of the adjoining shaders at a partition boundary.
++    const x0=Math.fround(left*2-1),x1=Math.fround(right*2-1);
++    const y0=Math.fround(top*2-1),y1=Math.fround(bottom*2-1);
++    partitionData.set([x0,y0,x1,y0,x0,y1,x0,y1,x1,y0,x1,y1],cursor);
++    cursor+=12;
++  };
++  for(let n=0;n<count;n++) {
++    const o=n*4;
++    let left=2,right=-1,top=2,bottom=-1;
++    if(cardFloatPrecision>=23) {
++      left=partitionEdgeLimit(cardOut[o],cardSeam[o],S.W,S.zoom);
++      right=1-partitionEdgeLimit(cardOut[o+1],cardSeam[o+1],S.W,S.zoom);
++      top=partitionEdgeLimit(cardOut[o+2],cardSeam[o+2],S.H,S.zoom);
++      bottom=1-partitionEdgeLimit(cardOut[o+3],cardSeam[o+3],S.H,S.zoom);
++    }
++    partitionInterior[n]=-1;
++    partitionEdges[n]=cursor/2;
++    if(left<right&&top<bottom) {
++      rect(0,0,1,top);
++      rect(0,bottom,1,1);
++      rect(0,top,left,bottom);
++      rect(right,top,1,bottom);
++      partitionEdgeCounts[n]=cursor/2-partitionEdges[n];
++      partitionInterior[n]=cursor/2;
++      rect(left,top,right,bottom);
++    } else {
++      rect(0,0,1,1);
++      partitionEdgeCounts[n]=6;
++    }
++  }
++  gl.bindBuffer(gl.ARRAY_BUFFER,partitionBuf);
++  gl.bufferData(gl.ARRAY_BUFFER,partitionData.subarray(0,cursor),gl.DYNAMIC_DRAW);
++  lastPartitionKey=key;
++}
++
+ function render() {
+   if (contextLost) return;
+   if (!S.ready) {
+@@ -1602,6 +1679,9 @@
+       gl.drawArrays(gl.TRIANGLES,0,6);
+     }
+ 
++    updateCardPartitions(k);
++    gl.bindBuffer(gl.ARRAY_BUFFER,partitionBuf);
++    gl.vertexAttribPointer(0,2,gl.FLOAT,false,0,0);
+     gl.useProgram(prog);
+     gl.uniform2f(U.uView,view.w,view.h);
+     gl.uniform2f(U.uCam,S.cam.x,S.cam.y);
+@@ -1628,7 +1708,28 @@
+       const brightness = cardBright[n];
+       gl.uniform2f(U.uColorMix, brightness, 1-brightness);
+       gl.uniform1f(U.uCAmt,cardAmt[n]);
+-      gl.drawArrays(gl.TRIANGLES,0,6);
++      gl.drawArrays(gl.TRIANGLES,partitionEdges[n],partitionEdgeCounts[n]);
++    }
++    gl.useProgram(interiorProg);
++    gl.uniform2f(IU.uView,view.w,view.h);
++    gl.uniform2f(IU.uCam,S.cam.x,S.cam.y);
++    gl.uniform1f(IU.uZoom,S.zoom);
++    gl.uniform2f(IU.uRotation,Math.cos(S.rot),Math.sin(S.rot));
++    gl.uniform2f(IU.uCard,S.W,S.H);
++    gl.uniform3fv(IU.uBg,BG);
++    gl.uniform1i(IU.uArt,0);
++    let interiorBlend=!opaqueViewport;
++    for(let n=0;n<k;n++) {
++      if(cardAmt[n]<=.004||partitionInterior[n]<0)continue;
++      const blendNeeded=!opaqueViewport&&cardAmt[n]!==1;
++      if(blendNeeded!==interiorBlend) {
++        if(blendNeeded)gl.enable(gl.BLEND);else gl.disable(gl.BLEND);
++        interiorBlend=blendNeeded;
++      }
++      gl.uniform2f(IU.uCIdx,cardIdx[n*2],cardIdx[n*2+1]);
++      gl.uniform2f(IU.uColorMix,cardBright[n],1-cardBright[n]);
++      gl.uniform1f(IU.uCAmt,cardAmt[n]);
++      gl.drawArrays(gl.TRIANGLES,partitionInterior[n],6);
+     }
+     gl.disable(gl.BLEND);
+   }
+@@ -1838,7 +1939,8 @@
+   e.preventDefault();
+   contextLost = true;
+   // Every object belongs to the lost context; never reuse stale handles.
+-  prog = bgProg = quadBuf = artTex = null;
++  prog = bgProg = interiorProg = quadBuf = partitionBuf = artTex = null;
++  lastPartitionKey="";
+   lastArtKey = "";
+ });
+ c.addEventListener("webglcontextrestored", () => {

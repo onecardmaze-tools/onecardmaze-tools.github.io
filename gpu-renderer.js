@@ -159,8 +159,10 @@
   class GPUContext {
     constructor(canvas, config = {}) {
       this.canvas = canvas;
+      this.preserveColor = !!config.preserveColor;
       const options = {
         alpha: true,
+        powerPreference: config.powerPreference || "default",
         antialias: false,
         depth: true,
         stencil: true,
@@ -168,7 +170,7 @@
         preserveDrawingBuffer: false,
       };
       const gl = (this.gl =
-        canvas.getContext("webgl2", options) ||
+        config.gl || canvas.getContext("webgl2", options) ||
         canvas.getContext("webgl", options));
       if (!gl) throw Error("GPU overlay WebGL unavailable");
       this.pendingShaders = new Set();
@@ -182,6 +184,14 @@
         this.webgl2 =
           typeof WebGL2RenderingContext !== "undefined" &&
           gl instanceof WebGL2RenderingContext;
+        if(config.gl) {
+          const attributes=gl.getContextAttributes();
+          if(!this.webgl2||!attributes||!attributes.depth||!attributes.stencil)
+            throw Error("Shared analytic rendering needs WebGL2 with depth and stencil");
+          this.vertexArray=gl.createVertexArray();
+          if(!this.vertexArray)throw Error("Could not allocate the shared overlay vertex array");
+          gl.bindVertexArray(this.vertexArray);
+        }
         if (!this.webgl2 && !gl.getExtension("EXT_frag_depth"))
           throw Error("Analytic path renderer requires EXT_frag_depth");
         const shader = (type, src) => {
@@ -336,6 +346,7 @@
       if (this.disposed) return;
       this.disposed = true;
       if (this.data) this.data.length = 0;
+      if (this.rectanglePaths) this.rectanglePaths.clear();
       const gl = this.gl;
       if (abandon) {
         // Context loss already invalidated every GPU handle. Deleting those old
@@ -357,6 +368,7 @@
         }
         this.pathBuffers.clear();
       }
+      if (this.vertexArray) gl.deleteVertexArray(this.vertexArray);
       if (this.buffer) gl.deleteBuffer(this.buffer);
       if (this.program) gl.deleteProgram(this.program);
       if (this.strokeProgram) gl.deleteProgram(this.strokeProgram.program);
@@ -491,12 +503,18 @@
       this.texture = null;
       const gl = this.gl;
       gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+      if(this.vertexArray)gl.bindVertexArray(this.vertexArray);
+      if(this.preserveColor) {
+        gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+        gl.disable(gl.SCISSOR_TEST);
+        gl.stencilMask(255);
+      }
       gl.clearColor(0, 0, 0, 0);
       gl.clearStencil(0);
       gl.clearDepth(0);
       gl.depthMask(true);
       gl.clear(
-        gl.COLOR_BUFFER_BIT | gl.STENCIL_BUFFER_BIT | gl.DEPTH_BUFFER_BIT,
+        (this.preserveColor ? 0 : gl.COLOR_BUFFER_BIT) | gl.STENCIL_BUFFER_BIT | gl.DEPTH_BUFFER_BIT,
       );
       this.strokeId = 0;
       this.metrics.frames++;
@@ -1021,16 +1039,26 @@
       }
       // Rectangle joins are square. Extending the four butt segments forms the
       // exact union, including corners, without a card-sized raster texture.
-      const p = new GPUPath(),
-        r = this.lineWidth / 2;
-      p.moveTo(x - r, y);
-      p.lineTo(x + w + r, y);
-      p.moveTo(x - r, y + h);
-      p.lineTo(x + w + r, y + h);
-      p.moveTo(x, y);
-      p.lineTo(x, y + h);
-      p.moveTo(x + w, y);
-      p.lineTo(x + w, y + h);
+      const paths = this.rectanglePaths || (this.rectanglePaths = new Map());
+      const key = [x, y, w, h, this.lineWidth].join(',');
+      let p = paths.get(key);
+      if (p) {
+        paths.delete(key);
+        paths.set(key, p);
+      } else {
+        p = new GPUPath();
+        const r = this.lineWidth / 2;
+        p.moveTo(x - r, y);
+        p.lineTo(x + w + r, y);
+        p.moveTo(x - r, y + h);
+        p.lineTo(x + w + r, y + h);
+        p.moveTo(x, y);
+        p.lineTo(x, y + h);
+        p.moveTo(x + w, y);
+        p.lineTo(x + w, y + h);
+        paths.set(key, p);
+        if (paths.size > 64) paths.delete(paths.keys().next().value);
+      }
       const cap = this.lineCap;
       this.lineCap = "butt";
       this.stroke(p);
@@ -1235,6 +1263,9 @@
       context = new GPUContext(currentCanvas, options);
       gpu = true;
     } catch (error) {
+      // The shared stage is owned by the caller. A fallback must never replace
+      // its canvas (which also owns the background and input listeners).
+      if(options.gl)throw error;
       // A canvas that has acquired any GL context cannot subsequently acquire
       // Canvas2D. Replace only during construction, before consumers bind it.
       const replacement = currentCanvas.cloneNode(false);
@@ -1321,6 +1352,19 @@
       },
       flush() {
         if (gpu && !lost && !disposed) context.flush();
+      },
+      endFrame() {
+        if (!gpu || lost || disposed) return;
+        const gl = context.gl;
+        // Loss can become observable before its DOM event is delivered.
+        if (gl.isContextLost()) return;
+        context.flush();
+        if (context.webgl2) {
+          // The renderer owns the default framebuffer and uses depth/stencil
+          // only for union coverage within this completed frame. The next
+          // frame explicitly clears both; presentation only needs color.
+          gl.invalidateFramebuffer(gl.FRAMEBUFFER, [gl.DEPTH, gl.STENCIL]);
+        }
       },
       resize() {
         if (!gpu || lost || disposed) return;

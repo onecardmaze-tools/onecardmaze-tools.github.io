@@ -29,8 +29,8 @@ module.exports=function harness(canvasModule,options={}) {
     URLSearchParams,URL,location:{search:''},Float32Array,Uint8ClampedArray,
     Option:function(text,value){this.text=text;this.value=value;},
     Path2D:canvasModule?canvasModule.Path2D:function(){this.moveTo=noop;this.lineTo=noop;this.addPath=noop;}};
-  sandbox.GPURenderer={create(canvas){return {canvas,context:canvas.getContext('2d'),Path:sandbox.Path2D,
-    mode:'test-vector-adapter',flush:noop,resize:noop,clearRasterCache:noop};}};
+  sandbox.GPURenderer={create(canvas,options={}){if(options.gl)throw Error("Canvas2D test adapter uses a separate surface");return {canvas,context:canvas.getContext('2d'),Path:sandbox.Path2D,
+    mode:'test-vector-adapter',flush:noop,endFrame:noop,resize:noop,clearRasterCache:noop};}};
   sandbox.window=sandbox;vm.createContext(sandbox);
   const html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');
   vm.runInContext([...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m=>m[1]).join('\n'),sandbox);

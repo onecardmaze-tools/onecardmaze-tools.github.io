@@ -4,14 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>One Card Maze Helper · Unofficial</title>
-<meta name="app-version" content="2026-10-21-card-library" />
+<meta name="app-version" content="2026-10-22-fullsize-gpu" />
 <meta name="description" content="Free, open-source One Card Maze helper. Upload both sides of your maze card, explore connected edges, track your path, and replay your walk in your browser." />
 <link rel="canonical" href="https://onecardmaze-tools.github.io/" />
 <meta property="og:title" content="One Card Maze Helper · Unofficial" />
 <meta property="og:description" content="Explore both sides of your One Card Maze card with path tracking, rotation, undo, and replay. Free and open source." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://onecardmaze-tools.github.io/" />
-<link rel="stylesheet" href="companion.css?v=card-library-1" />
+<link rel="stylesheet" href="companion.css?v=fullsize-gpu-1" />
 </head>
 <body data-mode="walk" data-route="0">
 <!-- UI: see DESIGN-SYSTEM.md. One dock whose contents follow uiMode(); never stack bars. -->
@@ -196,11 +196,11 @@
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="card-library.js?v=card-library-1"></script>
-<script src="session-codec.js?v=card-library-1"></script>
-<script src="replay-core.js?v=card-library-1"></script>
-<script src="trace-renderer.js?v=card-library-1"></script>
-<script src="gpu-renderer.js?v=card-library-1"></script>
+<script src="card-library.js?v=fullsize-gpu-1"></script>
+<script src="session-codec.js?v=fullsize-gpu-1"></script>
+<script src="replay-core.js?v=fullsize-gpu-1"></script>
+<script src="trace-renderer.js?v=fullsize-gpu-1"></script>
+<script src="gpu-renderer.js?v=fullsize-gpu-1"></script>
 <script>
 (function () {
 "use strict";
@@ -297,12 +297,15 @@ const $ = (id) => document.getElementById(id);
    GL SETUP — raw WebGL, no libraries
    ============================================================ */
 const c = $("stage");
+// On dual-GPU desktops, the default preference can select the integrated GPU
+// even for a full-resolution external display. Keep both rendering paths on
+// the same preference; small touch devices retain the low-power request.
 const glOpts = { alpha: false, antialias: false, depth: false, stencil: false,
                  premultipliedAlpha: false, preserveDrawingBuffer: false,
-                 powerPreference: window.matchMedia('(pointer:coarse)').matches && window.innerWidth<900 ? "low-power" : "default" };
+                 powerPreference: window.matchMedia('(pointer:coarse)').matches && window.innerWidth<900 ? "low-power" : "high-performance" };
 let gl = null, isGL2 = false, contextLost = false;
 try {
-  gl = c.getContext("webgl2", glOpts);
+  gl = c.getContext("webgl2", {...glOpts,depth:true,stencil:true});
   if (gl) isGL2 = true; else gl = c.getContext("webgl", glOpts);
 } catch (e) { gl = null; }
 if (!gl) { $("err").classList.remove("hidden"); return; }
@@ -663,13 +666,26 @@ function setAnchor(i, j) {
 /* ============================================================
    EVENT REVIEW — presentation never edits the recorded points.
    ============================================================ */
-const foreground = GPURenderer.create($("replayLayer"), {
+const foregroundOptions = {
   invalidate,
+  powerPreference:glOpts.powerPreference,
   onError(error) {
     $("errMsg").textContent = "The overlay renderer could not recover: " + error;
     $("err").classList.remove("hidden");
   }
-});
+};
+let foreground, sharedContext=false;
+if(isGL2) {
+  try {
+    foreground=GPURenderer.create(c,{...foregroundOptions,gl,preserveColor:true});
+    sharedContext=true;
+    // One opaque presentation surface; the fallback canvas has no GL context.
+    $("replayLayer").style.display="none";
+  } catch(error) {
+    foreground=GPURenderer.create($("replayLayer"),foregroundOptions);
+  }
+} else foreground=GPURenderer.create($("replayLayer"),foregroundOptions);
+
 const replayCanvas = foreground.canvas, replayCtx = foreground.context;
 const Path2D = foreground.Path;
 // Kept for old recording/benchmark readers; no giant world-space bitmap exists.
@@ -929,6 +945,46 @@ function advanceReplay(dt) {
    Internal seams are joins in one path, never independently clipped end caps. */
 let traceCache=null, geometryCache=null, prefixCache=null;
 const stampSprites=new Map();
+let chevronCache = null;
+function retainedChevrons(travel) {
+  if (chevronCache && chevronCache.source === travel && chevronCache.zoom === S.zoom)
+    return chevronCache.paths;
+  // A walking endpoint changes the trace version every frame, but fixed travel
+  // marks often stay identical. Retain their VBOs until their actual geometry
+  // changes, rather than treating an extended endpoint as a new glyph layout.
+  const key = S.zoom + ':' + travel.map(p =>
+    [p.face,p.x,p.y,p.dx,p.dy,+p.both].join(',')).join(';');
+  if (chevronCache && chevronCache.key === key) {
+    chevronCache.source = travel;
+    return chevronCache.paths;
+  }
+  const paths = [new Path2D(),new Path2D()];
+  const present = [false,false];
+  const bounds = [null,null];
+  for (const p of travel) {
+    // Geometry lives in canonical card coordinates. Glyph offsets are in
+    // CSS pixels divided by zoom; the shared camera transform restores their
+    // fixed screen size without rebuilding them during camera motion.
+    TraceRenderer.chevronPath(paths[p.face],p.x,p.y,p.dx/S.zoom,p.dy/S.zoom,p.both,0,0);
+    present[p.face] = true;
+    let b = bounds[p.face];
+    if (!b) bounds[p.face] = {minX:p.x,minY:p.y,maxX:p.x,maxY:p.y};
+    else {
+      b.minX=Math.min(b.minX,p.x);b.minY=Math.min(b.minY,p.y);
+      b.maxX=Math.max(b.maxX,p.x);b.maxY=Math.max(b.maxY,p.y);
+    }
+  }
+  for (let face=0;face<2;face++) {
+    if (!present[face]) paths[face] = null;
+    else {
+      const b=bounds[face];
+      bounds[face]={x:(b.minX+b.maxX)/2,y:(b.minY+b.maxY)/2,
+        hx:(b.maxX-b.minX)/2,hy:(b.maxY-b.minY)/2};
+    }
+  }
+  chevronCache = {source:travel,zoom:S.zoom,key,paths,bounds};
+  return paths;
+}
 function stampKey(p) {return p.face+':'+p.r+':'+p.x.toFixed(6)+':'+p.y.toFixed(6);}
 function traceScene() {
   const tiles=[...S.cards.values()].filter(t=>t.amt>.01);
@@ -987,17 +1043,34 @@ function drawTraceStamps(g) {
   if(!S.trailOn||S.trail.length<2)return;
   const cache=traceScene();
   g.save();
+  const chevrons = retainedChevrons(cache.travel);
+  const cr=Math.cos(S.rot)*S.zoom,sr=Math.sin(S.rot)*S.zoom;
+  const ax=Math.abs(cr),ay=Math.abs(sr);
+  g.save();worldTransform(g);
+  g.lineCap='round';g.lineJoin='round';
   for(const tile of cache.tiles) {
-    const odd=ReplayCore.mod(tile.j,2),face=faceIdx(tile.i,tile.j);
+    const odd=ReplayCore.mod(tile.j,2),face=faceIdx(tile.i,tile.j),path=chevrons[face];
+    if(!path)continue;
+    // Transform the cached center bounds once per tile. Expanding by the
+    // previous 10px cull margin is conservative for every glyph orientation.
+    const b=chevronCache.bounds[face];
+    const dx=tile.i*S.W+(odd?S.W-b.x:b.x)-S.cam.x;
+    const dy=tile.j*S.H+(odd?S.H-b.y:b.y)-S.cam.y;
+    const x=dx*cr-dy*sr+view.w/2,y=dx*sr+dy*cr+view.h/2;
+    const ex=ax*b.hx+ay*b.hy,ey=ay*b.hx+ax*b.hy;
+    if(x+ex < -10||x-ex > view.w+10||y+ey < -10||y-ey > view.h+10)continue;
+    g.save();
+    g.translate((tile.i+odd)*S.W,(tile.j+odd)*S.H);
+    if(odd)g.scale(-1,-1);
     g.globalAlpha=tile.amt*(tile.i===S.anchor.i&&tile.j===S.anchor.j?1:.55);
-    g.beginPath();
-    for(const p of cache.travel)if(p.face===face) {
-      const at=w2s(tile.i*S.W+(odd?S.W-p.x:p.x),tile.j*S.H+(odd?S.H-p.y:p.y));
-      if(at.x < -10||at.x>view.w+10||at.y < -10||at.y>view.h+10)continue;
-      TraceRenderer.chevronPath(g,at.x,at.y,p.dx,p.dy,p.both,tile.j,S.rot);
-    }
-    TraceRenderer.paintChevrons(g);
+    // Keep each tile's outline/color pair in the original compositing order.
+    // Glyphs extend less than 10 CSS pixels from their centers, so the old
+    // CPU screen cull removed no visible pixels; viewport clipping is enough.
+    g.lineWidth=4.5/S.zoom;g.strokeStyle='#081523';g.stroke(path);
+    g.lineWidth=1.8/S.zoom;g.strokeStyle='#fffbee';g.stroke(path);
+    g.restore();
   }
+  g.restore();
   for(const tile of cache.tiles)for(const p of cache.stamps) {
     if(p.face!==faceIdx(tile.i,tile.j))continue;
     const odd=ReplayCore.mod(tile.j,2),at=w2s(tile.i*S.W+(odd?S.W-p.x:p.x),tile.j*S.H+(odd?S.H-p.y:p.y));
@@ -1551,7 +1624,16 @@ function cardsCoverViewport(count) {
 }
 
 function render() {
-  if (contextLost) return;
+  if (contextLost || gl.isContextLost() || foreground.mode==="webgl-lost") return;
+  if(sharedContext) {
+    // Background and overlay own separate VAOs. Reset the shared framebuffer
+    // state before drawing; the overlay's clearRect resets its DS attachments.
+    gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+    gl.bindVertexArray(null);
+    gl.disable(gl.DEPTH_TEST);gl.disable(gl.STENCIL_TEST);gl.disable(gl.SCISSOR_TEST);
+    gl.colorMask(true,true,true,true);
+    gl.blendEquationSeparate(gl.FUNC_ADD,gl.FUNC_ADD);
+  }
   if (!S.ready) {
     gl.viewport(0, 0, c.width, c.height);
     gl.clearColor(BG[0], BG[1], BG[2], 1);
@@ -1587,7 +1669,9 @@ function render() {
 
   const artKey=[artVersion,c.width,c.height,S.cam.x,S.cam.y,S.zoom,S.rot,
     ...cardIdx,...cardOut,...cardSeam,...cardBright,...cardAmt].join(',');
-  if(artKey!==lastArtKey) {
+  // Shared color also contains last frame's overlay, so redraw the artwork
+  // directly each frame. No FBO, full-screen copy or second compositor surface.
+  if(sharedContext||artKey!==lastArtKey) {
     lastArtKey=artKey;
     gl.viewport(0, 0, c.width, c.height);
     gl.bindBuffer(gl.ARRAY_BUFFER,quadBuf);
@@ -1633,7 +1717,7 @@ function render() {
     gl.disable(gl.BLEND);
   }
   drawReplayLayer();
-  foreground.flush();
+  foreground.endFrame();
 }
 
 /* ============================================================
@@ -1848,7 +1932,7 @@ c.addEventListener("webglcontextrestored", () => {
     if (S.ready) uploadArt();
     lastArtKey = "";
     traceCache = null;
-    $("err").classList.add("hidden");
+    if(!foreground.error)$("err").classList.add("hidden");
     invalidate();
   } catch (error) {
     contextLost = true;
@@ -2042,10 +2126,14 @@ $("btnStart").addEventListener("click", async () => {
    including demo/imported maps, rather than racing pending IndexedDB writes. */
 let sessionBusy=false, lastMeasurement=null, measurement=null;
 function environmentSnapshot(){
+  const rendererInfo=gl.getExtension('WEBGL_debug_renderer_info');
   return {appVersion:document.querySelector('meta[name="app-version"]').content,
     userAgent:navigator.userAgent,viewport:{width:view.w,height:view.h},
     devicePixelRatio:window.devicePixelRatio||1,canvasPixelRatio:dpr,
     logicalProcessors:navigator.hardwareConcurrency||null,deviceMemoryGiB:navigator.deviceMemory||null,
+    rendering:{sharedContext,powerPreference:glOpts.powerPreference,
+      renderer:rendererInfo?gl.getParameter(rendererInfo.UNMASKED_RENDERER_WEBGL):null,
+      drawingBuffer:[gl.drawingBufferWidth,gl.drawingBufferHeight]},
     traceSurface:{mode:foreground.mode,width:replayCanvas.width,height:replayCanvas.height,rasterRatio:dpr}};
 }
 function captureSession(){
@@ -2261,7 +2349,7 @@ function resize() {
   c.height = Math.max(1, Math.floor(view.h * dpr));
   lastArtKey=""; // Assigning even the same canvas size clears its drawing buffer.
   c.style.width = view.w + "px"; c.style.height = view.h + "px";
-  replayCanvas.width = c.width; replayCanvas.height = c.height;
+  if(replayCanvas!==c){replayCanvas.width=c.width;replayCanvas.height=c.height;}
   foreground.resize();
   gl.viewport(0, 0, c.width, c.height);
   if (S.ready) clampZoom();
@@ -2292,6 +2380,6 @@ window.OCM.startup = (async () => {
 scheduleFrame();
 })();
 </script>
-<script src="companion-ui.js?v=card-library-1" defer></script>
+<script src="companion-ui.js?v=fullsize-gpu-1" defer></script>
 </body>
 </html>

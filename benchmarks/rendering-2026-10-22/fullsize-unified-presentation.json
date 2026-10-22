@@ -1,0 +1,146 @@
+[
+  {
+    "trace": "/private/tmp/ocm-20261022-unified-final-rotate.json.gz",
+    "measuredMs": 30005.716,
+    "method": "Chromium presentation-feedback counters, complete tracker intervals inside OCM measurement marks; JSAnimation and RAF overlap and must not be added together.",
+    "trackers": {
+      "JSAnimation": {
+        "expected": 1796,
+        "droppedV3": 0,
+        "droppedV4": 0,
+        "intervals": 1795,
+        "producedV3": 1796,
+        "dropPercentV3": 0.0,
+        "dropPercentV4": 0.0
+      },
+      "RAF": {
+        "expected": 1796,
+        "droppedV3": 0,
+        "droppedV4": 0,
+        "intervals": 1795,
+        "producedV3": 1796,
+        "dropPercentV3": 0.0,
+        "dropPercentV4": 0.0
+      }
+    },
+    "droppedIntervals": []
+  },
+  {
+    "trace": "/private/tmp/ocm-20261022-unified-final-walk.json.gz",
+    "measuredMs": 30001.476,
+    "method": "Chromium presentation-feedback counters, complete tracker intervals inside OCM measurement marks; JSAnimation and RAF overlap and must not be added together.",
+    "trackers": {
+      "JSAnimation": {
+        "expected": 1727,
+        "droppedV3": 2,
+        "droppedV4": 2,
+        "intervals": 1685,
+        "producedV3": 1725,
+        "dropPercentV3": 0.11580775911986103,
+        "dropPercentV4": 0.11580775911986103
+      },
+      "RAF": {
+        "expected": 1727,
+        "droppedV3": 2,
+        "droppedV4": 2,
+        "intervals": 1685,
+        "producedV3": 1725,
+        "dropPercentV3": 0.11580775911986103,
+        "dropPercentV4": 0.11580775911986103
+      }
+    },
+    "droppedIntervals": [
+      {
+        "kind": "JSAnimation",
+        "atMs": 17021.653,
+        "durationMs": 133.337,
+        "expected": 1,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 17021.653,
+        "durationMs": 133.337,
+        "expected": 1,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 17154.99,
+        "durationMs": 16.606,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 17154.99,
+        "durationMs": 16.606,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      }
+    ]
+  },
+  {
+    "trace": "/private/tmp/ocm-20261022-unified-final-replay.json.gz",
+    "measuredMs": 30001.648,
+    "method": "Chromium presentation-feedback counters, complete tracker intervals inside OCM measurement marks; JSAnimation and RAF overlap and must not be added together.",
+    "trackers": {
+      "JSAnimation": {
+        "expected": 838,
+        "droppedV3": 10,
+        "droppedV4": 9,
+        "intervals": 823,
+        "producedV3": 828,
+        "dropPercentV3": 1.1933174224343674,
+        "dropPercentV4": 1.0739856801909309
+      },
+      "RAF": {
+        "expected": 838,
+        "droppedV3": 10,
+        "droppedV4": 9,
+        "intervals": 823,
+        "producedV3": 828,
+        "dropPercentV3": 1.1933174224343674,
+        "dropPercentV4": 1.0739856801909309
+      }
+    },
+    "droppedIntervals": [
+      {
+        "kind": "JSAnimation",
+        "atMs": 788.124,
+        "durationMs": 16.457,
+        "expected": 10,
+        "droppedV3": 9,
+        "droppedV4": 9
+      },
+      {
+        "kind": "RAF",
+        "atMs": 788.124,
+        "durationMs": 16.457,
+        "expected": 10,
+        "droppedV3": 9,
+        "droppedV4": 9
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 2204.659,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 1,
+        "droppedV4": 0
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2204.659,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 1,
+        "droppedV4": 0
+      }
+    ]
+  }
+]

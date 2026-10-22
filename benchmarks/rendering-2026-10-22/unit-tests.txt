@@ -1,0 +1,20 @@
+PASS: full-DPR Canvas fallback ink aligns with world coordinates at four rotations
+PASS: idle RAF/HUD sleep, input wake/settle, artwork reuse, hidden-page suspension/resume, no historical bitmap allocation, cached exact progress in both directions
+PASS: retained model geometry during rotation/pan, viewport-bounded full-resolution foreground, unchanged touch DPR
+PASS: compact recording, exact folds, replay in both directions, immutable seeking, stable card-centred spins, smooth flip camera, focus hierarchy, free markers on all copies, Beach aspect ratio
+PASS: session round trip, full future and spin preservation, safe validation, paused restoration, imported replay/branch, timing summaries
+PASS: manual performance sampling stops all extra callbacks on stop/visibility loss
+PASS: real raster centreline coverage and colour, 3 zoom levels × 4 rotations, seams, hairpins and crossings, retained prefix + mutable tail
+PASS: exact multi-edge projection, seam stitching, negative tiles, stable append-only stamps and historical up directions, overlapping orientation states, fixed travel chevrons and reverse visits, non-destructive round vector strokes
+PASS: walk/playing/paused/complete/place modes, undo stays walking, tap pauses, reverse-complete tap keeps the route, branch asks, Done keeps the route, Start over undo, card switch asks
+Opaque coverage: deterministic cases, 20000 random views (5067 accepted, 169 samples each), and inline syntax checks passed.
+PASS: card hue follows artwork, remains near white, and handles neutral, opposing and transparent colors
+Clip checks passed: maximal rectangular union, no L-shape seams, one-pixel outer coverage, nested intersection, empty clipping, save/restore, grid coalescing and rotated scale.
+Context generation checks passed: no lost-context GL calls, no old-handle deletion after restore, stable context/method references and current-generation disposal.
+Lifecycle checks passed: VBO byte budget, deferred eviction, stale attributes, context loss suppression, text measurement, stable restore proxy, disposal, native fallback and failed-shader cleanup.
+Analytic stroke mock checks passed: leaf cache, width/transform reuse, composite prepass, dashes, depth/stencil rollover, original arc/rect commands.
+PASS: bundled PNG dimensions, both-face loading, safe decode failure, demo START ring and unchanged uploaded-card start
+Retained chevron checks passed: exact glyph positions/directions across zoom, rotation and tile parity, constant widths and geometry-only cache invalidation.
+Retained rectangle checks passed: transform reuse, exact geometry keys, cap restoration, dash invalidation and bounded lifecycle.
+Shared context command ordering and lifecycle checks passed.
+Frame-end attachment checks passed: flush-before-discard, color retained, ordinary flush unchanged, WebGL1 fallback and loss/disposal guards.

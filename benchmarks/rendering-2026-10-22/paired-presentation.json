@@ -1,0 +1,5542 @@
+[
+  {
+    "trace": "/private/tmp/ocm-20261022-paired-before-rotate.json.gz",
+    "measuredMs": 10007.944,
+    "method": "Chromium presentation-feedback counters, complete tracker intervals inside OCM measurement marks; JSAnimation and RAF overlap and must not be added together.",
+    "trackers": {
+      "RAF": {
+        "expected": 588,
+        "droppedV3": 354,
+        "droppedV4": 354,
+        "intervals": 233,
+        "producedV3": 234,
+        "dropPercentV3": 60.204081632653065,
+        "dropPercentV4": 60.204081632653065
+      },
+      "JSAnimation": {
+        "expected": 356,
+        "droppedV3": 173,
+        "droppedV4": 173,
+        "intervals": 183,
+        "producedV3": 183,
+        "dropPercentV3": 48.59550561797753,
+        "dropPercentV4": 48.59550561797753
+      }
+    },
+    "droppedIntervals": [
+      {
+        "kind": "RAF",
+        "atMs": 337.38,
+        "durationMs": 150.007,
+        "expected": 5,
+        "droppedV3": 4,
+        "droppedV4": 4
+      },
+      {
+        "kind": "RAF",
+        "atMs": 487.387,
+        "durationMs": 116.672,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 604.059,
+        "durationMs": 0.003,
+        "expected": 5,
+        "droppedV3": 4,
+        "droppedV4": 4
+      },
+      {
+        "kind": "RAF",
+        "atMs": 954.074,
+        "durationMs": 116.669,
+        "expected": 9,
+        "droppedV3": 8,
+        "droppedV4": 8
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1070.743,
+        "durationMs": 283.352,
+        "expected": 6,
+        "droppedV3": 5,
+        "droppedV4": 5
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1354.095,
+        "durationMs": 283.353,
+        "expected": 21,
+        "droppedV3": 19,
+        "droppedV4": 19
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1637.448,
+        "durationMs": 16.667,
+        "expected": 12,
+        "droppedV3": 11,
+        "droppedV4": 11
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1654.115,
+        "durationMs": 50.008,
+        "expected": 12,
+        "droppedV3": 11,
+        "droppedV4": 11
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1770.792,
+        "durationMs": 33.338,
+        "expected": 16,
+        "droppedV3": 15,
+        "droppedV4": 15
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1837.464,
+        "durationMs": 33.336,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1870.8,
+        "durationMs": 50.002,
+        "expected": 5,
+        "droppedV3": 4,
+        "droppedV4": 4
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1920.802,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1987.472,
+        "durationMs": 33.337,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2020.809,
+        "durationMs": 66.669,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2087.478,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2104.145,
+        "durationMs": 66.672,
+        "expected": 5,
+        "droppedV3": 4,
+        "droppedV4": 4
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2204.151,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2220.819,
+        "durationMs": 50.003,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2270.822,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2304.157,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2320.825,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2354.16,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2387.495,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2454.166,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2537.503,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2587.506,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2620.841,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2654.177,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2704.18,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2737.515,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2837.519,
+        "durationMs": 0.002,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2870.855,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2904.191,
+        "durationMs": 366.679,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 3954.036,
+        "durationMs": 33.354,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4020.725,
+        "durationMs": 200.009,
+        "expected": 62,
+        "droppedV3": 61,
+        "droppedV4": 61
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4237.401,
+        "durationMs": 33.338,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4237.401,
+        "durationMs": 33.338,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4270.739,
+        "durationMs": 50.003,
+        "expected": 11,
+        "droppedV3": 10,
+        "droppedV4": 10
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4270.739,
+        "durationMs": 50.003,
+        "expected": 11,
+        "droppedV3": 10,
+        "droppedV4": 10
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4320.742,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4320.742,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4387.412,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4387.412,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4420.748,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4420.748,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4454.082,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4454.082,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4487.418,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4487.418,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4520.753,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4520.753,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4554.088,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4554.088,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4587.423,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4587.423,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4620.759,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4620.759,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4654.093,
+        "durationMs": 16.669,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4654.093,
+        "durationMs": 16.669,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4670.762,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4670.762,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4704.097,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4704.097,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4737.432,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4737.432,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4770.767,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4770.767,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4854.105,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4854.105,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4870.773,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4870.773,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4904.108,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4904.108,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4970.779,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4970.779,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5004.114,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5004.114,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5020.782,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5020.782,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5104.119,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5104.119,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5170.791,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5204.125,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5204.125,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5237.46,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5237.46,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5270.796,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5270.796,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5304.13,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5304.13,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5337.465,
+        "durationMs": 33.336,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5337.465,
+        "durationMs": 33.336,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5387.469,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5387.469,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5454.139,
+        "durationMs": 50.002,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5454.139,
+        "durationMs": 50.002,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5570.812,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5570.812,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5587.48,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5587.48,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5654.15,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5654.15,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5670.818,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5670.818,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5754.155,
+        "durationMs": 16.669,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5754.155,
+        "durationMs": 16.669,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5820.826,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5820.826,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5920.832,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5920.832,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5937.499,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5937.499,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5970.835,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5970.835,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6070.841,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6070.841,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6104.175,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6104.175,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6187.513,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6187.513,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6220.848,
+        "durationMs": 33.337,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6220.848,
+        "durationMs": 33.337,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6254.185,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6254.185,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6287.519,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6287.519,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6354.189,
+        "durationMs": 33.336,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6354.189,
+        "durationMs": 33.336,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6387.525,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6387.525,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6454.195,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6454.195,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6487.53,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6487.53,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6520.866,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6520.866,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6570.869,
+        "durationMs": 33.334,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6570.869,
+        "durationMs": 33.334,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6654.207,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6654.207,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6704.21,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6704.21,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6787.548,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6787.548,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6854.217,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6854.217,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6887.553,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6887.553,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6937.555,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6937.555,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6970.891,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6970.891,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7020.894,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7020.894,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7120.9,
+        "durationMs": 50.001,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7120.9,
+        "durationMs": 50.001,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7220.905,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7220.905,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7254.24,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7254.24,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7270.908,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7270.908,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7320.911,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7320.911,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7370.914,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7370.914,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7470.919,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7470.919,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7537.589,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7537.589,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7570.924,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7570.924,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7604.26,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7604.26,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7737.6,
+        "durationMs": 50.002,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7737.6,
+        "durationMs": 50.002,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7787.602,
+        "durationMs": 16.669,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7787.602,
+        "durationMs": 16.669,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7804.271,
+        "durationMs": 50.003,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7804.271,
+        "durationMs": 50.003,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7854.274,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7854.274,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7870.942,
+        "durationMs": 33.335,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7870.942,
+        "durationMs": 33.335,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7954.279,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7954.279,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7987.615,
+        "durationMs": 50.002,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7987.615,
+        "durationMs": 50.002,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8037.617,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8037.617,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8054.285,
+        "durationMs": 16.668,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8054.285,
+        "durationMs": 16.668,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8104.288,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8104.288,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8170.959,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8170.959,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8220.961,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8220.961,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8270.964,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8270.964,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8320.967,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8320.967,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8354.302,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8354.302,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8420.972,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8420.972,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8454.307,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8454.307,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8520.977,
+        "durationMs": 50.004,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8520.977,
+        "durationMs": 50.004,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8570.981,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8570.981,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8604.316,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8604.316,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8637.651,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8637.651,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8670.987,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8670.987,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8704.321,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8704.321,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8737.657,
+        "durationMs": 33.335,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8737.657,
+        "durationMs": 33.335,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8820.995,
+        "durationMs": 50.003,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8820.995,
+        "durationMs": 50.003,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8870.998,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8870.998,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8904.333,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8904.333,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8937.668,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8937.668,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8987.671,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8987.671,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9021.006,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9021.006,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9037.674,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8931.396,
+        "durationMs": 139.613,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9121.013,
+        "durationMs": 66.67,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9121.013,
+        "durationMs": 66.67,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9187.683,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9187.683,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9254.352,
+        "durationMs": 216.676,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9254.352,
+        "durationMs": 216.676,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9471.028,
+        "durationMs": 99.836,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9471.028,
+        "durationMs": 99.836,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9604.199,
+        "durationMs": 33.336,
+        "expected": 16,
+        "droppedV3": 15,
+        "droppedV4": 15
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9604.199,
+        "durationMs": 33.336,
+        "expected": 16,
+        "droppedV3": 15,
+        "droppedV4": 15
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9670.869,
+        "durationMs": 33.336,
+        "expected": 5,
+        "droppedV3": 4,
+        "droppedV4": 4
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9670.869,
+        "durationMs": 33.336,
+        "expected": 5,
+        "droppedV3": 4,
+        "droppedV4": 4
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9704.205,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9704.205,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9737.54,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9737.54,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9787.543,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9787.543,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9837.546,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9837.546,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9904.216,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9904.216,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9937.55,
+        "durationMs": 16.669,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9937.55,
+        "durationMs": 16.669,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      }
+    ]
+  },
+  {
+    "trace": "/private/tmp/ocm-20261022-paired-before-walk.json.gz",
+    "measuredMs": 10007.032,
+    "method": "Chromium presentation-feedback counters, complete tracker intervals inside OCM measurement marks; JSAnimation and RAF overlap and must not be added together.",
+    "trackers": {
+      "RAF": {
+        "expected": 547,
+        "droppedV3": 147,
+        "droppedV4": 137,
+        "intervals": 393,
+        "producedV3": 400,
+        "dropPercentV3": 26.873857404021937,
+        "dropPercentV4": 25.045703839122485
+      },
+      "JSAnimation": {
+        "expected": 315,
+        "droppedV3": 82,
+        "droppedV4": 78,
+        "intervals": 231,
+        "producedV3": 233,
+        "dropPercentV3": 26.03174603174603,
+        "dropPercentV4": 24.761904761904763
+      }
+    },
+    "droppedIntervals": [
+      {
+        "kind": "RAF",
+        "atMs": 145.315,
+        "durationMs": 50.002,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 278.656,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 0
+      },
+      {
+        "kind": "RAF",
+        "atMs": 311.991,
+        "durationMs": 116.673,
+        "expected": 2,
+        "droppedV3": 2,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 478.667,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 512.002,
+        "durationMs": 16.668,
+        "expected": 6,
+        "droppedV3": 5,
+        "droppedV4": 5
+      },
+      {
+        "kind": "RAF",
+        "atMs": 528.67,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 645.343,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 678.678,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 712.013,
+        "durationMs": 83.339,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 795.352,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 812.019,
+        "durationMs": 50.003,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 862.022,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 878.689,
+        "durationMs": 33.335,
+        "expected": 5,
+        "droppedV3": 4,
+        "droppedV4": 4
+      },
+      {
+        "kind": "RAF",
+        "atMs": 945.359,
+        "durationMs": 33.336,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 978.695,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1045.365,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1078.701,
+        "durationMs": 50.002,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1128.703,
+        "durationMs": 50.003,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1178.706,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1195.374,
+        "durationMs": 50.003,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1245.377,
+        "durationMs": 33.335,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1295.379,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1328.715,
+        "durationMs": 0.001,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1328.716,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1345.383,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1362.05,
+        "durationMs": 33.336,
+        "expected": 3,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1678.735,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1712.069,
+        "durationMs": 50.003,
+        "expected": 5,
+        "droppedV3": 4,
+        "droppedV4": 4
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1762.072,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1862.078,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1878.746,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1912.081,
+        "durationMs": 16.669,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1962.084,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1978.752,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2112.092,
+        "durationMs": 0.001,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2112.093,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2878.802,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 0
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2895.47,
+        "durationMs": 50.003,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 0
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2945.473,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 0
+      },
+      {
+        "kind": "RAF",
+        "atMs": 3178.819,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 0
+      },
+      {
+        "kind": "RAF",
+        "atMs": 3245.49,
+        "durationMs": 16.667,
+        "expected": 1,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 3278.825,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 3378.83,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 3428.834,
+        "durationMs": 50.002,
+        "expected": 3,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 3978.864,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4545.563,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 0
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4545.563,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 0
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4645.568,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 0
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4645.568,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 0
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4812.244,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 0
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4812.244,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 0
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5045.591,
+        "durationMs": 50.002,
+        "expected": 1,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5045.591,
+        "durationMs": 50.002,
+        "expected": 1,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5128.928,
+        "durationMs": 83.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5128.928,
+        "durationMs": 83.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5212.264,
+        "durationMs": 0.003,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5212.267,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5212.267,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5245.602,
+        "durationMs": 50.003,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5245.602,
+        "durationMs": 50.003,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5295.605,
+        "durationMs": 33.335,
+        "expected": 6,
+        "droppedV3": 4,
+        "droppedV4": 4
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5295.605,
+        "durationMs": 33.335,
+        "expected": 6,
+        "droppedV3": 4,
+        "droppedV4": 4
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5362.276,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5362.276,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5428.945,
+        "durationMs": 16.669,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5428.945,
+        "durationMs": 16.669,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5495.616,
+        "durationMs": 16.667,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5495.616,
+        "durationMs": 16.667,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6212.107,
+        "durationMs": 16.667,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6212.107,
+        "durationMs": 16.667,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6278.777,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 0
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6278.777,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 0
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6312.112,
+        "durationMs": 66.671,
+        "expected": 1,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6312.112,
+        "durationMs": 66.671,
+        "expected": 1,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6395.45,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6395.45,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6445.453,
+        "durationMs": 33.335,
+        "expected": 5,
+        "droppedV3": 4,
+        "droppedV4": 4
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6445.453,
+        "durationMs": 33.335,
+        "expected": 5,
+        "droppedV3": 4,
+        "droppedV4": 4
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6495.456,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6495.456,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6545.459,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6545.459,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6645.464,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6645.464,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6695.467,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6695.467,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6712.135,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6712.135,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6745.47,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6745.47,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6895.477,
+        "durationMs": 33.337,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6895.477,
+        "durationMs": 33.337,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6962.149,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6962.149,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6978.816,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6978.816,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7028.819,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7028.819,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7045.487,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7045.487,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7212.162,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7212.162,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7878.867,
+        "durationMs": 33.336,
+        "expected": 1,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7878.867,
+        "durationMs": 33.336,
+        "expected": 1,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7962.205,
+        "durationMs": 50.002,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7962.205,
+        "durationMs": 50.002,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8012.207,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8012.207,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8078.878,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8078.878,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8112.213,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8112.213,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8145.548,
+        "durationMs": 33.336,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8145.548,
+        "durationMs": 33.336,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8178.884,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8178.884,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8212.219,
+        "durationMs": 16.667,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8212.219,
+        "durationMs": 16.667,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8562.239,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8562.239,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8595.574,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8595.574,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8628.909,
+        "durationMs": 16.668,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8628.909,
+        "durationMs": 16.668,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8712.247,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8712.247,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8845.589,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8845.589,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8878.923,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8878.923,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8912.259,
+        "durationMs": 16.667,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8912.259,
+        "durationMs": 16.667,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8962.261,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8962.261,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8995.597,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8995.597,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9128.937,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9128.937,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9678.968,
+        "durationMs": 50.003,
+        "expected": 1,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9678.968,
+        "durationMs": 50.003,
+        "expected": 1,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9795.64,
+        "durationMs": 50.003,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9795.64,
+        "durationMs": 50.003,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9845.645,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9845.645,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9878.98,
+        "durationMs": 50.002,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9878.98,
+        "durationMs": 50.002,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9928.982,
+        "durationMs": 16.667,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9928.982,
+        "durationMs": 16.667,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      }
+    ]
+  },
+  {
+    "trace": "/private/tmp/ocm-20261022-paired-before-replay.json.gz",
+    "measuredMs": 10006.806,
+    "method": "Chromium presentation-feedback counters, complete tracker intervals inside OCM measurement marks; JSAnimation and RAF overlap and must not be added together.",
+    "trackers": {
+      "RAF": {
+        "expected": 587,
+        "droppedV3": 271,
+        "droppedV4": 271,
+        "intervals": 313,
+        "producedV3": 316,
+        "dropPercentV3": 46.16695059625213,
+        "dropPercentV4": 46.16695059625213
+      },
+      "JSAnimation": {
+        "expected": 324,
+        "droppedV3": 150,
+        "droppedV4": 150,
+        "intervals": 173,
+        "producedV3": 174,
+        "dropPercentV3": 46.2962962962963,
+        "dropPercentV4": 46.2962962962963
+      }
+    },
+    "droppedIntervals": [
+      {
+        "kind": "RAF",
+        "atMs": 319.23,
+        "durationMs": 33.335,
+        "expected": 5,
+        "droppedV3": 5,
+        "droppedV4": 5
+      },
+      {
+        "kind": "RAF",
+        "atMs": 569.243,
+        "durationMs": 16.669,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 585.912,
+        "durationMs": 50.003,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 635.915,
+        "durationMs": 66.67,
+        "expected": 7,
+        "droppedV3": 6,
+        "droppedV4": 6
+      },
+      {
+        "kind": "RAF",
+        "atMs": 702.585,
+        "durationMs": 16.668,
+        "expected": 5,
+        "droppedV3": 4,
+        "droppedV4": 4
+      },
+      {
+        "kind": "RAF",
+        "atMs": 752.587,
+        "durationMs": 50.004,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 802.591,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 819.258,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 852.593,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 885.928,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 969.266,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1002.601,
+        "durationMs": 33.336,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1119.275,
+        "durationMs": 66.669,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1185.944,
+        "durationMs": 16.669,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1202.613,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1235.949,
+        "durationMs": 50.001,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1285.95,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1319.286,
+        "durationMs": 50.003,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1369.289,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1385.957,
+        "durationMs": 50.003,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1469.295,
+        "durationMs": 16.667,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1485.962,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1519.298,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1552.633,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1569.3,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1602.636,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1702.64,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1785.979,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1802.647,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1835.982,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 1885.985,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2002.658,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2035.993,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2069.329,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2119.331,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2152.667,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2219.336,
+        "durationMs": 16.669,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2236.005,
+        "durationMs": 50.003,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2302.676,
+        "durationMs": 66.669,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2369.345,
+        "durationMs": 33.335,
+        "expected": 6,
+        "droppedV3": 4,
+        "droppedV4": 4
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2452.683,
+        "durationMs": 50.004,
+        "expected": 3,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2536.021,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2552.689,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2652.694,
+        "durationMs": 133.341,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2819.371,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2852.705,
+        "durationMs": 33.336,
+        "expected": 8,
+        "droppedV3": 7,
+        "droppedV4": 7
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2902.709,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 2952.712,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 3002.714,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 3036.049,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 3086.052,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 3136.055,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 3169.39,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 3236.06,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 3252.728,
+        "durationMs": 50.004,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 3336.066,
+        "durationMs": 150.008,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 3486.074,
+        "durationMs": 33.133,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 3519.207,
+        "durationMs": 16.667,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 3535.874,
+        "durationMs": 16.668,
+        "expected": 10,
+        "droppedV3": 9,
+        "droppedV4": 9
+      },
+      {
+        "kind": "RAF",
+        "atMs": 3602.545,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 3735.886,
+        "durationMs": 16.667,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4419.257,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4452.592,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4485.927,
+        "durationMs": 50.003,
+        "expected": 6,
+        "droppedV3": 5,
+        "droppedV4": 5
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4602.6,
+        "durationMs": 16.669,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4602.6,
+        "durationMs": 16.669,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4619.269,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4619.269,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4652.604,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4652.604,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4685.938,
+        "durationMs": 16.669,
+        "expected": 5,
+        "droppedV3": 4,
+        "droppedV4": 4
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4685.938,
+        "durationMs": 16.669,
+        "expected": 5,
+        "droppedV3": 4,
+        "droppedV4": 4
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4769.277,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4769.277,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4852.615,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4852.615,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4885.95,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4885.95,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4919.286,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4919.286,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4952.62,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4952.62,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 4985.955,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 4985.955,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5019.291,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5019.291,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5102.629,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5102.629,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5119.296,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5119.296,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5152.632,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5152.632,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5185.967,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5185.967,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5202.635,
+        "durationMs": 50.002,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5078.874,
+        "durationMs": 173.763,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5519.314,
+        "durationMs": 150.008,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5519.314,
+        "durationMs": 150.008,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5669.322,
+        "durationMs": 116.679,
+        "expected": 7,
+        "droppedV3": 5,
+        "droppedV4": 5
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5669.322,
+        "durationMs": 116.679,
+        "expected": 7,
+        "droppedV3": 5,
+        "droppedV4": 5
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5786.001,
+        "durationMs": 33.335,
+        "expected": 11,
+        "droppedV3": 10,
+        "droppedV4": 10
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5786.001,
+        "durationMs": 33.335,
+        "expected": 11,
+        "droppedV3": 10,
+        "droppedV4": 10
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5819.336,
+        "durationMs": 66.671,
+        "expected": 10,
+        "droppedV3": 9,
+        "droppedV4": 9
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5819.336,
+        "durationMs": 66.671,
+        "expected": 10,
+        "droppedV3": 9,
+        "droppedV4": 9
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5952.676,
+        "durationMs": 0.001,
+        "expected": 6,
+        "droppedV3": 5,
+        "droppedV4": 5
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5952.676,
+        "durationMs": 0.001,
+        "expected": 6,
+        "droppedV3": 5,
+        "droppedV4": 5
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 5969.344,
+        "durationMs": 33.336,
+        "expected": 5,
+        "droppedV3": 4,
+        "droppedV4": 4
+      },
+      {
+        "kind": "RAF",
+        "atMs": 5969.344,
+        "durationMs": 33.336,
+        "expected": 5,
+        "droppedV3": 4,
+        "droppedV4": 4
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6002.68,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6002.68,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6069.35,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6069.35,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6186.023,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6186.023,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6202.691,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6202.691,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6269.361,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6269.361,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6286.028,
+        "durationMs": 83.34,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6286.028,
+        "durationMs": 83.34,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6386.035,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6386.035,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6402.702,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6402.702,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6436.037,
+        "durationMs": 33.335,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6436.037,
+        "durationMs": 33.335,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6486.04,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6486.04,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6586.045,
+        "durationMs": 16.669,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6586.045,
+        "durationMs": 16.669,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6652.716,
+        "durationMs": 50.003,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6652.716,
+        "durationMs": 50.003,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6719.386,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6719.386,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6752.721,
+        "durationMs": 16.669,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6752.721,
+        "durationMs": 16.669,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6769.39,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6769.39,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6836.06,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6836.06,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6869.395,
+        "durationMs": 50.003,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6869.395,
+        "durationMs": 50.003,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6919.398,
+        "durationMs": 16.667,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6919.398,
+        "durationMs": 16.667,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 6986.068,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 6986.068,
+        "durationMs": 33.335,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7036.071,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7036.071,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7102.741,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7102.741,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7136.076,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7136.076,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7152.744,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7152.744,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7202.747,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7202.747,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7219.415,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7219.415,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7252.75,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7252.75,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7352.755,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7352.755,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7369.423,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7369.423,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7419.426,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7419.426,
+        "durationMs": 16.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7469.428,
+        "durationMs": 0.001,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7469.428,
+        "durationMs": 0.001,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7819.449,
+        "durationMs": 50.001,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7819.449,
+        "durationMs": 50.001,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7869.45,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7869.45,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7919.454,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7919.454,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7936.122,
+        "durationMs": 50.003,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7936.122,
+        "durationMs": 50.003,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 7986.125,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 7986.125,
+        "durationMs": 16.667,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8002.792,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8002.792,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8052.794,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8052.794,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8102.798,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8102.798,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8152.801,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8152.801,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8186.135,
+        "durationMs": 16.669,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8186.135,
+        "durationMs": 16.669,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8302.81,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8302.81,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8369.48,
+        "durationMs": 66.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8369.48,
+        "durationMs": 66.668,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8436.148,
+        "durationMs": 16.67,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8436.148,
+        "durationMs": 16.67,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8452.818,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8452.818,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8519.488,
+        "durationMs": 33.335,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8519.488,
+        "durationMs": 33.335,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8552.823,
+        "durationMs": 50.002,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8552.823,
+        "durationMs": 50.002,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8619.494,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8619.494,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8652.828,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8652.828,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8686.164,
+        "durationMs": 16.667,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8686.164,
+        "durationMs": 16.667,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8736.166,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8736.166,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8769.501,
+        "durationMs": 16.669,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8769.501,
+        "durationMs": 16.669,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8786.17,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8786.17,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8852.84,
+        "durationMs": 33.336,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8852.84,
+        "durationMs": 33.336,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8886.176,
+        "durationMs": 66.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8886.176,
+        "durationMs": 66.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 8952.846,
+        "durationMs": 33.335,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "RAF",
+        "atMs": 8952.846,
+        "durationMs": 33.335,
+        "expected": 4,
+        "droppedV3": 3,
+        "droppedV4": 3
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9002.849,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9002.849,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9102.854,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9102.854,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9119.522,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9119.522,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9152.856,
+        "durationMs": 16.669,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9152.856,
+        "durationMs": 16.669,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9202.86,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9202.86,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9269.529,
+        "durationMs": 33.337,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9269.529,
+        "durationMs": 33.337,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9302.866,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9302.866,
+        "durationMs": 33.334,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9352.868,
+        "durationMs": 83.338,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9352.868,
+        "durationMs": 83.338,
+        "expected": 3,
+        "droppedV3": 2,
+        "droppedV4": 2
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9486.209,
+        "durationMs": 33.335,
+        "expected": 6,
+        "droppedV3": 5,
+        "droppedV4": 5
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9602.882,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9602.882,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9619.55,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9619.55,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9652.884,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9652.884,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9736.223,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9736.223,
+        "durationMs": 33.336,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9769.559,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9769.559,
+        "durationMs": 33.334,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9802.893,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9802.893,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9819.561,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9819.561,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9852.896,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9852.896,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9936.234,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9936.234,
+        "durationMs": 33.335,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 9969.569,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 9969.569,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      }
+    ]
+  },
+  {
+    "trace": "/private/tmp/ocm-20261022-paired-after-rotate.json.gz",
+    "measuredMs": 10004.26,
+    "method": "Chromium presentation-feedback counters, complete tracker intervals inside OCM measurement marks; JSAnimation and RAF overlap and must not be added together.",
+    "trackers": {
+      "RAF": {
+        "expected": 598,
+        "droppedV3": 0,
+        "droppedV4": 0,
+        "intervals": 580,
+        "producedV3": 598,
+        "dropPercentV3": 0.0,
+        "dropPercentV4": 0.0
+      },
+      "JSAnimation": {
+        "expected": 341,
+        "droppedV3": 0,
+        "droppedV4": 0,
+        "intervals": 332,
+        "producedV3": 341,
+        "dropPercentV3": 0.0,
+        "dropPercentV4": 0.0
+      }
+    },
+    "droppedIntervals": []
+  },
+  {
+    "trace": "/private/tmp/ocm-20261022-paired-after-walk.json.gz",
+    "measuredMs": 10002.327,
+    "method": "Chromium presentation-feedback counters, complete tracker intervals inside OCM measurement marks; JSAnimation and RAF overlap and must not be added together.",
+    "trackers": {
+      "RAF": {
+        "expected": 576,
+        "droppedV3": 2,
+        "droppedV4": 2,
+        "intervals": 566,
+        "producedV3": 574,
+        "dropPercentV3": 0.3472222222222222,
+        "dropPercentV4": 0.3472222222222222
+      },
+      "JSAnimation": {
+        "expected": 326,
+        "droppedV3": 0,
+        "droppedV4": 0,
+        "intervals": 318,
+        "producedV3": 326,
+        "dropPercentV3": 0.0,
+        "dropPercentV4": 0.0
+      }
+    },
+    "droppedIntervals": [
+      {
+        "kind": "RAF",
+        "atMs": 800.204,
+        "durationMs": 100.005,
+        "expected": 1,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 3333.68,
+        "durationMs": 116.673,
+        "expected": 1,
+        "droppedV3": 1,
+        "droppedV4": 1
+      }
+    ]
+  },
+  {
+    "trace": "/private/tmp/ocm-20261022-paired-after-replay.json.gz",
+    "measuredMs": 10002.013,
+    "method": "Chromium presentation-feedback counters, complete tracker intervals inside OCM measurement marks; JSAnimation and RAF overlap and must not be added together.",
+    "trackers": {
+      "RAF": {
+        "expected": 592,
+        "droppedV3": 5,
+        "droppedV4": 5,
+        "intervals": 578,
+        "producedV3": 587,
+        "dropPercentV3": 0.8445945945945946,
+        "dropPercentV4": 0.8445945945945946
+      },
+      "JSAnimation": {
+        "expected": 319,
+        "droppedV3": 0,
+        "droppedV4": 0,
+        "intervals": 317,
+        "producedV3": 319,
+        "dropPercentV3": 0.0,
+        "dropPercentV4": 0.0
+      }
+    },
+    "droppedIntervals": [
+      {
+        "kind": "RAF",
+        "atMs": 613.478,
+        "durationMs": 0.001,
+        "expected": 6,
+        "droppedV3": 5,
+        "droppedV4": 5
+      }
+    ]
+  },
+  {
+    "trace": "/private/tmp/ocm-20261022-replay-final-replay.json.gz",
+    "measuredMs": 30003.312,
+    "method": "Chromium presentation-feedback counters, complete tracker intervals inside OCM measurement marks; JSAnimation and RAF overlap and must not be added together.",
+    "trackers": {
+      "RAF": {
+        "expected": 1771,
+        "droppedV3": 6,
+        "droppedV4": 6,
+        "intervals": 1731,
+        "producedV3": 1765,
+        "dropPercentV3": 0.33879164313946925,
+        "dropPercentV4": 0.33879164313946925
+      },
+      "JSAnimation": {
+        "expected": 1503,
+        "droppedV3": 1,
+        "droppedV4": 1,
+        "intervals": 1472,
+        "producedV3": 1502,
+        "dropPercentV3": 0.0665335994677312,
+        "dropPercentV4": 0.0665335994677312
+      }
+    },
+    "droppedIntervals": [
+      {
+        "kind": "RAF",
+        "atMs": 490.594,
+        "durationMs": 16.668,
+        "expected": 6,
+        "droppedV3": 5,
+        "droppedV4": 5
+      },
+      {
+        "kind": "JSAnimation",
+        "atMs": 20941.177,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      },
+      {
+        "kind": "RAF",
+        "atMs": 20941.177,
+        "durationMs": 16.668,
+        "expected": 2,
+        "droppedV3": 1,
+        "droppedV4": 1
+      }
+    ]
+  }
+]
