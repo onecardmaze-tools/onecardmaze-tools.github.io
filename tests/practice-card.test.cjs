@@ -24,8 +24,17 @@ function fixture(rejectBack=false) {
  assert(!failed.calls.includes('apply'),'A missing face cannot replace the current card');
  assert(failed.calls.includes('error'),'Image failures give visible feedback');
  const h=require('./app-harness.js')(),app=h.app,S=h.S;
- app.applyImages({width:1061,height:1483},{width:1061,height:1483});S.demo=true;app.startNow();
- assert.equal(S.walker.x,522);assert.equal(S.walker.y,750,'Demo starts at the printed START ring');
- S.demo=false;app.startNow();assert.equal(S.walker.x,530.5);assert.equal(S.walker.y,741.5,'Other cards retain the existing start behavior');
- console.log('PASS: bundled PNG dimensions, both-face loading, safe decode failure, demo START ring and unchanged uploaded-card start');
+ for (const demo of [true,false]) {
+  app.applyImages({width:1061,height:1483},{width:1061,height:1483});S.demo=demo;app.startNow();
+  assert.equal(S.started,false,'Loading a card waits for the player to choose start');
+  assert.equal(S.trail.length,0,'Loading must not record a guessed start');
+  app.tap({x:123,y:456});
+  assert.equal(S.started,true);
+  assert.equal(S.walker.x,123);assert.equal(S.walker.y,456);
+  assert.equal(S.trail.length,1);
+  assert.equal(S.trail[0].x,123);assert.equal(S.trail[0].y,456);
+  app.tap({x:234,y:567});
+  assert.equal(S.walker.tx,234);assert.equal(S.walker.ty,567,'Next tap walks from the chosen start');
+ }
+ console.log('PASS: bundled PNG dimensions, both-face loading, safe decode failure and player-selected start for all cards');
 })().catch(error=>{console.error(error);process.exitCode=1;});

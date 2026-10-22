@@ -4,14 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>One Card Maze Helper · Unofficial</title>
-<meta name="app-version" content="2026-10-22-fullsize-gpu" />
+<meta name="app-version" content="2026-10-22-player-start" />
 <meta name="description" content="Free, open-source One Card Maze helper. Upload both sides of your maze card, explore connected edges, track your path, and replay your walk in your browser." />
 <link rel="canonical" href="https://onecardmaze-tools.github.io/" />
 <meta property="og:title" content="One Card Maze Helper · Unofficial" />
 <meta property="og:description" content="Explore both sides of your One Card Maze card with path tracking, rotation, undo, and replay. Free and open source." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://onecardmaze-tools.github.io/" />
-<link rel="stylesheet" href="companion.css?v=fullsize-gpu-1" />
+<link rel="stylesheet" href="companion.css?v=player-start-1" />
 </head>
 <body data-mode="walk" data-route="0">
 <!-- UI: see DESIGN-SYSTEM.md. One dock whose contents follow uiMode(); never stack bars. -->
@@ -196,11 +196,11 @@
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="card-library.js?v=fullsize-gpu-1"></script>
-<script src="session-codec.js?v=fullsize-gpu-1"></script>
-<script src="replay-core.js?v=fullsize-gpu-1"></script>
-<script src="trace-renderer.js?v=fullsize-gpu-1"></script>
-<script src="gpu-renderer.js?v=fullsize-gpu-1"></script>
+<script src="card-library.js?v=player-start-1"></script>
+<script src="session-codec.js?v=player-start-1"></script>
+<script src="replay-core.js?v=player-start-1"></script>
+<script src="trace-renderer.js?v=player-start-1"></script>
+<script src="gpu-renderer.js?v=player-start-1"></script>
 <script>
 (function () {
 "use strict";
@@ -2084,17 +2084,8 @@ async function loadDemo(autoStart) {
 $("btnDemo").addEventListener("click", () => loadDemo(true));
 
 function startNow() {
-  loader.classList.add("hidden");
-  S.started = true;
-  setAnchor(0, 0);
-  // Center of the START ring in the supplied 1061 × 1483 front image.
-  S.walker.x = S.demo ? S.W * (522 / 1061) : S.W / 2;
-  S.walker.y = S.demo ? S.H * (750 / 1483) : S.H / 2;
-  S.walker.tx = null; S.walker.ty = null;
-  S.follow = true; clearWalk();
-  S.trail.push({ x: S.walker.x, y: S.walker.y, r: oriIndex() });
-  invalidateReplay(); invalidate();
-  setHint("Click a spot to walk there.");
+  // Loading artwork cannot determine where the player's route begins.
+  resetRoute();
 }
 
 let cardImportBusy = false;
@@ -2380,6 +2371,6 @@ window.OCM.startup = (async () => {
 scheduleFrame();
 })();
 </script>
-<script src="companion-ui.js?v=fullsize-gpu-1" defer></script>
+<script src="companion-ui.js?v=player-start-1" defer></script>
 </body>
 </html>
