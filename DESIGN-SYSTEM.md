@@ -103,7 +103,12 @@ these limits describe dock coverage, not a sum of all floating element heights.
 The camera has to know about the chrome. `uiInsets()` in `index.html` returns
 the space reserved on each side, and **must match the `--inset-*` tokens** in
 `companion.css`. `fitView()` fits the card inside the insets and `camTarget()`
-keeps the walker out from under them. If you change the dock height, change
+keeps the walker out from under them. Walking preserves the current composition:
+the inner 60% of the inset-adjusted viewport is a quiet zone. The camera follows
+only while walking outside that zone, and crossing a card seam never recentres
+it. After manual pan/zoom, following resumes only when the walker enters the
+quiet zone. Pinch zoom preserves the gesture focal point. Fit explicitly frames
+the card; My position explicitly locates the walker. Review keeps card framing. If you change the dock height, change
 both, and run the browser QA.
 
 Floating layers, from back to front: map canvases → chips and dock

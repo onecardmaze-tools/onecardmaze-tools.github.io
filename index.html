@@ -4,14 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>One Card Maze Helper · Unofficial</title>
-<meta name="app-version" content="2026-10-23-ux-flow" />
+<meta name="app-version" content="2026-10-23-walk-camera" />
 <meta name="description" content="Free, open-source One Card Maze helper. Upload both sides of your maze card, explore connected edges, track your path, and replay your walk in your browser." />
 <link rel="canonical" href="https://onecardmaze-tools.github.io/" />
 <meta property="og:title" content="One Card Maze Helper · Unofficial" />
 <meta property="og:description" content="Explore both sides of your One Card Maze card with path tracking, rotation, undo, and replay. Free and open source." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://onecardmaze-tools.github.io/" />
-<link rel="stylesheet" href="companion.css?v=ux-flow-2" />
+<link rel="stylesheet" href="companion.css?v=walk-camera-1" />
 </head>
 <body data-mode="walk" data-route="0">
 <!-- UI: see DESIGN-SYSTEM.md. One dock whose contents follow uiMode(); never stack bars. -->
@@ -212,11 +212,11 @@
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="card-library.js?v=ux-flow-2"></script>
-<script src="session-codec.js?v=ux-flow-2"></script>
-<script src="replay-core.js?v=ux-flow-2"></script>
-<script src="trace-renderer.js?v=ux-flow-2"></script>
-<script src="gpu-renderer.js?v=ux-flow-2"></script>
+<script src="card-library.js?v=walk-camera-1"></script>
+<script src="session-codec.js?v=walk-camera-1"></script>
+<script src="replay-core.js?v=walk-camera-1"></script>
+<script src="trace-renderer.js?v=walk-camera-1"></script>
+<script src="gpu-renderer.js?v=walk-camera-1"></script>
 <script>
 (function () {
 "use strict";
@@ -251,10 +251,9 @@ const CFG = {
   lightLerp:      6,
   fitArmFrac:     0.30,   // how much of a neighbour the default Fit shows beyond the card
   anchorMarginFrac:0.05,  // how far inside the next card before the view re-centres on it
-  keepInFrac:     0.11,   // how far from a screen edge the walker is kept when zoomed right in
   cardFade:       8,      // how fast a card fades in/out of the set of cards on screen
   speedFrac:      0.55,   // walker speed, card-heights per second
-  camLerp:        4,      // how fast the view eases onto the centred card
+  camLerp:        4,      // how fast the view follows its camera target
   rotLerp:        14,     // how fast the card settles after a 90° spin
   // Straight motion retains only its endpoints; render samples are not stored.
   trailWidthFrac: 0.008,  // reference width; final strokes are clamped in CSS pixels
@@ -554,7 +553,7 @@ function applyImages(front, back) {
   S.markers = []; S.nextMarkerId = 1; S.selectedMarker = null; setMarkerMode(false); syncMarkers();
   S.cam = { x: S.W / 2, y: S.H / 2 };
   S.walker = { x: S.W / 2, y: S.H / 2, tx: null, ty: null };
-  S.started = false; S.follow = true;
+  S.started = false; S.follow = true; S.walkFollowPending=false;
   setAnchor(0, 0);
   clearWalk();
   fitView();
@@ -575,7 +574,8 @@ function uiInsets() {
 }
 function fitView() {
   if (!S.ready) return;
-  S.manualPivot=null;
+  S.manualPivot=null; S.walkFollowPending=false;
+  S.cam=cardCenter();
   // fit the card plus a slice of each neighbour, so the other side is visible
   // above, below, left and right at the default zoom
   // Teaching text needs a readable first view on phones; neighboring slices
@@ -609,8 +609,8 @@ function s2w(px, py) {
 function zoomAt(px, py, factor) {
   if (!S.ready) return;
   S.manualPivot=null;
-  // while the card is centred, zoom about the middle so it stays centred
-  if (S.follow) { px = view.w / 2; py = view.h / 2; }
+  // A zoom gesture owns its focal point, including while following.
+  S.follow=false; S.walkFollowPending=false;
   const before = s2w(px, py);
   S.zoom = clamp(S.zoom * factor, S.minZoom, S.maxZoom);
   const after = s2w(px, py);
@@ -618,30 +618,25 @@ function zoomAt(px, py, factor) {
   invalidate();
 }
 
-/* Where the view wants to be: the middle of the card you are standing on — slid
-   just far enough to keep the walker on screen when you zoom past the card. */
+/* Walking preserves the user's composition. The inner 60% of the usable
+   viewport is a quiet zone; only walking beyond it moves the camera. Review
+   retains its card-centred presentation and event-owned camera transitions. */
+function walkFrame() {
+  const ins=uiInsets(), width=Math.max(1,view.w-ins.left-ins.right), height=Math.max(1,view.h-ins.top-ins.bottom);
+  return {left:ins.left+width*.2,right:view.w-ins.right-width*.2,
+    top:ins.top+height*.2,bottom:view.h-ins.bottom-height*.2};
+}
 function camTarget() {
-  const a = S.anchor;
-  let tx = (a.i + 0.5) * S.W, ty = (a.j + 0.5) * S.H;
-  // Review frames the card, not the walker. Rotating a card must not trigger
-  // a second camera move just because its walker ends up nearer the HUD.
-  if (!S.started || S.review) return { x: tx, y: ty };
-  // keep the walker clear of the screen edges (and of the HUD along the top and bottom)
-  const pad = Math.max(40, Math.min(view.w, view.h) * CFG.keepInFrac);
-  const hx = view.w * 0.5 - pad, hy = view.h * 0.5 - pad;
-  if (hx <= 0 || hy <= 0) return { x: tx, y: ty };
-  const cr = Math.cos(S.rot), sr = Math.sin(S.rot);
-  const gx = S.walker.x - tx, gy = S.walker.y - ty;
-  const dx = S.zoom * (cr * gx - sr * gy), dy = S.zoom * (sr * gx + cr * gy);
-  // Keep the walker out from under the chrome as well as off the edges.
-  const ins = uiInsets(), m = 24;
-  const nx = clamp(dx, -Math.min(hx, view.w * .5 - ins.left - m), Math.min(hx, view.w * .5 - ins.right - m));
-  const ny = clamp(dy, -Math.min(hy, view.h * .5 - ins.top - m), Math.min(hy, view.h * .5 - ins.bottom - m));
-  if (nx !== dx || ny !== dy) {
-    tx = S.walker.x - (cr * nx + sr * ny) / S.zoom;
-    ty = S.walker.y - (-sr * nx + cr * ny) / S.zoom;
-  }
-  return { x: tx, y: ty };
+  if (!S.started || S.review) return cardCenter();
+  const pos=w2s(S.walker.x,S.walker.y), box=walkFrame();
+  const inside=pos.x>=box.left && pos.x<=box.right && pos.y>=box.top && pos.y<=box.bottom;
+  // After browsing, let the walker enter the composition before following it.
+  if(S.walkFollowPending && inside) {S.walkFollowPending=false;S.follow=true;}
+  if(!S.follow || S.walkFollowPending || S.walker.tx==null) return {...S.cam};
+  const dx=(pos.x-clamp(pos.x,box.left,box.right))/S.zoom;
+  const dy=(pos.y-clamp(pos.y,box.top,box.bottom))/S.zoom;
+  const cr=Math.cos(S.rot),sr=Math.sin(S.rot);
+  return {x:S.cam.x+cr*dx+sr*dy,y:S.cam.y-sr*dx+cr*dy};
 }
 
 /* Three levels of emphasis: current card, adjacent possibilities, and diagonal
@@ -850,7 +845,7 @@ function finishReview() {
   hideConfirm(); S.play = 0; cancelPhase();
   const end = S.trail.length - 1;
   if (S.review && end > 0 && S.cursor < end - 1e-6) setCursor(end);
-  exitReview(); S.follow = true; S.manualPivot = null;
+  exitReview(); S.follow = true; S.walkFollowPending=false; S.manualPivot = null;
   syncTimeline();
 }
 /* A heavier choice (card switch, import) that would clear the route. */
@@ -1215,7 +1210,7 @@ function placeWalker(t) {
   const p = trailAt(t);
   if (!p || !S.started) return;
   S.walker.x = p.x; S.walker.y = p.y; S.walker.tx = null; S.walker.ty = null;
-  S.follow = true;
+  S.follow = true; S.walkFollowPending=false;
 }
 function syncTimeline(immediate=true) {
   scheduleProgress();
@@ -1272,7 +1267,7 @@ function play(dir) {
   for (const e of replayModel().events) {
     if (dir > 0 ? e.at < S.cursor - 1e-6 : e.at > S.cursor + 1e-6) S.eventDone.add(e.id);
   }
-  S.play = dir; S.follow = true; S.undoHeld = false;
+  S.play = dir; S.follow = true; S.walkFollowPending=false; S.undoHeld = false;
   placeWalker(S.cursor); resetProgress();
   S.anchor = { i: Math.floor(S.walker.x / S.W), j: Math.floor(S.walker.y / S.H) };
   S.cam = camTarget();
@@ -1526,11 +1521,8 @@ function update(dt) {
     else if (!S.play && !S.undoHeld) S.recordBreak = true;
   }
 
-  // ---- which card the view is centred on ----------------------------------
-  // The card you are standing on sits in the middle of the screen with all
-  // eight cards around it. Stepping over an edge hands the middle to the card
-  // you step onto; the view then animates to bring it in. A small margin stops
-  // the view twitching on a seam.
+  // ---- logical current card, independent of the walking camera ------------
+  // A small margin keeps card identity from twitching on a seam.
   {
     const m = Math.min(S.W, S.H) * CFG.anchorMarginFrac;
     if (S.phase && S.phase.event.type === "flip") {
@@ -1852,14 +1844,17 @@ function tap(wpt) {
   if (!S.started) {
     S.started = true;
     S.walker.x = wpt.x; S.walker.y = wpt.y; S.walker.tx = null; S.walker.ty = null;
-    // hand the middle to the card you land on, and jump straight to it
+    // Initial placement frames the chosen card; subsequent walking preserves the view.
     setAnchor(Math.floor(wpt.x / S.W), Math.floor(wpt.y / S.H));
-    S.cam.x = (S.anchor.i + 0.5) * S.W; S.cam.y = (S.anchor.j + 0.5) * S.H;
-    S.follow = true; clearWalk();
+    S.cam=cardCenter();
+    S.follow = true; S.walkFollowPending=false; clearWalk();
     S.trail.push({ x: wpt.x, y: wpt.y, r: oriIndex() });
     invalidateReplay();
     setHint("Click a spot to walk there.");
-  } else { S.walker.tx = wpt.x; S.walker.ty = wpt.y; S.follow = true; }
+  } else {
+    S.walker.tx = wpt.x; S.walker.ty = wpt.y;
+    S.walkFollowPending=!S.follow;
+  }
 }
 
 c.addEventListener("pointerdown", (e) => {
@@ -1875,7 +1870,7 @@ c.addEventListener("pointermove", (e) => {
     const dx = nx - p.x, dy = ny - p.y;
     downMoved += Math.hypot(dx, dy);
     if (downMoved > 6 && S.ready) {
-      panning = true; S.follow = false; S.manualPivot=null;
+      panning = true; S.follow = false; S.walkFollowPending=false; S.manualPivot=null;
       const cs = Math.cos(-S.rot), sn = Math.sin(-S.rot);
       S.cam.x -= (dx * cs - dy * sn) / S.zoom;
       S.cam.y -= (dx * sn + dy * cs) / S.zoom;
@@ -2260,7 +2255,7 @@ function restoreSessionState(state){
   S.trail=state.trail.map(p=>({...p}));S.spins=state.spins.map(p=>({...p}));S.rotQ0=state.rotQ0;
   S.cursor=state.cursor;S.rot=S.rotTarget=state.rotation;S.zoom=state.zoom;
   S.minZoom=Math.min(S.minZoom,S.zoom);S.maxZoom=Math.max(S.maxZoom,S.zoom);
-  S.cam={...state.cam};S.camGoal={...state.cam};S.follow=state.follow;
+  S.cam={...state.cam};S.camGoal={...state.cam};S.follow=state.follow;S.walkFollowPending=false;
   S.walker={...state.walker,tx:null,ty:null};S.started=state.started;
   S.review=state.review;S.reviewDir=1;S.trailOn=state.trailOn;S.replaySpeed=state.replaySpeed;
   S.travelled=walkedTo(Math.max(0,S.trail.length-1));S.recordBreak=true;
@@ -2379,7 +2374,7 @@ function restoreRoute(snap) {
   S.trail = snap.trail; S.spins = snap.spins; S.rotQ0 = snap.rotQ0; S.started = snap.started;
   S.walker = { ...snap.walker }; S.cam = { ...snap.cam }; S.rotTarget = S.rot = snap.rotTarget;
   S.travelled = snap.travelled; setAnchor(snap.anchor.i, snap.anchor.j);
-  S.cursor = Math.max(0, S.trail.length - 1); S.follow = true; S.recordBreak = true;
+  S.cursor = Math.max(0, S.trail.length - 1); S.follow = true; S.walkFollowPending=false; S.recordBreak = true;
   invalidateReplay(); refreshTrace(); syncTimeline(); invalidate();
   toast("Route restored");
 }
@@ -2388,7 +2383,7 @@ function resetRoute() {
   S.started = false;
   setAnchor(0, 0);
   S.walker.x = S.W / 2; S.walker.y = S.H / 2; S.walker.tx = null; S.walker.ty = null;
-  S.cam = { x: S.W / 2, y: S.H / 2 }; S.follow = true;
+  S.cam = { x: S.W / 2, y: S.H / 2 }; S.follow = true; S.walkFollowPending=false;
   clearWalk(); loader.classList.add("hidden"); invalidate();
   setHint("<b>Click anywhere</b> on the card to drop your walker and begin.");
 }
@@ -2397,7 +2392,7 @@ $("btnZoomIn").addEventListener("click", () => zoomAt(view.w / 2, view.h / 2, 1.
 $("btnZoomOut").addEventListener("click", () => zoomAt(view.w / 2, view.h / 2, 0.8));
 $("btnSpinL").addEventListener("click", () => spin(-1));
 $("btnSpinR").addEventListener("click", () => spin(1));
-$("btnFit").addEventListener("click", () => { fitView(); S.follow = true; });
+$("btnFit").addEventListener("click", () => { fitView(); S.follow = true; S.walkFollowPending=false; });
 
 /* ---- action undo, replay in both directions, and route inspection ---- */
 function undoUp() { S.undoHeld = false; }
@@ -2408,7 +2403,7 @@ $("btnNextStep").addEventListener("click", () => stepReview(1));
 $("btnRailLocate").addEventListener("click", () => $("btnLocate").click());
 $("btnRailFit").addEventListener("click", () => $("btnFit").click());
 $("btnRailMarker").addEventListener("click", () => $("btnQuickMarker").click());
-$("btnLocate").addEventListener("click", () => { S.follow=true;S.manualPivot=null;invalidate();window.MazeUI?.closeAll(true); });
+$("btnLocate").addEventListener("click", () => { S.follow=true;S.walkFollowPending=false;S.manualPivot=null;S.cam=S.started?{x:S.walker.x,y:S.walker.y}:cardCenter();invalidate();window.MazeUI?.closeAll(true); });
 $("btnQuickMarker").addEventListener("click", () => { window.MazeUI?.closeAll(false);S.play=0;S.walker.tx=S.walker.ty=null;S.selectedMarker=null;$("markerLabel").value="";setMarkerMode(true); });
 backBtn.addEventListener("click", () => play(-1));
 fwdBtn.addEventListener("click", () => play(1));
@@ -2479,7 +2474,7 @@ window.OCM.startup = (async () => {
 scheduleFrame();
 })();
 </script>
-<script src="batch-import.js?v=ux-flow-2" defer></script>
-<script src="companion-ui.js?v=ux-flow-2" defer></script>
+<script src="batch-import.js?v=walk-camera-1" defer></script>
+<script src="companion-ui.js?v=walk-camera-1" defer></script>
 </body>
 </html>
