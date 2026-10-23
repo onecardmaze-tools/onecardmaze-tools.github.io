@@ -32,7 +32,7 @@ const server = http.createServer((req, res) => {
     }));
     const image = (name, i) => ({ name, mimeType: 'image/png', buffer: Buffer.from(pngs[i], 'base64') });
     const files = [];
-    for (let i = 24; i >= 0; i--) files.push(image(`Map-${i + 1}_back.png`, i), image(`Map-${i + 1}_FRONT.png`, i));
+    for (let i = 24; i >= 0; i--) files.push(image(`${String(i + 1).padStart(2, '0')}-Map_back.png`, i), image(`${String(i + 1).padStart(2, '0')}-Map_FRONT.png`, i));
     files.push(image('Missing_front.png', 0), image('Clash_front.png', 0), image('Clash_FRONT.jpg', 0),
       image('Clash_back.png', 0), image('unknown.png', 0),
       { name: 'Broken_front.png', mimeType: 'image/png', buffer: Buffer.from('broken') }, image('Broken_back.png', 0));
@@ -60,12 +60,12 @@ const server = http.createServer((req, res) => {
     assert.match(await page.locator('#libraryStatus').textContent(), /25 cards imported/);
     assert.equal(await snapshot(), before);
     const cards = await page.evaluate(() => CardLibrary.list()); assert.equal(cards.length, 25);
-    assert.deepEqual(cards.map(c => c.name), Array.from({ length: 25 }, (_, i) => `Map-${i + 1}`));
+    assert.deepEqual(cards.map(c => c.name), Array.from({ length: 25 }, (_, i) => `${String(i + 1).padStart(2, '0')}-Map`));
     await page.evaluate(async id => { const card = await CardLibrary.get(id); delete card.fingerprint; await CardLibrary.save(card); }, cards[0].id);
     // Repeat imports skip existing image pairs, even with different names.
     await page.click('#btnLibraryImport'); await page.click('#btnBatchMode');
     await page.locator('#fileBatch').setInputFiles([image('Renamed_front.png', 0), image('Renamed_back.png', 0),
-      image('Map-1_front.png', 25), image('Map-1_back.png', 25)]);
+      image('01-Map_front.png', 25), image('01-Map_back.png', 25)]);
     await page.waitForFunction(() => !document.getElementById('btnBatchSave').disabled);
     await page.click('#btnBatchSave');
     await page.waitForFunction(() => !document.getElementById('cardLibrary').classList.contains('hidden') && document.getElementById('libraryStatus').textContent.includes('imported'));

@@ -157,11 +157,16 @@ Icons are inline SVG symbols at the top of `<body>` (`#i-*`), 2px round strokes
 on a 24px grid. Reuse a symbol, or add one in the same style.
 
 Saved cards open in the existing modal surface from Tools and on return visits.
+A labeled Search cards input filters names instantly without changing the active
+card or route; matching is case-insensitive and clearing restores the list.
 Each row has a thumbnail, a named play button and a delete button. Names wrap;
 the list scrolls within the modal. Import adds a new card only after both faces
-are selected and the player chooses **Use this card**. Batch import reuses the modal, image drop target and scrollable list. Names ending
+are selected and the player chooses **Use this card**. Batch import reuses the
+modal, image drop target and scrollable list. Names ending
 in `_front` and `_back` pair automatically (case-insensitive); the shared name
-names the card. Only readable, unambiguous pairs are imported. A single action
+names the card. Recommend number-first names such as `01-Forest_front.png` and
+`01-Forest_back.png`; older names remain accepted. Only readable, unambiguous
+pairs are imported. A single action
 adds all ready pairs to Saved cards without switching the active card or editing
 the route. Exact image pairs are skipped; different images with the same name
 remain separate cards. Import progress and failures stay in the modal or library.

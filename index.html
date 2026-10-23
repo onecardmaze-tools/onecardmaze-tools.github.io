@@ -4,14 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>One Card Maze Helper · Unofficial</title>
-<meta name="app-version" content="2026-10-22-batch-import" />
+<meta name="app-version" content="2026-10-22-card-search" />
 <meta name="description" content="Free, open-source One Card Maze helper. Upload both sides of your maze card, explore connected edges, track your path, and replay your walk in your browser." />
 <link rel="canonical" href="https://onecardmaze-tools.github.io/" />
 <meta property="og:title" content="One Card Maze Helper · Unofficial" />
 <meta property="og:description" content="Explore both sides of your One Card Maze card with path tracking, rotation, undo, and replay. Free and open source." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://onecardmaze-tools.github.io/" />
-<link rel="stylesheet" href="companion.css?v=batch-import-1" />
+<link rel="stylesheet" href="companion.css?v=card-search-1" />
 </head>
 <body data-mode="walk" data-route="0">
 <!-- UI: see DESIGN-SYSTEM.md. One dock whose contents follow uiMode(); never stack bars. -->
@@ -158,7 +158,7 @@
     <button id="btnBatchMode" class="linkish wide">Import multiple cards</button>
     </div>
     <div id="batchImport" hidden>
-      <p class="sheet-lead">Pair images by name: <code>Forest-01_front.png</code> and <code>Forest-01_back.png</code>. The shared name becomes the card name.</p>
+      <p class="sheet-lead">Pair images by name: <code>01-Forest_front.png</code> and <code>01-Forest_back.png</code>. The shared name becomes the card name.</p>
       <label class="drop batch-drop" id="dropBatch">
         <input id="fileBatch" type="file" accept="image/*" multiple aria-label="Choose card images" />
         <svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg>
@@ -182,6 +182,8 @@
     <h2 class="sheet-title" id="libraryTitle">Saved cards</h2>
     <p class="sheet-lead">Choose a card to play. Each card keeps its own markers in this browser.</p>
     <p id="libraryStatus" class="sheet-lead" role="status" aria-live="polite"></p>
+    <label class="card-name" for="cardSearch">Search cards<input id="cardSearch" type="search" placeholder="Search by name" autocomplete="off" aria-label="Search cards by name" aria-controls="savedCards" /></label>
+    <p id="cardSearchStatus" class="sheet-lead" role="status" aria-live="polite" hidden></p>
     <ul id="savedCards" class="saved-cards" aria-label="Saved cards"></ul>
     <button id="btnLibraryImport" class="primary wide">Import another card</button>
     <button id="btnLibraryPractice" class="linkish wide">Play the practice card</button>
@@ -213,11 +215,11 @@
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="card-library.js?v=batch-import-1"></script>
-<script src="session-codec.js?v=batch-import-1"></script>
-<script src="replay-core.js?v=batch-import-1"></script>
-<script src="trace-renderer.js?v=batch-import-1"></script>
-<script src="gpu-renderer.js?v=batch-import-1"></script>
+<script src="card-library.js?v=card-search-1"></script>
+<script src="session-codec.js?v=card-search-1"></script>
+<script src="replay-core.js?v=card-search-1"></script>
+<script src="trace-renderer.js?v=card-search-1"></script>
+<script src="gpu-renderer.js?v=card-search-1"></script>
 <script>
 (function () {
 "use strict";
@@ -2034,14 +2036,27 @@ async function useSavedCard(id) {
     $("libraryStatus").textContent = "Could not open that card. Try importing its images again.";
   }
 }
+function filterSavedCards() {
+  const query = $("cardSearch").value.trim().normalize("NFC").toLowerCase();
+  let found = 0;
+  for (const row of $("savedCards").children) {
+    row.hidden = !row.dataset.name.includes(query);
+    if (!row.hidden) found++;
+  }
+  $("cardSearchStatus").hidden = !query;
+  $("cardSearchStatus").textContent = found ? found + (found === 1 ? " card found" : " cards found") : "No matching cards. Try another name.";
+}
+$("cardSearch").addEventListener("input", filterSavedCards);
 async function refreshSavedCards() {
   const list = $("savedCards"); list.replaceChildren();
+  $("cardSearchStatus").hidden = true;
   $("libraryStatus").textContent = "Loading saved cards…";
   try {
     const cards = await CardLibrary.list();
     $("libraryStatus").textContent = cards.length ? "" : "No saved cards yet. Import both faces to add one.";
     for (const card of cards) {
       const row = document.createElement("li"), play = document.createElement("button"), remove = document.createElement("button");
+      row.dataset.name = card.name.normalize("NFC").toLowerCase();
       play.className = "saved-card-play";
       if (card.thumbnail) { const image = document.createElement("img"); image.src = card.thumbnail; image.alt = ""; play.appendChild(image); }
       const name = document.createElement("span"); name.textContent = card.name; play.appendChild(name);
@@ -2061,6 +2076,7 @@ async function refreshSavedCards() {
       });
       row.appendChild(play); row.appendChild(remove); list.appendChild(row);
     }
+    filterSavedCards();
   } catch { $("libraryStatus").textContent = "Saved cards are unavailable. Check this browser’s storage settings."; }
 }
 
@@ -2392,7 +2408,7 @@ window.OCM.startup = (async () => {
 scheduleFrame();
 })();
 </script>
-<script src="batch-import.js?v=batch-import-1" defer></script>
-<script src="companion-ui.js?v=batch-import-1" defer></script>
+<script src="batch-import.js?v=card-search-1" defer></script>
+<script src="companion-ui.js?v=card-search-1" defer></script>
 </body>
 </html>

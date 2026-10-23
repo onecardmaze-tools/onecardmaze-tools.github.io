@@ -13,5 +13,6 @@ assert.equal(result.issues.find(p => p.name === 'Missing').issue, 'Missing back'
 assert.equal(result.issues.find(p => p.name === 'Conflict').issue, 'Multiple front images');
 assert.equal(pairFiles(['a_front_back.png', 'a_front_front.png'].map(file)).pairs[0].name, 'a_front');
 assert.equal(pairFiles(['Cafe\u0301_front.png', 'Café_back.png'].map(file)).pairs.length, 1);
+assert.deepEqual(pairFiles(['10-Forest_back.png', '02-Beach_front.png', '10-Forest_front.png', '02-Beach_back.png'].map(file)).pairs.map(p => p.name), ['02-Beach', '10-Forest']);
 assert.deepEqual(pairFiles([]), { pairs: [], issues: [] });
 console.log('PASS: batch pairing, natural order, case, Unicode, missing and ambiguous faces');

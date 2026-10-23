@@ -36,8 +36,8 @@ Uploaded images are saved only in your browser's IndexedDB and are never uploade
 Import both faces, optionally name the card, then choose **Use this card** to
 add it to your collection. Importing another card keeps the previous cards.
 For a batch, choose **Import multiple cards**, then select or drop all images at
-once (for example, 40 images for 20 cards). Name each pair `Forest-01_front.png`
-and `Forest-01_back.png`: the shared prefix becomes the card name, and face
+once (for example, 40 images for 20 cards). Name each pair `01-Forest_front.png`
+and `01-Forest_back.png`: the shared prefix becomes the card name, and face
 suffixes ignore case. Review the paired thumbnails, then choose **Import N cards**.
 Missing faces, ambiguous names and unreadable images are listed separately and
 skipped. Fix those files outside the app and choose them again. Exact image pairs
@@ -45,6 +45,9 @@ are skipped on repeat imports; same-name cards with different images are kept
 separately. Batch import adds to Saved cards without switching your current card
 or clearing its route. A persistent result reports any storage failures; retrying
 skips cards already saved. New batch cards sort naturally by name.
+Number-first names such as `01-Forest` keep numbered cards in order. Older names
+continue to work. In **Saved cards**, type any part of a name into **Search cards**
+to filter instantly (case-insensitive); clear the field to show all cards.
 On your next visit, **Saved cards** opens with names and thumbnails so you can
 choose which card to play. You can also open it from **Tools → Saved cards…**.
 Each card keeps its own markers. The previous single-card cache migrates

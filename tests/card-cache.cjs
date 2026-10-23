@@ -116,6 +116,23 @@ const server = http.createServer((req, res) => {
       fs.mkdirSync(path.join(root, 'ui-qa'), { recursive: true });
       await page.screenshot({ path: path.join(root, `ui-qa/library-${width}.png`) });
     }
+    // Search by partial name, with case-insensitive and Unicode matching; keep route and selection.
+    const beforeSearch = await page.evaluate(() => JSON.stringify({ trail: OCM.S.trail, id: OCM.S.savedCardId, markers: OCM.S.markers }));
+    await page.locator('#cardSearch').fill('ANOTHER');
+    assert.equal(await page.locator('#savedCards li:visible').count(), 1);
+    assert.match(await page.locator('#cardSearchStatus').textContent(), /1 card found/);
+    await page.locator('#cardSearch').fill('not a card');
+    assert.equal(await page.locator('#savedCards li:visible').count(), 0);
+    assert.match(await page.locator('#cardSearchStatus').textContent(), /No matching cards/);
+    await page.locator('#cardSearch').fill('');
+    assert.equal(await page.locator('#savedCards li:visible').count(), 2);
+    assert.equal(await page.evaluate(() => JSON.stringify({ trail: OCM.S.trail, id: OCM.S.savedCardId, markers: OCM.S.markers })), beforeSearch);
+    await page.evaluate(async () => { const c = (await CardLibrary.list())[0]; const card = await CardLibrary.get(c.id); await CardLibrary.save({ ...card, id: 'unicode-search', name: '03-孤岛' }); await OCM.refreshSavedCards(); });
+    await page.locator('#cardSearch').fill('孤岛');
+    assert.equal(await page.locator('#savedCards li:visible').count(), 1);
+    await page.keyboard.press('Escape');
+    await page.evaluate(() => MazeUI.openLibrary());
+    assert.equal(await page.locator('#cardSearch').inputValue(), '');
     // Seed the v1 layout in a fresh origin context, then upgrade without data loss.
     const legacy = await browser.newContext(); const old = await legacy.newPage();
     await old.goto(base + 'robots.txt');

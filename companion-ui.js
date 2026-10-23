@@ -64,6 +64,7 @@
     app.S.play = 0; app.S.undoHeld = false; app.S.walker.tx = app.S.walker.ty = null;
     app.syncTimeline();
     $('hud').inert = true; $('stage').inert = true;
+    $('cardSearch').value = '';
     $('btnLibraryImport').focus();
     await app.refreshSavedCards();
     if (!library.classList.contains('hidden'))
