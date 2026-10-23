@@ -73,6 +73,16 @@ const server = http.createServer((req, res) => {
     await choose('Card B');
     await choose('Card A');
     assert.equal(await page.evaluate(() => OCM.S.trail.length), 2);
+    // Cancelled uploads and library shortcuts cannot mutate the active route.
+    const currentRoute=await page.evaluate(()=>JSON.stringify(OCM.S.trail));
+    await page.click('#btnCards');
+    await page.locator('#btnLibraryImport').focus(); await page.keyboard.press('r');
+    assert.equal(await page.evaluate(()=>JSON.stringify(OCM.S.trail)),currentRoute);
+    await page.click('#btnLibraryImport');
+    await page.locator('#fileFront').setInputFiles(image('cancelled_front.png'));
+    await page.click('#btnLoaderClose');
+    assert.equal(await page.evaluate(()=>JSON.stringify(OCM.S.trail)),currentRoute);
+    assert.equal(await page.locator('#currentCardName').textContent(),'Card A');
     // Failed new-card writes must roll back both card images and markers.
     await page.evaluate(() => {
       const put = IDBObjectStore.prototype.put;

@@ -39,7 +39,7 @@ const server = http.createServer((req, res) => {
     await page.evaluate(() => { OCM.S.trail.push({ x: 20, y: 30, r: 0 }, { x: 25, y: 35, r: 0 }); OCM.syncTimeline(); });
     const snapshot = () => page.evaluate(() => JSON.stringify({ trail: OCM.S.trail, markers: OCM.S.markers, demo: OCM.S.demo, saved: OCM.S.savedCardId }));
     const before = await snapshot();
-    await page.click('#btnMore'); await page.click('#btnUpload');
+    await page.click('#btnCards'); await page.click('#btnLibraryImport');
     assert(await page.locator('#confirmCard').isHidden());
     await page.click('#btnBatchMode'); await page.locator('#fileBatch').setInputFiles(files);
     await page.waitForFunction(() => !document.getElementById('btnBatchSave').disabled);
@@ -94,7 +94,8 @@ const server = http.createServer((req, res) => {
     assert.match(await page.locator('#libraryStatus').textContent(), /1 duplicates skipped/);
     assert.equal(await page.evaluate(async () => (await CardLibrary.list()).length), 28);
     assert.equal(await snapshot(), before);
-    // Single import still asks at the point that it would replace the active card.
+    // Single import asks before replacement when the current route cannot be saved.
+    await page.evaluate(()=>{Storage.prototype.setItem=function(){throw Error("quota")};});
     await page.click('#btnLibraryImport');
     await page.locator('#fileFront').setInputFiles(image('front.png', 0));
     await page.locator('#fileBack').setInputFiles(image('back.png', 0));

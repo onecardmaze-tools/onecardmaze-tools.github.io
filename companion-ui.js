@@ -24,7 +24,7 @@
   function openSheet(id, focusId) {
     for (const other of sheets) if (other !== id) closeSheet(other, false);
     const el = $(id); el.hidden = false; $(opener[id]).setAttribute('aria-expanded', 'true');
-    app.S.play = 0; app.syncTimeline();
+    app.S.play = 0; app.S.walker.tx = app.S.walker.ty = null; app.syncTimeline();
     const f = focusId && $(focusId); (f || el.querySelector('button,select,input')).focus({ preventScroll: true });
   }
   const closeMenu = () => closeSheet('moreMenu', false);
@@ -45,7 +45,7 @@
     window.BatchImport.reset();
     loader.classList.remove('hidden');
     $('hud').inert = true; $('stage').inert = true;
-    $('cardName').focus();
+    $('fileFront').focus();
   }
   function closeImport() {
     if (window.BatchImport.busy) return;
@@ -73,7 +73,7 @@
   function closeLibrary() {
     library.classList.add('hidden');
     $('hud').inert = false; $('stage').inert = false;
-    $('btnMore').focus();
+    $('btnCards').focus();
   }
   window.MazeUI = { openImport, closeImport, closeAll, openLibrary, closeLibrary };
   $('btnCards').addEventListener('click', openLibrary);
@@ -86,19 +86,19 @@
     closeLibrary(); app.guardRoute('Switch card', () => app.loadDemo(true));
   });
   $('btnLoaderClose').addEventListener('click', closeImport);
-  $('btnDemo').addEventListener('click', closeImport);
-  $('btnImportWelcome').addEventListener('click', () => { closeImport(); openSheet('sessionPanel', 'btnImportSession'); });
+
+
   $('btnIntroImport').addEventListener('click', openImport);
   $('btnIntroDemo').addEventListener('click', () => {
     // On first entry the demo is already underneath the introduction.
-    if (!app.S.demo) app.loadDemo(true);
+    if (!app.S.demo) app.guardRoute("Switch card", () => app.loadDemo(true));
     intro.close();
   });
 
   // Tools sheet
   $('btnMore').addEventListener('click', () => {
     if (!menu.hidden) { closeMenu(); return; }
-    openSheet('moreMenu', 'btnSession');
+    openSheet('moreMenu', 'btnLocate');
   });
   $('btnMoreClose').addEventListener('click', () => closeSheet('moreMenu', true));
   // Engine handlers toggle these panels; make them sheets that replace Tools.
@@ -107,23 +107,14 @@
     if (!$('markerPanel').hidden) { for (const id of ['sessionPanel']) closeSheet(id, false); $('markerShape').focus(); }
   });
   $('btnSession').addEventListener('click', () => {
+    closeLibrary();
     closeMenu();
     if (!$('sessionPanel').hidden) { closeSheet('markerPanel', false); $('btnExportSession').focus(); }
   });
   $('btnMarkersClose').addEventListener('click', () => $('btnMore').focus());
-  $('btnSessionClose').addEventListener('click', () => $('btnMore').focus());
-  $('btnReset').addEventListener('click', closeMenu);
+  $('btnSessionClose').addEventListener('click', openLibrary);
+  $('btnReset').addEventListener('click', closeLibrary);
   $('btnAboutFromTools').addEventListener('click', () => { closeMenu(); intro.showModal(); });
-  // Save the current card before switching; guard unsaved routes if storage fails.
-  $('btnPractice').addEventListener('click', () => {
-    closeMenu();
-    app.guardRoute('Switch card', () => app.loadDemo(true));
-  });
-  $('btnUpload').addEventListener('click', () => {
-    closeMenu();
-    openImport();
-  });
-
   // Upload/recording completion may close the existing loader from the engine.
   const observer = new MutationObserver(() => {
     if (loader.classList.contains('hidden') && library.classList.contains('hidden')) {

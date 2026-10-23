@@ -29,14 +29,15 @@ const VIEWPORTS = [
   ['phone-390', 390, 664, true, .15],
   ['land-844', 844, 390, true, .30],   // rails sit at the sides; measured as share of area instead
   ['land-667', 667, 375, true, .30],
+  ['tablet', 768, 1024, true, .15],
   ['desktop', 1280, 800, false, .12],
 ];
 // Which interactive controls must (and must not) be visible in each mode.
 const MODE_CONTROLS = {
-  walk: { show: ['btnSpinL', 'btnSpinR', 'btnUndo', 'btnReplay', 'btnHelp', 'btnMore'], hide: ['btnDone', 'btnFwd', 'scrub', 'btnReplayAgain', 'btnCancelMarker'] },
-  playing: { show: ['btnDone', 'scrub', 'btnSpeed', 'btnMore'], hide: ['btnSpinL', 'btnSpinR', 'btnUndo', 'btnReplayAgain'] },
-  paused: { show: ['btnDone', 'btnBack', 'btnFwd', 'scrub', 'btnSpeed'], hide: ['btnSpinL', 'btnSpinR', 'btnReplayAgain'] },
-  complete: { show: ['btnReplayAgain', 'btnDoneComplete'], hide: ['btnSpinL', 'btnSpinR', 'scrub', 'btnFwd'] },
+  walk: { show: ['btnSpinL', 'btnSpinR', 'btnUndo', 'btnReplay', 'btnHelp', 'btnCards', 'btnMore'], hide: ['btnDone', 'btnFwd', 'scrub', 'btnCancelMarker'] },
+  playing: { show: ['btnDone', 'scrub', 'btnSpeed', 'btnMore'], hide: ['btnSpinL', 'btnSpinR', 'btnUndo'] },
+  paused: { show: ['btnDone', 'btnBack', 'btnFwd', 'scrub', 'btnSpeed'], hide: ['btnSpinL', 'btnSpinR'] },
+  complete: { show: ['btnDone','btnBack','btnFwd','scrub','btnContinue'], hide: ['btnSpinL', 'btnSpinR'] },
   place: { show: ['btnCancelMarker', 'btnPlaceStyle'], hide: ['btnSpinL', 'btnSpinR', 'scrub'] },
 };
 const failures = [];
@@ -48,10 +49,10 @@ async function audit(pg, vp, step, opts = {}) {
     const rect = el => { const b = el.getBoundingClientRect(); return { x: b.left, y: b.top, w: b.width, h: b.height, r: b.right, b: b.bottom }; };
     const W = innerWidth, H = innerHeight;
     const mode = document.body.dataset.mode;
-    const ids = ['btnSpinL', 'btnSpinR', 'btnUndo', 'btnReplay', 'btnHelp', 'btnMore', 'btnDone', 'btnBack', 'btnFwd', 'scrub', 'btnSpeed', 'btnReplayAgain', 'btnDoneComplete', 'btnCancelMarker', 'btnPlaceStyle'];
+    const ids = ['btnSpinL', 'btnSpinR', 'btnUndo', 'btnReplay', 'btnHelp', 'btnCards', 'btnMore', 'btnContinue', 'btnDone', 'btnBack', 'btnFwd', 'scrub', 'btnSpeed', 'btnCancelMarker', 'btnPlaceStyle'];
     const visible = Object.fromEntries(ids.map(id => [id, vis(document.getElementById(id))]));
     // chrome boxes that float over the map
-    const chromeSel = ['#btnHelp', '#btnMore', '.dock-walk .dbtn', '#player', '#replayCompletion', '#markerPlacementTip', '#walkHint', '#confirmCard', '#actionToast'];
+    const chromeSel = ['#btnHelp', '#btnCards', '#btnMore', '.dock-walk .dbtn', '#player', '#markerPlacementTip', '#walkHint', '#confirmCard', '#actionToast'];
     const boxes = [];
     for (const sel of chromeSel) for (const el of document.querySelectorAll(sel)) if (vis(el)) boxes.push({ sel: el.id ? '#' + el.id : sel, ...rect(el) });
     const overlaps = [];
@@ -62,7 +63,7 @@ async function audit(pg, vp, step, opts = {}) {
     }
     const offscreen = boxes.filter(b => b.x < -1 || b.y < -1 || b.r > W + 1 || b.b > H + 1).map(b => b.sel);
     // tap targets for every visible interactive element in floating chrome and open surfaces
-    const scope = [...document.querySelectorAll('#hud, .chip, #confirmCard, #actionToast, .sheet:not([hidden]), #loader:not(.hidden), dialog[open]')];
+    const scope = [...document.querySelectorAll('#hud, .chip, #confirmCard, #actionToast, .sheet:not([hidden]), #loader:not(.hidden), #cardLibrary:not(.hidden), dialog[open]')];
     const small = [];
     for (const s of scope) for (const el of s.querySelectorAll('button, a, input:not([type=file]), select, summary')) {
       if (!vis(el) || el.closest('[hidden]')) continue;
@@ -77,7 +78,7 @@ async function audit(pg, vp, step, opts = {}) {
       if (!vis(el)) continue; if (el.scrollWidth > el.clientWidth + 1) clipped.push(el.id || el.textContent.trim().slice(0, 20));
     }
     // coverage: chrome area along the bottom (portrait) or sides (landscape)
-    const dockBoxes = boxes.filter(b => !['#btnHelp', '#btnMore', '#walkHint'].includes(b.sel));
+    const dockBoxes = boxes.filter(b => !['#btnHelp', '#btnCards', '#btnMore', '#walkHint'].includes(b.sel));
     const bottomTop = dockBoxes.length ? Math.min(...dockBoxes.map(b => b.y)) : H;
     const area = dockBoxes.reduce((s, b) => s + b.w * b.h, 0) / (W * H);
     const a = document.activeElement;
@@ -152,7 +153,8 @@ srv.listen(0, async () => {
     await pg.mouse.click(w * .5, h * .45); await settle(500);
     const after = await pg.evaluate(() => ({ trail: JSON.stringify(OCM.S.trail), confirm: !document.getElementById('confirmCard').hidden }));
     if (after.trail !== before) fail(vp, 'reverse-complete tap', 'route was edited by a tap during review');
-    if (!after.confirm) fail(vp, 'reverse-complete tap', 'confirm card did not appear');
+    if (after.confirm) fail(vp, 'reverse-complete tap', 'map tap unexpectedly offered route editing');
+    await pg.click('#btnContinue'); await settle(200);
     await shot('07-confirm');
     await audit(pg, vp, 'confirm', { focus: true });
     await pg.click('#btnConfirmNo'); await settle(200);
@@ -165,6 +167,9 @@ srv.listen(0, async () => {
     await shot('08-tools');
     await audit(pg, vp, 'tools', { sheet: true, focus: true });
     // Start over and undo it
+    await pg.click('#btnMoreClose'); await pg.click('#btnCards');
+    await shot('08b-cards'); await audit(pg,vp,'cards',{sheet:true,focus:true});
+    await pg.click('#currentCardActions summary');
     await pg.click('#btnReset'); await settle(300);
     await shot('09-start-over');
     await audit(pg, vp, 'start over', { mode: 'walk' });
@@ -179,8 +184,11 @@ srv.listen(0, async () => {
     await shot('11-place');
     await audit(pg, vp, 'place', { mode: 'place', focus: true });
     await pg.click('#btnCancelMarker'); await settle(200);
+    await pg.click('#btnMore'); await pg.click('#btnQuickMarker');
+    await pg.mouse.click(w*.5,h*.4); await settle(200);
+    if(await pg.evaluate(()=>OCM.S.markers.length)!==1) fail(vp,'quick marker','marker was not placed');
     // Opening import preserves the route; only activating a card asks first.
-    await pg.click('#btnMore'); await pg.click('#btnUpload'); await settle(300);
+    await pg.click('#btnCards'); await pg.click('#btnLibraryImport'); await settle(300);
     const asked = await pg.evaluate(() => !document.getElementById('confirmCard').hidden);
     if (asked) fail(vp, 'import', 'opening import should not ask to discard the route');
     await settle(400);

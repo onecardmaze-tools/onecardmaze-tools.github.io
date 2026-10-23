@@ -2,7 +2,7 @@
 const assert=require('assert').strict,fs=require('fs'),vm=require('vm'),path=require('path');
 const root=path.join(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
-const source=html.slice(html.indexOf('async function loadDemo('),html.indexOf('$("btnDemo").addEventListener'));
+const source=html.slice(html.indexOf('async function loadDemo('),html.indexOf('function startNow()'));
 for(const face of ['front','back']) {
  const png=fs.readFileSync(path.join(root,'assets/demo',face+'.png'));
  assert.equal(png.slice(0,8).toString('hex'),'89504e470d0a1a0a');

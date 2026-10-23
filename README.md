@@ -14,9 +14,9 @@ collisions, or game rules.
 
 1. The page opens into the original, user-supplied practice maze, with a personal introduction over it. Its two 1061 × 1483 PNG faces are bundled unchanged in `assets/demo/`. Tap the card’s start to place your walker and begin recording; loading a card does not choose a starting point. Follow the light path, match the edge letters and rotate at the spin signs; the tool records the route but does not enforce maze rules. The practice card starts at a closer scale on phones; uploaded cards retain their existing fit. Close the introduction to play, or choose **Import my card** to use your own images. The official free-demo link remains available below the game.
 2. Click/tap a location to walk there. **Q / E** or the large **Rotate left / Rotate right** buttons turn the card in 90° steps. WASD and arrow-key movement are intentionally disabled.
-3. Drag to pan and wheel/pinch to zoom. **Tools** (top right) holds the route's events, recording import/export, markers, zoom and **Fit**, trail visibility, card import, the practice card and **Start over**.
-4. While walking, one dock shows **Rotate left · Undo · Replay · Rotate right**. On short landscape screens the rotate buttons move to rails at the sides. Replaying swaps the dock for a transport (**Done · Reverse · Play/Pause · timeline · Speed**); see [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) for every mode.
-5. The **unofficial OneCardMaze helper** chip (top left) reopens the personal introduction, unofficial attribution and links to the official game, demo and store.
+3. Drag to pan and wheel/pinch to zoom. **Map** (top right) holds position, markers, zoom / **Fit**, and trail visibility. The current card name / **Cards** (top left) opens your collection, imports and current-card options. Desktop also exposes position, fit and marker shortcuts beside the map.
+4. While walking, one dock shows **Rotate left · Undo · Replay · Rotate right**. On short landscape screens the rotate buttons move to rails at the sides. Replaying swaps the dock for a transport (**Back to walking · Reverse · Play/Pause · timeline · Speed**, plus step inspection and **Continue from here**); see [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md) for every mode.
+5. The small **unofficial helper** link below the card name reopens the personal introduction, unofficial attribution and links to the official game, demo and store.
 
 The interface is English, bright and deliberately quiet, with a light doodle feel. Its pale background takes a low-saturation hue from both card images, sampled only when the card changes. Neutral or conflicting palettes use neutral paper. No official game artwork is bundled or fetched by the practice demo.
 
@@ -33,7 +33,7 @@ changes ease in and out, including when focus passes to the next card. Markers
 retain their high-contrast appearance on every copy.
 
 Uploaded images are saved only in your browser's IndexedDB and are never uploaded.
-Import both faces, optionally name the card, then choose **Use this card** to
+Import both faces, optionally name the card, then choose **Save and start** to
 add it to your collection. Importing another card keeps the previous cards.
 For a batch, choose **Import multiple cards**, then select or drop all images at
 once (for example, 40 images for 20 cards). Name each pair `01-Forest_front.png`
@@ -49,7 +49,7 @@ Number-first names such as `01-Forest` keep numbered cards in order. Older names
 continue to work. In **Saved cards**, type any part of a name into **Search cards**
 to filter instantly (case-insensitive); clear the field to show all cards.
 On your next visit, **Saved cards** opens with names and thumbnails so you can
-choose which card to play. You can also open it from **Tools → Saved cards…**.
+choose which card to play. You can also open it from the **Cards** chip.
 Each card keeps its own route, markers and completion mark. The previous single-card cache migrates
 automatically as **Saved card**. **Delete** removes one card and its saved progress
 after confirmation; clearing site data removes the collection.
@@ -62,13 +62,13 @@ not overwrite the collection or its markers.
 
 ## Export, import and share a recording
 
-Open **Tools → Save or load recording… → Export recording** to download one `.ocm.json` file containing
+Open **Cards → Current card options → Back up or restore… → Export backup** to download one `.ocm.json` file containing
 both faces as lossless PNGs of the active card, the complete route, spin events,
 markers, playhead, zoom and camera. The back face uses the same dimensions as the
 front, as displayed in the app. No remote artwork URL is needed to restore it.
 Exporting during review preserves the entire future route. Animation/movement
 pauses when a file is imported; replay or continue walking from that playhead.
-Import is available from the card import screen as well as **Save or load recording…**.
+Use **Restore backup** in the same panel to open a recording; image uploads remain in **Cards → Add cards**.
 
 Import replaces the current on-screen session, so export it first to keep it.
 Imported sessions last until reload and do not overwrite the previous IndexedDB
@@ -89,12 +89,12 @@ Press **Replay** (or Space) to review. The dock becomes a transport:
 | **Reverse / Shift+Space** | Review from end to start; press again to pause |
 | **Speed** | Cycle 0.25×, 0.5×, 1×, 2×, 4× (default 1×) |
 | **Timeline** | Preview any recorded position without changing the route. Amber shows progress; ticks mark spins and flips |
-| **Done / Esc** | Go back to walking at the end of the route, unchanged |
-| **Tools → Route events** | Jump to the previous/next flip or spin, or directly to a numbered event |
-| **Undo / Z** (while walking) | Step back; hold to rewind. Walking again replaces what you undid |
-| **Replay again** | Restart the same direction after playback completes |
+| **Back to walking / Esc** | Go back to walking at the end of the route, unchanged |
+| **Previous step / Next step** | Inspect adjacent recorded vertices while paused |
+| **Continue from here** | Explicitly branch from the inspected position; asks before replacing later history |
+| **Undo / Z** (while walking) | Undo exactly one movement or rotation, including an unfinished movement. Checkpoints persist with progress and backups; legacy recordings fall back to recorded vertices |
 
-The game stays visible during replay; there is no explanatory overlay. When a replay finishes, a short message says whether it reached the start or the end, and the dock shrinks to **Replay again · Done**. Tapping the map during a replay pauses it. The timeline always represents position in the original recording.
+The game stays visible during replay; there is no explanatory overlay. When a replay finishes, a short message says whether it reached the start or the end, and the timeline and transport remain available for further inspection or another replay. Tapping the map during a replay pauses it. The timeline always represents position in the original recording.
 
 ### Three route layers
 
@@ -159,8 +159,7 @@ arrival and settling time.
 
 ## Free-form markers
 
-Open **Tools → Markers**, choose a **circle, diamond, square, triangle, or star**, pick any
-colour, optionally enter a label, then click **Place marker** and click the map.
+Open **Map → Add marker**, then tap the location to leave a marker with the current style. Use **Change style** during placement, or **Map → Edit markers…**, to choose a circle, diamond, square, triangle or star, a colour and an optional label. Desktop has a direct Add marker shortcut.
 You can place a marker before or after starting a walk, or while reviewing.
 
 A marker belongs to the physical face you clicked. It appears on **every copy of
@@ -174,18 +173,18 @@ at once, or remove it with **×**. **Start over** clears only the walk, preservi
 markers, and offers **Undo** for 8 seconds. Markers are stored only in your browser with the uploaded images.
 
 Completion explicitly says **Replay complete** and whether it reached the recorded
-start or end. It preserves the full route and offers **Replay again** and **Done**; it does not
+start or end. It preserves the full route and leaves the timeline available; it does not
 assign game outcomes.
 
 ### Recording versus preview
 
-Playing, reversing, seeking, pausing, and event jumps **do not change recorded
-points or turns**. Walking or rotating from an earlier review position first asks
-**Walk from here?**; only confirming branches the route and replaces its future.
-Rewinding with Undo is the exception: like any undo, walking afterwards replaces
-what was undone without asking. Switching or importing a card asks before it
-clears a route. A fractional seek preserves its exact
-position as the new branch endpoint.
+Playing, reversing, seeking, pausing and inspection steps **do not change recorded
+points or turns**. Map taps pause a running replay and do nothing during paused
+or completed review. Rotating is unavailable during review. **Continue from here**
+is the explicit branch entry; before replacing future history it asks **Walk from
+here?**. **Back to walking** returns to the route end unchanged. A fractional
+branch preserves its interpolated endpoint. Undo is separate: one press restores
+the previous movement or rotation immediately, with no held-key rewind.
 
 ### Compact route storage
 
@@ -205,8 +204,7 @@ for its endpoint.
 
 The obsolete per-pixel time-index canvas/GPU texture has been removed. The former
 4,000-sample rolling history cap is no longer needed; the compact route retains
-all commands in the current session. No route points are uploaded or written to
-disk/browser storage by the application.
+all commands in the current session. Route points are stored locally per card; nothing is uploaded.
 
 ### Map borders
 
@@ -292,7 +290,7 @@ real mazes, demos and purchases from [the creators](https://www.onecardmaze.com/
 
 Routes auto-save in this browser for each saved card and the practice card.
 Switch cards or reload, then select a card to resume its route, including recorded
-turns and its review position. Tools → **Mark as completed** adds a reversible
+turns and its review position. Cards → current-card options → **Mark as completed** adds a reversible
 completion mark. Saved cards shows **Completed**, **Continue route**, or **Not started**.
 Completion is your own annotation; replaying or clearing a route does not change it.
 

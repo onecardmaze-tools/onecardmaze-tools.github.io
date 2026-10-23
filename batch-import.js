@@ -36,7 +36,7 @@
     generation++; ready = [];
     $('loader').removeAttribute('data-batch');
     $('singleImport').hidden = false; $('batchImport').hidden = true;
-    $('importTitle').textContent = 'Bring your own card';
+    $('importTitle').textContent = 'Add a card';
     $('importLead').textContent = 'Choose both faces to add a card to your saved collection. Images stay in this browser.';
     $('fileBatch').value = ''; $('batchRows').replaceChildren();
     $('batchStatus').textContent = ''; $('batchChoose').textContent = 'Choose or drop images';

@@ -32,3 +32,12 @@ assert(sample.elements.get('measureStatus').textContent.includes('Sample saved')
 sample.listeners['btnMeasure:click']();sample.tick();sample.tick();sample.document.hidden=true;sample.listeners['document:visibilitychange']();
 assert.equal(sample.pending(),0);assert(sample.elements.get('measureStatus').textContent.includes('tab hidden'));
 console.log('PASS: manual performance sampling stops all extra callbacks on stop/visibility loss');
+
+// New checkpoints survive validation; corrupt histories never enter the app.
+const withCommands=JSON.parse(JSON.stringify(fixture));
+withCommands.state.commands=[{at:0,q:0},{at:1,q:0},{at:1,q:1},{at:2,q:1}];
+assert.deepEqual(codec.validate(withCommands).state.commands,withCommands.state.commands);
+for(const commands of [[{at:-1,q:0}],[{at:99,q:0}],[{at:0,q:4}],[{at:2,q:1},{at:1,q:1}]]) {
+  assert.throws(()=>codec.validate({...fixture,state:{...fixture.state,commands}}));
+}
+console.log('PASS: command checkpoint round trip and validation');

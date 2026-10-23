@@ -26,7 +26,14 @@
       if(!m||![0,1].includes(m.face)||!finite(m.u,1)||m.u<0||!finite(m.v,1)||m.v<0||!['circle','diamond','square','triangle','star'].includes(m.shape)||!/^#[0-9a-f]{6}$/i.test(m.color)||typeof m.label!=='string'||m.label.length>24)fail();
       return {face:m.face,u:m.u,v:m.v,shape:m.shape,color:m.color,label:m.label};
     });
-    return {format:raw.format,version:1,art:{width:a.width,height:a.height,front:a.front,back:a.back},state:{trail,spins,rotQ0:s.rotQ0,cursor:s.cursor,rotation:s.rotation,zoom:s.zoom,cam:{x:s.cam.x,y:s.cam.y},walker:{x:s.walker.x,y:s.walker.y},started:s.started,review:s.review,follow:s.follow,trailOn:s.trailOn,replaySpeed:s.replaySpeed,markers}};
+    const commands=(s.commands||[]);
+    if(!Array.isArray(commands)||commands.length>200000)fail();
+    let commandAt=-1;
+    const checkedCommands=commands.map(c=>{
+      if(!c||!Number.isInteger(c.at)||c.at<commandAt||c.at<0||c.at>=trail.length||!q(c.q))fail();
+      commandAt=c.at;return {at:c.at,q:c.q};
+    });
+    return {format:raw.format,version:1,art:{width:a.width,height:a.height,front:a.front,back:a.back},state:{...(s.commands ? {commands:checkedCommands} : {}),trail,spins,rotQ0:s.rotQ0,cursor:s.cursor,rotation:s.rotation,zoom:s.zoom,cam:{x:s.cam.x,y:s.cam.y},walker:{x:s.walker.x,y:s.walker.y},started:s.started,review:s.review,follow:s.follow,trailOn:s.trailOn,replaySpeed:s.replaySpeed,markers}};
   }
   function summarize(values){
     if(!values.length)return null;

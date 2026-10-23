@@ -74,3 +74,61 @@ Decisions:
 - The hand-drawn identity is kept and made consistent: Patrick Hand (bundled,
   OFL) for titles, uneven radii, offset shadows, olive/paper palette, amber only
   for route progress.
+
+## Task-based UX implementation (2026-10-23)
+
+Owner approved implementation after discussing frequent replay for route checking
+and enjoyment, confusing undo, and upload/switching/navigation friction. Keep the
+existing paper, olive, hand-drawn style; reconsider controls across screen sizes.
+
+User jobs:
+- While exploring, correct the previous action precisely without learning replay.
+- After exploring, watch or inspect the route, then return to walking or explicitly
+  choose a new branch.
+- Open another card or add images while keeping the current card's progress.
+
+Implemented:
+- Current-card/Cards chip opens one library. Single/batch imports share Add cards;
+  the single form chooses images before naming. Completion, backup and Start over
+  belong to current-card options. Map contains only map aids and annotations.
+- Undo checkpoints store command boundaries and orientation, including consecutive
+  turns at one vertex. Checkpoints persist in local progress and portable backups;
+  legacy recordings use their recorded vertices when no checkpoints exist.
+- Replay remains a first-level action. Paused and completed replay retain the same
+  timeline/transport. Explicit Continue from here owns branching; review map taps
+  and Q/E cannot modify the route. Previous/next step inspects recorded vertices.
+- Removed the independent Route events list; flip/spin animation and timeline
+  ticks remain. Add marker uses the current style immediately, with optional style
+  editing. Desktop has direct position, fit and marker shortcuts.
+- Portrait review uses three rows (timeline, playback, inspection); landscape uses
+  a compact two-row transport and keeps walking rails; tablet/desktop use a wider
+  timeline. No renderer or maze-rule changes.
+
+Experiments and evidence:
+
+| Expectation | Experiment | Result |
+| --- | --- | --- |
+| Undo restores one action exactly | `tests/ui-mode.test.js`: complete/partial movement, successive spins at the same point, restored history | Passed |
+| Review never edits without explicit intent | Unit and browser tests: play, pause, reverse completion, map tap, Q/E, fractional branch | Passed |
+| Card navigation preserves progress | `tests/card-cache.cjs`, `tests/local-progress.cjs`: real uploads, cancelling a partial upload, switching, reload, blocked storage, completion | Passed |
+| Library keyboards cannot operate the map underneath | Open library, focus a button, press R; compare route | Passed; fixed global shortcut handling |
+| Batch import is independent of the active route | `tests/batch-import.cjs`: 25 cards, ambiguous files, duplicates, partial failure, retry, quota guard | Passed |
+| Layout works beyond one phone size | `tests/ui-states.cjs`: 320×568, 375×667, 390×664, 667×375, 844×390, 768×1024, 1280×800 | Passed; screenshots inspected |
+| Camera leaves space for the actual controls | `tests/ux-layout.cjs`: all five modes at seven viewports, live resize, CSS/JS inset comparison and dock bounds | Passed: 35 combinations |
+| Existing geometry/rendering behavior is preserved | All `tests/*.test.js` and `tests/*.test.cjs`, including native raster tests | Passed |
+
+Portrait walking dock occupied 12.4%, 11.3%, 11.4% of height at the three phone
+sizes; tablet 7.4%, desktop 11.8%. Landscape walking controls occupied 10.1% and
+7.7% of screen area. These are dock budgets, not total map-chrome coverage.
+
+Corrections from experiments: de-emphasized Continue from here relative to Play;
+kept inspection controls in place while playing (disabled); moved image selection
+before the name; removed held-key rewind; reserved bottom space for marker
+placement in landscape. A batch test previously required a discard question even
+when autosave succeeded; it now explicitly simulates quota failure to verify the
+actual data-loss boundary. The live-resize geometry probe waits for the resize
+handler before comparing CSS and renderer dimensions.
+
+References in `docs/design/` have been regenerated, including a new tablet sheet.
+This verifies behavior and geometry in automated Chromium plus visual inspection;
+it is not a substitute for user feedback or testing on physical iOS/Android devices.

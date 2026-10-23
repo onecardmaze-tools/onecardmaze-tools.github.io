@@ -4,14 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>One Card Maze Helper · Unofficial</title>
-<meta name="app-version" content="2026-10-22-local-progress" />
+<meta name="app-version" content="2026-10-23-ux-flow" />
 <meta name="description" content="Free, open-source One Card Maze helper. Upload both sides of your maze card, explore connected edges, track your path, and replay your walk in your browser." />
 <link rel="canonical" href="https://onecardmaze-tools.github.io/" />
 <meta property="og:title" content="One Card Maze Helper · Unofficial" />
 <meta property="og:description" content="Explore both sides of your One Card Maze card with path tracking, rotation, undo, and replay. Free and open source." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://onecardmaze-tools.github.io/" />
-<link rel="stylesheet" href="companion.css?v=local-progress-1" />
+<link rel="stylesheet" href="companion.css?v=ux-flow-2" />
 </head>
 <body data-mode="walk" data-route="0">
 <!-- UI: see DESIGN-SYSTEM.md. One dock whose contents follow uiMode(); never stack bars. -->
@@ -41,36 +41,33 @@
 <canvas id="replayLayer" aria-hidden="true"></canvas>
 
 <!-- Corner chips: identity (top-left) and Tools (top-right). Always present, always quiet. -->
-<button id="btnHelp" class="chip corner-left" aria-haspopup="dialog"><svg class="ic" aria-hidden="true"><use href="#i-info"/></svg><span class="chip-long">unofficial OneCardMaze helper</span><span class="chip-short">unofficial helper</span></button>
-<button id="btnMore" class="chip corner-right tools-chip" aria-expanded="false" aria-controls="moreMenu"><svg class="ic" aria-hidden="true"><use href="#i-tools"/></svg>Tools</button>
+<button id="btnHelp" class="identity-link" aria-haspopup="dialog"><svg class="ic" aria-hidden="true"><use href="#i-info"/></svg><span class="chip-long">unofficial OneCardMaze helper</span><span class="chip-short">unofficial helper</span></button>
+<button id="btnCards" class="chip corner-left card-chip" aria-haspopup="dialog"><svg class="ic" aria-hidden="true"><use href="#i-card"/></svg><span id="currentCardName">Practice card</span><span class="card-cue">Cards</span></button>
+<button id="btnMore" class="chip corner-right tools-chip" aria-expanded="false" aria-controls="moreMenu"><svg class="ic" aria-hidden="true"><use href="#i-tools"/></svg>Map</button>
 
 <div id="hud">
+  <div class="map-rail" role="toolbar" aria-label="Map shortcuts"><button id="btnRailLocate">My position</button><button id="btnRailFit">Fit card</button><button id="btnRailMarker">Add marker</button></div>
   <div id="walkHint" class="hint" hidden role="status"><span>Tap the path to walk there</span><button id="btnHintClose" class="hint-close" aria-label="Dismiss hint">×</button></div>
 
   <!-- mode: walk -->
   <div class="dock dock-walk" id="dockWalk" role="toolbar" aria-label="Walking controls">
     <button id="btnSpinL" class="dbtn rotate" aria-label="Rotate left (Q)"><svg class="ic" aria-hidden="true"><use href="#i-rotl"/></svg><span>Rotate left</span><kbd>Q</kbd></button>
-    <button id="btnUndo" class="dbtn" aria-label="Undo last step (Z, hold to rewind)"><svg class="ic" aria-hidden="true"><use href="#i-undo"/></svg><span>Undo</span><kbd>Z</kbd></button>
+    <button id="btnUndo" class="dbtn" aria-label="Undo last action (Z)"><svg class="ic" aria-hidden="true"><use href="#i-undo"/></svg><span>Undo</span><kbd>Z</kbd></button>
     <button id="btnReplay" class="dbtn" aria-label="Replay route (Space)"><svg class="ic" aria-hidden="true"><use href="#i-play"/></svg><span>Replay</span><kbd>Space</kbd></button>
     <button id="btnSpinR" class="dbtn rotate" aria-label="Rotate right (E)"><svg class="ic" aria-hidden="true"><use href="#i-rotr"/></svg><span>Rotate right</span><kbd>E</kbd></button>
   </div>
 
   <!-- mode: playing / paused -->
   <div class="dock dock-player" id="player" role="toolbar" aria-label="Replay controls">
-    <button id="btnDone" class="dbtn" aria-label="Done: return to walking at the end of the route (Esc)"><svg class="ic" aria-hidden="true"><use href="#i-done"/></svg><span>Done</span></button>
+    <button id="btnDone" class="dbtn" aria-label="Back to walking at the end of the route (Esc)"><svg class="ic" aria-hidden="true"><use href="#i-done"/></svg><span>Back to walking</span></button>
     <button id="btnBack" class="dbtn" aria-label="Reverse replay (Shift+Space)"><svg class="ic" aria-hidden="true"><use href="#i-rev"/></svg><span>Reverse</span></button>
     <button id="btnFwd" class="dbtn primary" aria-label="Play replay (Space)"><svg class="ic" aria-hidden="true"><use href="#i-play"/></svg><span>Play</span></button>
+    <div class="review-actions"><button id="btnPrevStep">Previous step</button><button id="btnNextStep">Next step</button><button id="btnContinue">Continue from here</button></div>
     <div class="timeline">
       <div class="tl-label"><span id="pcount">0%</span><span id="tlEvent"></span></div>
       <div class="timeline-track"><span id="eventTicks" aria-hidden="true"></span><input id="scrub" type="range" min="0" max="100" step="0.01" value="0" aria-label="Recorded route position" /></div>
     </div>
     <button id="btnSpeed" class="dbtn speed" aria-label="Change replay speed"><b id="speedValue">1×</b><span>Speed</span></button>
-  </div>
-
-  <!-- mode: complete -->
-  <div class="dock dock-pill" id="replayCompletion" role="toolbar" aria-label="Replay finished">
-    <button id="btnReplayAgain" class="dbtn primary row"><svg class="ic" aria-hidden="true"><use href="#i-again"/></svg><span>Replay again</span></button>
-    <button id="btnDoneComplete" class="dbtn row" aria-label="Done: return to walking at the end of the route (Esc)"><svg class="ic" aria-hidden="true"><use href="#i-done"/></svg><span>Done</span></button>
   </div>
 
   <!-- mode: place -->
@@ -91,25 +88,15 @@
 <div id="actionToast" class="toast toast-action" role="status" hidden><span id="actionToastText"></span><button id="actionToastBtn"></button><i class="toast-timer"></i></div>
 
 <div id="sheetBackdrop" hidden></div>
-<section id="moreMenu" class="sheet" hidden aria-label="Tools">
+<section id="moreMenu" class="sheet" hidden aria-label="Map tools">
   <div class="sheet-grab" aria-hidden="true"></div>
-  <h2 class="sheet-title">Tools</h2><button class="sheet-close" id="btnMoreClose" aria-label="Close tools">×</button>
-  <div class="sec">Route</div>
-  <details class="row-details"><summary class="li"><svg class="ic" aria-hidden="true"><use href="#i-list"/></svg>Route events<span class="r" id="eventSummary"></span></summary>
-    <div class="event-controls"><button id="btnPrevEvent" aria-label="Previous event ([)">Previous</button><button id="btnNextEvent" aria-label="Next event (])">Next</button><select id="eventSelect" aria-label="Jump to route event"><option value="">Events</option></select></div></details>
-  <button class="li" id="btnSession" aria-expanded="false" aria-controls="sessionPanel"><svg class="ic" aria-hidden="true"><use href="#i-file"/></svg>Save or load recording…</button>
-  <button class="li" id="btnMarkers" aria-expanded="false" aria-controls="markerPanel"><svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>Markers…<span class="r" id="markerCount"></span></button>
+  <h2 class="sheet-title">Map tools</h2><button class="sheet-close" id="btnMoreClose" aria-label="Close map tools">×</button>
+  <button class="li" id="btnLocate"><svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>Back to my position</button>
+  <button class="li" id="btnQuickMarker"><svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>Add marker</button>
+  <button class="li" id="btnMarkers" aria-expanded="false" aria-controls="markerPanel"><svg class="ic" aria-hidden="true"><use href="#i-pin"/></svg>Edit markers…<span class="r" id="markerCount"></span></button>
   <div class="sec">View</div>
   <div class="li static"><svg class="ic" aria-hidden="true"><use href="#i-fit"/></svg>Zoom<span class="seg" role="group" aria-label="Zoom"><button id="btnZoomOut" aria-label="Zoom out (−)">−</button><button id="btnFit" aria-label="Fit card (F)">Fit</button><button id="btnZoomIn" aria-label="Zoom in (+)">+</button></span></div>
   <button class="li" id="btnTrail" role="switch" aria-checked="true"><svg class="ic" aria-hidden="true"><use href="#i-trail"/></svg>Show trail<span class="switch" aria-hidden="true"></span></button>
-  <div class="sec">Card</div>
-  <button class="li" id="btnComplete" role="switch" aria-checked="false" aria-label="Mark card as completed"><svg class="ic" aria-hidden="true"><use href="#i-done"/></svg>Mark as completed<span class="switch" aria-hidden="true"></span></button>
-  <p class="progress-note" id="progressStatus" role="status">Progress saves in this browser.</p>
-  <button class="li" id="btnCards"><svg class="ic" aria-hidden="true"><use href="#i-card"/></svg>Saved cards…</button>
-  <button class="li" id="btnUpload"><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg>Import my card…</button>
-  <button class="li" id="btnPractice"><svg class="ic" aria-hidden="true"><use href="#i-card"/></svg>Switch to practice card</button>
-  <div class="hr"></div>
-  <button class="li danger" id="btnReset"><svg class="ic" aria-hidden="true"><use href="#i-trash"/></svg>Start over<span class="r">keeps markers</span></button>
   <p class="sheet-foot">Fan-made, unofficial · <button class="linkish" id="btnAboutFromTools">About</button> · <a id="practiceOfficial" href="https://www.onecardmaze.com/downloads" target="_blank" rel="noopener">Get the real demo ↗</a> · <a href="https://github.com/onecardmaze-tools/onecardmaze-tools.github.io" target="_blank" rel="noopener">Source</a></p>
 </section>
 
@@ -129,10 +116,10 @@
 
 <section id="sessionPanel" class="sheet" hidden aria-label="Recording">
   <div class="sheet-grab" aria-hidden="true"></div>
-  <h2 class="sheet-title">Recording</h2><button class="sheet-close" id="btnSessionClose" aria-label="Close recording">×</button>
+  <h2 class="sheet-title">Back up or restore</h2><button class="sheet-close" id="btnSessionClose" aria-label="Close recording">×</button>
   <p class="sheet-lead">One file with both card images, your complete route, spins, markers and current view. Sharing a recording also shares the card images it contains.</p>
-  <button id="btnExportSession" class="primary wide">Export recording</button>
-  <button id="btnImportSession" class="wide">Import recording</button>
+  <button id="btnExportSession" class="primary wide">Export backup</button>
+  <button id="btnImportSession" class="wide">Restore backup</button>
   <input id="fileSession" type="file" accept=".json,.ocm.json,application/json" hidden />
   <p class="sheet-lead">Import replaces the current session; export first if you want to keep it. Files stay on your device until you choose to share them.</p>
 </section>
@@ -140,10 +127,9 @@
 <div class="overlay hidden" id="loader" role="dialog" aria-modal="true" aria-labelledby="importTitle">
   <div class="panel sheet-like">
     <div class="sheet-grab" aria-hidden="true"></div>
-    <button class="sheet-close" id="btnLoaderClose" aria-label="Close import">×</button><h2 class="sheet-title" id="importTitle">Bring your own card</h2>
+    <button class="sheet-close" id="btnLoaderClose" aria-label="Close import">×</button><h2 class="sheet-title" id="importTitle">Add a card</h2>
     <p id="importLead" class="sheet-lead">Choose both faces to add a card to your saved collection. Images stay in this browser.</p>
     <div id="singleImport">
-    <label class="card-name" for="cardName">Card name<input id="cardName" type="text" maxlength="80" placeholder="My maze card" /></label>
     <div class="drops">
       <label class="drop" id="dropFront">
         <input id="fileFront" type="file" accept="image/*" hidden />
@@ -156,7 +142,8 @@
         <img class="thumb" id="thumbBack" alt="" />
       </label>
     </div>
-    <button id="btnStart" class="primary wide" disabled>Use this card</button>
+    <label class="card-name" for="cardName">Card name<input id="cardName" type="text" maxlength="80" placeholder="My maze card" /></label>
+    <button id="btnStart" class="primary wide" disabled>Save and start</button>
     <button id="btnBatchMode" class="linkish wide">Import multiple cards</button>
     </div>
     <div id="batchImport" hidden>
@@ -173,7 +160,7 @@
       <button id="btnSingleMode" class="linkish wide">Import one card instead</button>
       </div>
     </div>
-    <div class="textlinks"><button class="linkish" id="btnImportWelcome">Import a recording instead</button><button class="linkish" id="btnDemo">Use practice card</button><button class="linkish" id="btnSavedFromImport">Saved cards</button></div>
+    <div class="textlinks"><button class="linkish" id="btnSavedFromImport">Back to cards</button></div>
   </div>
 </div>
 
@@ -181,13 +168,21 @@
   <div class="panel sheet-like">
     <div class="sheet-grab" aria-hidden="true"></div>
     <button class="sheet-close" id="btnLibraryClose" aria-label="Close saved cards">×</button>
-    <h2 class="sheet-title" id="libraryTitle">Saved cards</h2>
+    <h2 class="sheet-title" id="libraryTitle">Your cards</h2>
     <p class="sheet-lead">Pick up where you left off. Routes, markers and completion stay in this browser.</p>
     <p id="libraryStatus" class="sheet-lead" role="status" aria-live="polite"></p>
+    <details id="currentCardActions"><summary class="li" id="currentCardOptionsName">Current card options</summary>
+  <div class="sec">Card</div>
+  <button class="li" id="btnComplete" role="switch" aria-checked="false" aria-label="Mark card as completed"><svg class="ic" aria-hidden="true"><use href="#i-done"/></svg>Mark as completed<span class="switch" aria-hidden="true"></span></button>
+  <p class="progress-note" id="progressStatus" role="status">Progress saves in this browser.</p>
+  <button class="li" id="btnSession" aria-expanded="false" aria-controls="sessionPanel">Back up or restore…</button>
+  <div class="hr"></div>
+  <button class="li danger" id="btnReset"><svg class="ic" aria-hidden="true"><use href="#i-trash"/></svg>Start over<span class="r">keeps markers</span></button>
+</details>
     <label class="card-name" for="cardSearch">Search cards<input id="cardSearch" type="search" placeholder="Search by name" autocomplete="off" aria-label="Search cards by name" aria-controls="savedCards" /></label>
     <p id="cardSearchStatus" class="sheet-lead" role="status" aria-live="polite" hidden></p>
     <ul id="savedCards" class="saved-cards" aria-label="Saved cards"></ul>
-    <button id="btnLibraryImport" class="primary wide">Import another card</button>
+    <button id="btnLibraryImport" class="primary wide">Add cards</button>
     <button id="btnLibraryPractice" class="linkish wide">Play the practice card</button>
   </div>
 </div>
@@ -217,11 +212,11 @@
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="card-library.js?v=local-progress-1"></script>
-<script src="session-codec.js?v=local-progress-1"></script>
-<script src="replay-core.js?v=local-progress-1"></script>
-<script src="trace-renderer.js?v=local-progress-1"></script>
-<script src="gpu-renderer.js?v=local-progress-1"></script>
+<script src="card-library.js?v=ux-flow-2"></script>
+<script src="session-codec.js?v=ux-flow-2"></script>
+<script src="replay-core.js?v=ux-flow-2"></script>
+<script src="trace-renderer.js?v=ux-flow-2"></script>
+<script src="gpu-renderer.js?v=ux-flow-2"></script>
 <script>
 (function () {
 "use strict";
@@ -293,7 +288,7 @@ const S = {
   rotQ0: 0,                        // the card's orientation when the recorded walk began
   cursor: 0,                       // interpolated position along the compact route vertices
   markers: [], placingMarker: false, selectedMarker: null, nextMarkerId: 1,
-  recordBreak: true,
+  recordBreak: true, commands: [], cardTitle: "Practice card",
   review: false, reviewDir: 1, reviewDone: false, reviewEvent: null,
   replayModel: null, replayVersion: 0, traceVersion: 0, modelVersion: -1, eventDone: new Set(),
   phase: null, // event arrival -> action -> settle, kept separate from the recorded route
@@ -574,8 +569,9 @@ function applyImages(front, back) {
    rotate rails on the left and right, nothing across the bottom while walking. */
 function uiInsets() {
   const landscape = view.h <= 500 && view.w > view.h;
-  return landscape ? { top: 52, bottom: 12, left: 104, right: 104 } :
-    { top: 60, bottom: view.w >= 900 ? 92 : 96, left: 12, right: 12 };
+  const reviewing=S.review && !S.placingMarker;
+  if(landscape) return {top:52,bottom:S.placingMarker?96:reviewing?148:12,left:104,right:104};
+  return {top:60,bottom:reviewing?(view.w<=700?220:164):96,left:12,right:view.w>=1000?164:12};
 }
 function fitView() {
   if (!S.ready) return;
@@ -713,7 +709,7 @@ const Path2D = foreground.Path;
 // Kept for old recording/benchmark readers; no giant world-space bitmap exists.
 function traceLayout() { return null; }
 const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-let progressCache = null, menuVersion = -1, menuSignature = null, hudPending = true;
+let progressCache = null, menuVersion = -1, hudPending = true;
 function invalidateReplay(routeChanged=true) { S.replayVersion++;if(routeChanged)S.traceVersion++;progressCache = null; }
 function resetProgress() { progressCache = null; }
 function replayModel() {
@@ -741,28 +737,17 @@ function eventName(e, dir) {
 }
 function syncReviewHUD() {
   if (S.trail.length > 1 && menuVersion !== S.replayVersion) {
-    const model=replayModel(),events=model.events,select=$("eventSelect"),ticks=$("eventTicks");
-    const signature=events.map(e=>[e.type,e.at,e.delta,e.fromFace,e.toFace].join(':')).join(';');
-    if(signature!==menuSignature) {
-      select.replaceChildren(new Option("Jump to event", ""));ticks.replaceChildren();
-      for(const e of events) {
-        select.add(new Option((e.id+1)+". "+eventName(e,1),String(e.id)));
-        const tick=document.createElement('i');tick.className=e.type;ticks.appendChild(tick);
-      }
-      menuSignature=signature;
-    }
+    const model=replayModel(),ticks=$("eventTicks");
+    ticks.replaceChildren();
     const total=model.distances[model.distances.length-1]||1;
-    if(ticks.children)events.forEach((e,i)=>{ticks.children[i].style.left=(ReplayCore.distanceAt(model,e.at)/total*100)+'%';});
-    $("btnPrevEvent").disabled = !events.some(e => e.at < S.cursor - 1e-5);
-    $("btnNextEvent").disabled = !events.some(e => e.at > S.cursor + 1e-5);
-    select.disabled = !events.length;
+    for(const e of model.events) {
+      const tick=document.createElement('i');tick.className=e.type;
+      tick.style.left=(ReplayCore.distanceAt(model,e.at)/total*100)+'%';ticks.appendChild(tick);
+    }
     menuVersion = S.replayVersion;
   }
-  if (S.trail.length > 1) {
-    const events = replayModel().events;
-    $("btnPrevEvent").disabled = !events.some(e => e.at < S.cursor - 1e-5);
-    $("btnNextEvent").disabled = !events.some(e => e.at > S.cursor + 1e-5);
-  }
+  backBtn.classList.toggle("primary",S.play<0);
+  fwdBtn.classList.toggle("primary",S.play>=0);
   backBtn.setAttribute("aria-pressed", String(S.play < 0));
   fwdBtn.setAttribute("aria-pressed", String(S.play > 0));
   setButton(backBtn, S.play < 0 ? "pause" : "rev", S.play < 0 ? "Pause" : "Reverse",
@@ -772,7 +757,6 @@ function syncReviewHUD() {
   const ev = S.reviewEvent && $("tlEvent");
   if ($("tlEvent")) $("tlEvent").textContent = ev ? "· " + eventName(S.reviewEvent, S.reviewDir || 1) :
     (S.play < 0 ? "of route · reverse" : "of route");
-  if ($("eventSummary")) $("eventSummary").textContent = S.trail.length > 1 ? String(replayModel().events.length) : "";
   syncMode();                 // last: buttons above must already show their state
 }
 /* Icon + label buttons keep their markup; only the symbol and words change. */
@@ -798,7 +782,7 @@ function uiMode() {
   if (S.play) return "playing";
   return S.reviewDone ? "complete" : "paused";
 }
-const modePrimary = { walk: "btnReplay", playing: null, paused: "btnFwd", complete: "btnReplayAgain", place: "btnCancelMarker" };
+const modePrimary = { walk: "btnReplay", playing: null, paused: "btnFwd", complete: "btnFwd", place: "btnCancelMarker" };
 let lastMode = "";
 function syncMode() {
   const m = uiMode(), b = document.body, route = S.trail.length > 1;
@@ -832,7 +816,9 @@ function syncWalkHint() {
   const el = $("walkHint"); if (!el) return;
   const route = S.trail.length > 1;
   if (route && !hintSeen()) { try { localStorage.setItem("ocm.hint.walk", "1"); } catch {} }
-  const show = S.ready && S.started && !route && !S.placingMarker && !hintSeen() && !S.hintClosed;
+  const message = S.started ? "Tap each bend to walk the path" : "Tap the map to choose your start";
+  if(el.querySelector("span").textContent!==message) el.querySelector("span").textContent=message;
+  const show = S.ready && !route && !S.placingMarker && !hintSeen() && !S.hintClosed;
   if (el.hidden !== !show) el.hidden = !show;
 }
 
@@ -878,7 +864,7 @@ function guardRoute(yesLabel, action) {
 function seekEvent(id) {
   const e = replayModel().events[id]; if (!e) return;
   S.play = 0; setCursor(e.at); S.reviewEvent = e;
-  $("eventSelect").value = String(id); syncTimeline();
+  syncTimeline();
 }
 function jumpEvent(dir) {
   const events = replayModel().events;
@@ -1243,7 +1229,10 @@ function paintTimeline() {
   scrubEl.max = "100";
   if (!S.scrubDrag) scrubEl.value = String(fraction*100);
   scrubEl.style.setProperty("--p", fraction.toFixed(4));
-  undoBtn.disabled = S.cursor <= 0;
+  undoBtn.disabled = !S.commands.length && S.trail.length < 2;
+  $("btnContinue").disabled = !!S.play;
+  $("btnPrevStep").disabled = !!S.play || S.cursor <= 0;
+  $("btnNextStep").disabled = !!S.play || S.cursor >= n;
   $("btnReplay").disabled = n < 1;
   const pct = Math.round(fraction*100);
   countEl.textContent = pct + "%";
@@ -1296,11 +1285,31 @@ function cycleSpeed() {
   S.replaySpeed = list[(i + 1) % list.length];
   syncTimeline();
 }
+// Small command checkpoints retain exact action boundaries, including turns in place.
+function rememberAction() {
+  if (S.started) S.commands.push({at: Math.max(0,S.trail.length-1), q:rotIndex()});
+}
 function undoOnce() {
-  if (!S.started || !S.trail.length) return;
-  S.play = 0; hideConfirm();
-  setCursor(ReplayCore.advance(replayModel(), S.cursor, -S.H * .12));
-  S.undoRewind = true; syncTimeline();   // Undo is a walking tool: stay in walk mode
+  if (!S.started || S.review) return;
+  const checkpoint=S.commands.pop();
+  if (!checkpoint && S.trail.length<2) return;
+  const at=checkpoint ? checkpoint.at : S.trail.length-2;
+  const q=checkpoint ? checkpoint.q : orientationAt(at);
+  S.walker.tx=S.walker.ty=null;
+  S.trail.length=at+1;
+  S.spins=S.spins.filter(sp=>sp.i<at);
+  const prior=S.spins.length ? S.spins[S.spins.length-1].q : S.rotQ0;
+  if(q!==prior) S.spins.push({i:at,q});
+  S.cursor=at;alignRotation(q);S.rot=S.rotTarget;placeWalker(at);
+  S.travelled=walkedTo(at);S.recordBreak=true;S.manualPivot=null;
+  invalidateReplay();refreshTrace();
+}
+function continueFromHere() {
+  guardBranch(() => { exitReview(); S.recordBreak=true; syncTimeline(); });
+}
+function stepReview(dir) {
+  const target=dir<0 ? Math.ceil(S.cursor)-1 : Math.floor(S.cursor)+1;
+  setCursor(target);
 }
 /* Invalidate retained geometry; route vertices are the sole source of truth. */
 function refreshTrace() {
@@ -1315,6 +1324,7 @@ function commitWalk() {
   S.trail.length = n + 1;
   if (S.cursor > n + 1e-6) S.trail.push({ x: endpoint.x, y: endpoint.y, r: oriIndex() });
   for (let k = S.spins.length - 1; k >= 0; k--) if (S.spins[k].i > n) S.spins.pop();
+  S.commands = S.commands.filter(c=>c.at<=n);
   S.travelled = walkedTo(S.trail.length - 1);
   S.cursor = Math.max(0, S.trail.length - 1);
   exitReview(); invalidateReplay();
@@ -1322,6 +1332,7 @@ function commitWalk() {
 }
 /* Wipe the walk itself: the trace, the timeline, and the counters. */
 function clearWalk() {
+  S.commands = [];
   S.trail = []; S.travelled = 0; S.cursor = 0; S.play = 0; S.undoHeld = false;
   S.recordBreak = true; S.manualPivot=null;
   exitReview(); invalidateReplay();
@@ -1502,17 +1513,6 @@ function update(dt) {
     let walked = false;
     if (S.play) {
       advanceReplay(dt);
-      syncTimeline(false);
-      moving = true;
-    } else if (S.undoHeld && S.cursor > 0) {
-      // ---- holding undo winds the walk back, smoothly ------------------------
-      // The speed control is for watching the walk back; holding undo is a scrub, and
-      // stays at its own brisk rate whatever the replay is set to.
-      const c0 = S.cursor;
-      cancelPhase(); S.review = true; S.reviewDone = false; S.undoRewind = true;
-      S.cursor = ReplayCore.advance(replayModel(), c0, -S.H * .9 * dt);
-      applySpins(c0, S.cursor);
-      placeWalker(S.cursor);
       syncTimeline(false);
       moving = true;
     } else if (w.tx != null) {
@@ -1751,12 +1751,9 @@ function render() {
    ============================================================ */
 function spin(dir) {
   if (!S.ready) return;
-  // A turn takes over from a replay, and (like walking) commits a rewound preview, so
-  // the recorded turns always describe the walk that is actually there.
-  if (S.started && S.review && !S.undoRewind && S.cursor < S.trail.length - 1 - 1e-6) {
-    guardBranch(() => spin(dir)); return;        // reviewing never edits without asking
-  }
-  if (S.started && S.review && S.cursor < S.trail.length - 1) commitWalk();
+  if (S.review) return;
+  S.walker.tx=S.walker.ty=null;
+  rememberAction();
   exitReview(); hideConfirm();
   S.recordBreak = true;
   if(!S.manualPivot) {const center=cardCenter();S.manualPivot={world:center,screen:w2s(center.x,center.y)};}
@@ -1795,6 +1792,9 @@ function currentFace() {
   return faceIdx(i, j) === 0 ? "FRONT" : "BACK";
 }
 function updateHUD() {
+  $("currentCardName").textContent=S.cardTitle;
+  $("currentCardOptionsName").textContent = S.cardTitle + " · options";
+  $("btnCards").setAttribute("aria-label", S.cardTitle + " · Open cards");
   const link=$('practiceOfficial');
   if(link) link.hidden=!S.demo;
   $("btnComplete").hidden = !S.progressId;
@@ -1846,10 +1846,8 @@ function tap(wpt) {
   if (S.placingMarker) { addMarker(wpt); return; }
   if (S.confirm) { confirmNo(); return; }        // a tap elsewhere is "not now"
   if (S.started && S.play) { S.play = 0; syncTimeline(); return; }   // tapping a replay pauses it
-  if (S.started && S.review && !S.undoRewind && S.cursor < S.trail.length - 1 - 1e-6) {
-    guardBranch(() => tap(wpt)); return;
-  }
-  if (S.started && S.review && !S.undoRewind) exitReview();
+  if (S.review) return;
+  rememberAction();
   S.recordBreak = true;
   if (!S.started) {
     S.started = true;
@@ -1924,11 +1922,12 @@ window.addEventListener("keydown", (e) => {
   if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA" ||
       (tag === "BUTTON" && (k === " " || k === "enter" || k.startsWith("arrow")))) return;
   if (k === " ") e.preventDefault();
-  if (help.open || !loader.classList.contains("hidden")) return;
+  if (help.open || !loader.classList.contains("hidden") || !$("cardLibrary").classList.contains("hidden") ||
+      ["moreMenu","markerPanel","sessionPanel"].some(id=>$(id).hidden===false)) return;
   if (e.metaKey || e.ctrlKey) { if (k === "z") undoOnce(); return; }
   if (["w", "a", "s", "d", "arrowup", "arrowdown", "arrowleft", "arrowright"].includes(k)) return;
   invalidate();
-  if (k === "z") { if (!e.repeat) undoOnce(); S.undoHeld = true; return; }
+  if (k === "z") { if (!e.repeat) undoOnce(); return; }
   if (e.repeat) return;
   if (k === "r") doReset();
   else if (k === "t") toggleTrail();
@@ -2038,6 +2037,7 @@ async function useSavedCard(id) {
     try { [front, back] = await Promise.all(urls.map(loadImage)); }
     finally { urls.forEach(url => URL.revokeObjectURL(url)); }
     applyImages(front, back);
+    S.cardTitle = card.name;
     S.savedCardId = id; S.persistMarkers = true;
     restoreMarkers(card.markers); startNow();
     resumeProgress(id);
@@ -2078,6 +2078,7 @@ async function refreshSavedCards() {
       const progress = readProgress(card.id), status = document.createElement("span");
       status.className = "saved-card-status" + (progress?.completed ? " is-completed" : "");
       status.textContent = progress?.completed ? "✓ Completed" : progress?.state?.started ? "Continue route" : "Not started";
+      if(S.savedCardId===card.id) status.textContent="Current card · "+status.textContent;
       details.appendChild(status); play.appendChild(details);
       play.setAttribute("aria-label", "Play " + card.name);
       play.addEventListener("click", () => {
@@ -2127,7 +2128,7 @@ async function loadDemo(autoStart) {
     for(const side of ['Front','Back']){
       $('drop'+side).classList.remove('has');$('thumb'+side).removeAttribute('src');
     }
-    applyImages(front,back);S.demo=true;fitView();
+    applyImages(front,back);S.cardTitle="Practice card";S.demo=true;fitView();
     c.setAttribute('aria-label','Original two-sided practice maze. Follow the light path, match the edge letters, and use Q and E or the rotation buttons at the spin signs. The tool records your route; maze rules are followed by the player.');
     if(autoStart) startNow();
     resumeProgress("practice");
@@ -2136,7 +2137,7 @@ async function loadDemo(autoStart) {
     toast('Could not load the practice demo. Please try again.');
   }
 }
-$("btnDemo").addEventListener("click", () => guardRoute("Switch card", () => loadDemo(true)));
+
 
 function startNow() {
   // Loading artwork cannot determine where the player's route begins.
@@ -2161,7 +2162,7 @@ async function savePendingCard() {
     card.thumbnail = thumb.toDataURL("image/jpeg", .7);
   } catch {} // A thumbnail is optional; full card images remain unchanged.
   await markerSaveQueue;
-  applyImages(front.img, back.img);
+  applyImages(front.img, back.img);S.cardTitle=card.name;
   $("btnStart").disabled = true;
   try {
     await CardLibrary.save(card);
@@ -2170,14 +2171,14 @@ async function savePendingCard() {
   } catch { toast("Card ready, but could not save in this browser. Keep the images for next time.", 6500); }
   startNow();
   if (S.savedCardId) resumeProgress(S.savedCardId);
-  cardImportBusy = false;
+  cardImportBusy = false; updateHUD();
 }
 
 /* Small per-card snapshots are synchronous at page hide and before switching.
    Throttle during walking; never serialize artwork or replay geometry here. */
 var progressTimer = null, progressSaveFailed = false;
 function progressKey(id) { return "ocm.progress.v1." + id; }
-function progressState() { return {trail:S.trail.map(p=>({...p})),spins:S.spins.map(p=>({...p})),rotQ0:S.rotQ0,
+function progressState() { return {commands:S.commands.map(c=>({...c})),trail:S.trail.map(p=>({...p})),spins:S.spins.map(p=>({...p})),rotQ0:S.rotQ0,
       cursor:S.cursor,rotation:S.rotTarget,zoom:S.zoom,cam:{...S.cam},
       walker:{x:S.walker.x,y:S.walker.y},started:S.started,review:S.review,
       follow:S.follow,trailOn:S.trailOn,replaySpeed:S.replaySpeed,markers:S.markers.map(m=>({...m}))}; }
@@ -2255,6 +2256,7 @@ function captureSession(){
 function restoreSessionState(state){
   S.keys=Object.create(null);S.undoHeld=false;S.scrubDrag=false;S.play=0;S.phase=null;
   S.manualPivot=null;S.eventDone=new Set();S.reviewDone=false;S.reviewEvent=null;
+  S.commands=(state.commands||[]).map(c=>({...c}));
   S.trail=state.trail.map(p=>({...p}));S.spins=state.spins.map(p=>({...p}));S.rotQ0=state.rotQ0;
   S.cursor=state.cursor;S.rot=S.rotTarget=state.rotation;S.zoom=state.zoom;
   S.minZoom=Math.min(S.minZoom,S.zoom);S.maxZoom=Math.max(S.maxZoom,S.zoom);
@@ -2275,7 +2277,7 @@ async function importSessionFile(file){
   // Decode everything before touching the current walk. Declared sizes must match.
   if(front.naturalWidth!==data.art.width||front.naturalHeight!==data.art.height||back.naturalWidth!==data.art.width||back.naturalHeight!==data.art.height)throw new Error('Recording image dimensions do not match');
   if(measurement)finishMeasurement('import interrupted sample');
-  applyImages(front,back);restoreSessionState(data.state);
+  applyImages(front,back);S.cardTitle="Imported backup";restoreSessionState(data.state);
   pending={front:{img:front,blob:null},back:{img:back,blob:null}};
   markDrop('front',data.art.front);markDrop('back',data.art.back);
   // Keep imported sessions self-contained; do not mix their markers with the
@@ -2304,7 +2306,7 @@ $('btnExportSession').addEventListener('click',()=>{
     toast('Recording exported — includes your card images');
   }catch(e){toast(e.message||'Could not export recording');}finally{sessionButtons(false);}
 });
-for(const id of ['btnImportSession','btnImportWelcome'])$(id).addEventListener('click',()=>{if(!sessionBusy)$('fileSession').click();});
+for(const id of ['btnImportSession'])$(id).addEventListener('click',()=>{if(!sessionBusy)$('fileSession').click();});
 $('fileSession').addEventListener('change',async e=>{
   if(sessionBusy)return;sessionButtons(true);
   try{await importSessionFile(e.target.files[0]);toast('Recording restored');}
@@ -2341,7 +2343,7 @@ $('btnMeasure')?.addEventListener('click',()=>{
 
 
 
-// btnUpload is wired in companion-ui.js (it asks before clearing a route).
+// Card import and library navigation live in companion-ui.js.
 $("btnHelp").addEventListener("click", toggleHelp);
 $("btnHelpClose").addEventListener("click", toggleHelp);
 function toggleHelp() {
@@ -2367,12 +2369,13 @@ function doReset() {
   if (snap) actionToast("Route cleared · markers kept", "Undo", () => restoreRoute(snap));
 }
 function snapshotRoute() {
-  return { trail: S.trail.map(p => ({ ...p })), spins: S.spins.map(sp => ({ ...sp })), rotQ0: S.rotQ0,
+  return { commands:S.commands.map(c=>({...c})), trail: S.trail.map(p => ({ ...p })), spins: S.spins.map(sp => ({ ...sp })), rotQ0: S.rotQ0,
     cursor: S.cursor, started: S.started, walker: { ...S.walker, tx: null, ty: null }, anchor: { ...S.anchor },
     cam: { ...S.cam }, rotTarget: S.rotTarget, travelled: S.travelled };
 }
 function restoreRoute(snap) {
   hideConfirm(); exitReview();
+  S.commands=(snap.commands||[]).map(c=>({...c}));
   S.trail = snap.trail; S.spins = snap.spins; S.rotQ0 = snap.rotQ0; S.started = snap.started;
   S.walker = { ...snap.walker }; S.cam = { ...snap.cam }; S.rotTarget = S.rot = snap.rotTarget;
   S.travelled = snap.travelled; setAnchor(snap.anchor.i, snap.anchor.j);
@@ -2396,15 +2399,17 @@ $("btnSpinL").addEventListener("click", () => spin(-1));
 $("btnSpinR").addEventListener("click", () => spin(1));
 $("btnFit").addEventListener("click", () => { fitView(); S.follow = true; });
 
-/* ---- the walk timeline: undo (hold to rewind), replay both ways, scrub ---- */
+/* ---- action undo, replay in both directions, and route inspection ---- */
 function undoUp() { S.undoHeld = false; }
-undoBtn.addEventListener("pointerdown", (e) => {
-  e.preventDefault();
-  if (undoBtn.disabled) return;
-  undoOnce();                      // one step, then keep going while held
-  S.undoHeld = true;
-});
-["pointerup", "pointerleave", "pointercancel"].forEach((ev) => undoBtn.addEventListener(ev, undoUp));
+undoBtn.addEventListener("click", undoOnce);
+$("btnContinue").addEventListener("click", continueFromHere);
+$("btnPrevStep").addEventListener("click", () => stepReview(-1));
+$("btnNextStep").addEventListener("click", () => stepReview(1));
+$("btnRailLocate").addEventListener("click", () => $("btnLocate").click());
+$("btnRailFit").addEventListener("click", () => $("btnFit").click());
+$("btnRailMarker").addEventListener("click", () => $("btnQuickMarker").click());
+$("btnLocate").addEventListener("click", () => { S.follow=true;S.manualPivot=null;invalidate();window.MazeUI?.closeAll(true); });
+$("btnQuickMarker").addEventListener("click", () => { window.MazeUI?.closeAll(false);S.play=0;S.walker.tx=S.walker.ty=null;S.selectedMarker=null;$("markerLabel").value="";setMarkerMode(true); });
 backBtn.addEventListener("click", () => play(-1));
 fwdBtn.addEventListener("click", () => play(1));
 speedBtn.addEventListener("click", cycleSpeed);
@@ -2412,15 +2417,9 @@ scrubEl.addEventListener("pointerdown", () => { S.scrubDrag = true; S.play = 0; 
 scrubEl.addEventListener("input", () => { S.play = 0; seekPercent(parseFloat(scrubEl.value)); });
 scrubEl.addEventListener("change", () => { S.scrubDrag = false; seekPercent(parseFloat(scrubEl.value)); });
 window.addEventListener("pointerup", () => { S.scrubDrag = false; undoUp(); });
-$("btnPrevEvent").addEventListener("click", () => jumpEvent(-1));
-$("btnNextEvent").addEventListener("click", () => jumpEvent(1));
-$("eventSelect").addEventListener("change", e => {
-  if (e.target.value !== "") seekEvent(Number(e.target.value));
-});
-$("btnReplayAgain").addEventListener("click", () => { S.cursor = S.reviewDir > 0 ? S.trail.length - 1 : 0; play(S.reviewDir || 1); });
 $("btnReplay").addEventListener("click", () => play(1));
 $("btnDone").addEventListener("click", finishReview);
-$("btnDoneComplete").addEventListener("click", finishReview);
+
 $("btnConfirmYes").addEventListener("click", confirmYes);
 $("btnConfirmNo").addEventListener("click", confirmNo);
 $("btnHintClose").addEventListener("click", () => { S.hintClosed = true; try { localStorage.setItem("ocm.hint.walk", "1"); } catch {} syncWalkHint(); });
@@ -2467,7 +2466,7 @@ window.OCM = { S, CFG, gl, foreground, render, update, applyImages, w2s, s2w, re
   flushProgress, readProgress, resumeProgress, artCv, uploadArt, fitView, loadDemo, camTarget, traceLayout, captureSession, restoreSessionState, importSessionFile,
   camGoal: () => S.camGoal, trailAt, walkedTo, setCursor, play, undoOnce, commitWalk,
   refreshTrace, clearWalk, syncTimeline, uiMode, finishReview, confirmYes, confirmNo, guardRoute, doReset,
-  restoreRoute, actionToast, syncSheets, uiInsets, prepareImport, refreshSavedCards, useSavedCard, setMarkerMode, recordPosition, addMarker, restoreMarkers, markerCopies, replayModel, advanceReplay, cardLight, cardCenter, spin, startNow, tap, seekEvent, orientationAt };
+  restoreRoute, continueFromHere, stepReview, actionToast, syncSheets, uiInsets, prepareImport, refreshSavedCards, useSavedCard, setMarkerMode, recordPosition, addMarker, restoreMarkers, markerCopies, replayModel, advanceReplay, cardLight, cardCenter, spin, startNow, tap, seekEvent, orientationAt };
 
 window.OCM.startup = (async () => {
   if (new URLSearchParams(location.search).has("demo")) { await loadDemo(true); return false; }
@@ -2480,7 +2479,7 @@ window.OCM.startup = (async () => {
 scheduleFrame();
 })();
 </script>
-<script src="batch-import.js?v=local-progress-1" defer></script>
-<script src="companion-ui.js?v=local-progress-1" defer></script>
+<script src="batch-import.js?v=ux-flow-2" defer></script>
+<script src="companion-ui.js?v=ux-flow-2" defer></script>
 </body>
 </html>
