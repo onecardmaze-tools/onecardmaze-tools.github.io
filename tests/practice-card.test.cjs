@@ -14,12 +14,12 @@ function fixture(rejectBack=false) {
   loadImage:async url=>{calls.push(url);if(rejectBack&&url.endsWith('/back.png'))throw Error('decode failed');return url.endsWith('/front.png')?images.front:images.back;},
   $:()=>({classList:{remove(){}},removeAttribute(){}}),c:{setAttribute(){}},
   applyImages:(f,b)=>{assert.strictEqual(f,images.front);assert.strictEqual(b,images.back);calls.push('apply');},
-  fitView:()=>calls.push('fit'),startNow:()=>calls.push('start'),updateHUD:()=>calls.push('hud'),toast:()=>calls.push('error')};
+  resumeProgress:id=>{assert.equal(id,'practice');calls.push('resume');},fitView:()=>calls.push('fit'),startNow:()=>calls.push('start'),updateHUD:()=>calls.push('hud'),toast:()=>calls.push('error')};
  vm.createContext(world);vm.runInContext(source,world);return {world,calls};
 }
 (async()=>{
  const good=fixture();await good.world.loadDemo(true);
- assert(good.world.S.demo);assert.deepEqual(good.calls,['assets/demo/front.png','assets/demo/back.png','apply','fit','start','hud']);
+ assert(good.world.S.demo);assert.deepEqual(good.calls,['assets/demo/front.png','assets/demo/back.png','apply','fit','start','resume','hud']);
  const failed=fixture(true);await failed.world.loadDemo(true);
  assert(!failed.calls.includes('apply'),'A missing face cannot replace the current card');
  assert(failed.calls.includes('error'),'Image failures give visible feedback');

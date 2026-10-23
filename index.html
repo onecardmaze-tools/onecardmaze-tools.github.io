@@ -4,14 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>One Card Maze Helper · Unofficial</title>
-<meta name="app-version" content="2026-10-22-replay-speed" />
+<meta name="app-version" content="2026-10-22-local-progress" />
 <meta name="description" content="Free, open-source One Card Maze helper. Upload both sides of your maze card, explore connected edges, track your path, and replay your walk in your browser." />
 <link rel="canonical" href="https://onecardmaze-tools.github.io/" />
 <meta property="og:title" content="One Card Maze Helper · Unofficial" />
 <meta property="og:description" content="Explore both sides of your One Card Maze card with path tracking, rotation, undo, and replay. Free and open source." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://onecardmaze-tools.github.io/" />
-<link rel="stylesheet" href="companion.css?v=replay-speed-1" />
+<link rel="stylesheet" href="companion.css?v=local-progress-1" />
 </head>
 <body data-mode="walk" data-route="0">
 <!-- UI: see DESIGN-SYSTEM.md. One dock whose contents follow uiMode(); never stack bars. -->
@@ -103,6 +103,8 @@
   <div class="li static"><svg class="ic" aria-hidden="true"><use href="#i-fit"/></svg>Zoom<span class="seg" role="group" aria-label="Zoom"><button id="btnZoomOut" aria-label="Zoom out (−)">−</button><button id="btnFit" aria-label="Fit card (F)">Fit</button><button id="btnZoomIn" aria-label="Zoom in (+)">+</button></span></div>
   <button class="li" id="btnTrail" role="switch" aria-checked="true"><svg class="ic" aria-hidden="true"><use href="#i-trail"/></svg>Show trail<span class="switch" aria-hidden="true"></span></button>
   <div class="sec">Card</div>
+  <button class="li" id="btnComplete" role="switch" aria-checked="false" aria-label="Mark card as completed"><svg class="ic" aria-hidden="true"><use href="#i-done"/></svg>Mark as completed<span class="switch" aria-hidden="true"></span></button>
+  <p class="progress-note" id="progressStatus" role="status">Progress saves in this browser.</p>
   <button class="li" id="btnCards"><svg class="ic" aria-hidden="true"><use href="#i-card"/></svg>Saved cards…</button>
   <button class="li" id="btnUpload"><svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg>Import my card…</button>
   <button class="li" id="btnPractice"><svg class="ic" aria-hidden="true"><use href="#i-card"/></svg>Switch to practice card</button>
@@ -180,7 +182,7 @@
     <div class="sheet-grab" aria-hidden="true"></div>
     <button class="sheet-close" id="btnLibraryClose" aria-label="Close saved cards">×</button>
     <h2 class="sheet-title" id="libraryTitle">Saved cards</h2>
-    <p class="sheet-lead">Choose a card to play. Each card keeps its own markers in this browser.</p>
+    <p class="sheet-lead">Pick up where you left off. Routes, markers and completion stay in this browser.</p>
     <p id="libraryStatus" class="sheet-lead" role="status" aria-live="polite"></p>
     <label class="card-name" for="cardSearch">Search cards<input id="cardSearch" type="search" placeholder="Search by name" autocomplete="off" aria-label="Search cards by name" aria-controls="savedCards" /></label>
     <p id="cardSearchStatus" class="sheet-lead" role="status" aria-live="polite" hidden></p>
@@ -215,11 +217,11 @@
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="card-library.js?v=replay-speed-1"></script>
-<script src="session-codec.js?v=replay-speed-1"></script>
-<script src="replay-core.js?v=replay-speed-1"></script>
-<script src="trace-renderer.js?v=replay-speed-1"></script>
-<script src="gpu-renderer.js?v=replay-speed-1"></script>
+<script src="card-library.js?v=local-progress-1"></script>
+<script src="session-codec.js?v=local-progress-1"></script>
+<script src="replay-core.js?v=local-progress-1"></script>
+<script src="trace-renderer.js?v=local-progress-1"></script>
+<script src="gpu-renderer.js?v=local-progress-1"></script>
 <script>
 (function () {
 "use strict";
@@ -537,6 +539,7 @@ function updateBackground(front, back) {
 }
 
 function applyImages(front, back) {
+  flushProgress(); S.progressId = null; S.completed = false;
   S.W = front.naturalWidth || front.width;
   S.H = front.naturalHeight || front.height;
   // art atlas: front on top, back below (back scaled to match if it differs)
@@ -866,6 +869,7 @@ function finishReview() {
 }
 /* A heavier choice (card switch, import) that would clear the route. */
 function guardRoute(yesLabel, action) {
+  if (S.progressId && flushProgress()) { action(); return; }
   if (S.trail.length < 2) { action(); return; }
   askConfirm("card", "Your current route will be cleared. Export a recording first to keep it.",
     "Keep route", yesLabel, action);
@@ -1228,6 +1232,7 @@ function placeWalker(t) {
   S.follow = true;
 }
 function syncTimeline(immediate=true) {
+  scheduleProgress();
   hudPending=true;invalidate();
   if(immediate){paintTimeline();hudPending=false;}
 }
@@ -1335,6 +1340,7 @@ let dirty = true;
 /* Free-form annotations belong to a physical card face, never to a route event. */
 let markerSaveQueue = Promise.resolve();
 function saveMarkers() {
+  scheduleProgress();
   if (!S.persistMarkers) return;
   const snapshot = S.markers.map(m => ({ ...m }));
   const id = S.savedCardId;
@@ -1791,6 +1797,9 @@ function currentFace() {
 function updateHUD() {
   const link=$('practiceOfficial');
   if(link) link.hidden=!S.demo;
+  $("btnComplete").hidden = !S.progressId;
+  if (!S.progressId) $("progressStatus").textContent = "Export a recording to keep this route.";
+  $("btnComplete").setAttribute("aria-checked", String(!!S.completed));
 }
 
 /* ============================================================
@@ -1821,7 +1830,7 @@ function suspendFrames() {
   if(rafId!==null)cancelAnimationFrame(rafId);
   rafId=null;lastT=0;S.keys=Object.create(null);S.undoHeld=false;
 }
-document.addEventListener('visibilitychange',()=>{if(document.hidden){suspendFrames();if(measurement)finishMeasurement('tab hidden');}else invalidate();});
+document.addEventListener('visibilitychange',()=>{if(document.hidden){flushProgress();suspendFrames();if(measurement)finishMeasurement('tab hidden');}else invalidate();});
 window.addEventListener('pagehide',suspendFrames);
 window.addEventListener('pageshow',invalidate);
 
@@ -2031,6 +2040,7 @@ async function useSavedCard(id) {
     applyImages(front, back);
     S.savedCardId = id; S.persistMarkers = true;
     restoreMarkers(card.markers); startNow();
+    resumeProgress(id);
     window.MazeUI?.closeLibrary();
   } catch {
     await window.MazeUI?.openLibrary();
@@ -2053,6 +2063,9 @@ async function refreshSavedCards() {
   $("cardSearchStatus").hidden = true;
   $("libraryStatus").textContent = "Loading saved cards…";
   try {
+    flushProgress();
+    const practiceProgress = readProgress("practice");
+    $("btnLibraryPractice").textContent = practiceProgress?.completed ? "Practice card · completed" : practiceProgress?.state?.started ? "Continue practice card" : "Play the practice card";
     const cards = await CardLibrary.list();
     $("libraryStatus").textContent = cards.length ? "" : "No saved cards yet. Import both faces to add one.";
     for (const card of cards) {
@@ -2060,7 +2073,12 @@ async function refreshSavedCards() {
       row.dataset.name = card.name.normalize("NFC").toLowerCase();
       play.className = "saved-card-play";
       if (card.thumbnail) { const image = document.createElement("img"); image.src = card.thumbnail; image.alt = ""; play.appendChild(image); }
-      const name = document.createElement("span"); name.textContent = card.name; play.appendChild(name);
+      const details = document.createElement("span"); details.className = "saved-card-details";
+      const name = document.createElement("span"); name.textContent = card.name; details.appendChild(name);
+      const progress = readProgress(card.id), status = document.createElement("span");
+      status.className = "saved-card-status" + (progress?.completed ? " is-completed" : "");
+      status.textContent = progress?.completed ? "✓ Completed" : progress?.state?.started ? "Continue route" : "Not started";
+      details.appendChild(status); play.appendChild(details);
       play.setAttribute("aria-label", "Play " + card.name);
       play.addEventListener("click", () => {
         window.MazeUI?.closeLibrary();
@@ -2068,9 +2086,11 @@ async function refreshSavedCards() {
       });
       remove.textContent = "Delete"; remove.setAttribute("aria-label", "Delete " + card.name);
       remove.addEventListener("click", async () => {
-        if (!window.confirm('Delete “' + card.name + '” and its saved markers from this browser?')) return;
+        if (!window.confirm('Delete “' + card.name + '” and its route, markers and completion from this browser?')) return;
         try {
           await markerSaveQueue; await CardLibrary.remove(card.id);
+          localStorage.removeItem(progressKey(card.id));
+          if (S.progressId === card.id) { S.progressId = null; S.completed = false; updateHUD(); }
           if (S.savedCardId === card.id) { S.persistMarkers = false; S.savedCardId = null; }
           await refreshSavedCards(); $("btnLibraryImport").focus();
         } catch { $("libraryStatus").textContent = "Could not delete that card. Please try again."; }
@@ -2110,6 +2130,7 @@ async function loadDemo(autoStart) {
     applyImages(front,back);S.demo=true;fitView();
     c.setAttribute('aria-label','Original two-sided practice maze. Follow the light path, match the edge letters, and use Q and E or the rotation buttons at the spin signs. The tool records your route; maze rules are followed by the player.');
     if(autoStart) startNow();
+    resumeProgress("practice");
     updateHUD();
   } catch {
     toast('Could not load the practice demo. Please try again.');
@@ -2148,8 +2169,61 @@ async function savePendingCard() {
     toast("Card saved in this browser · ready next time");
   } catch { toast("Card ready, but could not save in this browser. Keep the images for next time.", 6500); }
   startNow();
+  if (S.savedCardId) resumeProgress(S.savedCardId);
   cardImportBusy = false;
 }
+
+/* Small per-card snapshots are synchronous at page hide and before switching.
+   Throttle during walking; never serialize artwork or replay geometry here. */
+var progressTimer = null, progressSaveFailed = false;
+function progressKey(id) { return "ocm.progress.v1." + id; }
+function progressState() { return {trail:S.trail.map(p=>({...p})),spins:S.spins.map(p=>({...p})),rotQ0:S.rotQ0,
+      cursor:S.cursor,rotation:S.rotTarget,zoom:S.zoom,cam:{...S.cam},
+      walker:{x:S.walker.x,y:S.walker.y},started:S.started,review:S.review,
+      follow:S.follow,trailOn:S.trailOn,replaySpeed:S.replaySpeed,markers:S.markers.map(m=>({...m}))}; }
+function readProgress(id) {
+  try {
+    const data = JSON.parse(localStorage.getItem(progressKey(id)));
+    if (!data || data.version !== 1) return null;
+    // Reuse recording validation without storing duplicate images.
+    data.state = SessionCodec.validate({format:"onecardmaze-session",version:1,
+      art:{width:data.width,height:data.height,front:"data:image/png;base64,AAAA",back:"data:image/png;base64,AAAA"},state:data.state}).state;
+    return data;
+  } catch { return null; }
+}
+function scheduleProgress() {
+  if (!S.progressId || progressTimer != null) return;
+  progressTimer = setTimeout(() => { progressTimer = null; flushProgress(); }, 600);
+}
+function flushProgress() {
+  clearTimeout(progressTimer); progressTimer = null;
+  if (!S.progressId || !S.ready) return false;
+  try {
+    localStorage.setItem(progressKey(S.progressId), JSON.stringify({version:1,width:S.W,height:S.H,
+      completed:!!S.completed,state:progressState()}));
+    progressSaveFailed = false;
+    $("progressStatus").textContent = "Progress saved in this browser.";
+    return true;
+  } catch {
+    $("progressStatus").textContent = "Could not save progress. Export a recording to keep your route.";
+    if (!progressSaveFailed) toast("Progress could not be saved · export a recording to keep it", 6500);
+    progressSaveFailed = true;
+    return false;
+  }
+}
+function resumeProgress(id) {
+  const data = readProgress(id);
+  S.progressId = id; S.completed = !!data?.completed;
+  if (data && data.width === S.W && data.height === S.H) restoreSessionState(data.state);
+  updateHUD(); flushProgress();
+}
+$("btnComplete").addEventListener("click", () => {
+  S.completed = !S.completed;
+  if (!flushProgress()) S.completed = !S.completed;
+  else toast(S.completed ? "Card marked as completed" : "Completion mark removed");
+  updateHUD();
+});
+window.addEventListener("pagehide", flushProgress);
 
 /* User-triggered portable recordings. Artwork is copied from the active atlas,
    including demo/imported maps, rather than racing pending IndexedDB writes. */
@@ -2173,10 +2247,7 @@ function captureSession(){
   g.drawImage(artCv,0,S.H,S.W,S.H,0,0,S.W,S.H);
   const recording={format:'onecardmaze-session',version:1,createdAt:new Date().toISOString(),
     art:{width:S.W,height:S.H,front,back:image.toDataURL('image/png')},
-    state:{trail:S.trail.map(p=>({...p})),spins:S.spins.map(p=>({...p})),rotQ0:S.rotQ0,
-      cursor:S.cursor,rotation:S.rotTarget,zoom:S.zoom,cam:{...S.cam},
-      walker:{x:S.walker.x,y:S.walker.y},started:S.started,review:S.review,
-      follow:S.follow,trailOn:S.trailOn,replaySpeed:S.replaySpeed,markers:S.markers.map(m=>({...m}))},
+    state:progressState(),
     diagnostics:{environment:environmentSnapshot(),measurement:lastMeasurement}};
   SessionCodec.validate(recording);
   return recording;
@@ -2393,7 +2464,7 @@ updateHUD();
 
 /* expose for headless probes */
 window.OCM = { S, CFG, gl, foreground, render, update, applyImages, w2s, s2w, resize,
-  artCv, uploadArt, fitView, loadDemo, camTarget, traceLayout, captureSession, restoreSessionState, importSessionFile,
+  flushProgress, readProgress, resumeProgress, artCv, uploadArt, fitView, loadDemo, camTarget, traceLayout, captureSession, restoreSessionState, importSessionFile,
   camGoal: () => S.camGoal, trailAt, walkedTo, setCursor, play, undoOnce, commitWalk,
   refreshTrace, clearWalk, syncTimeline, uiMode, finishReview, confirmYes, confirmNo, guardRoute, doReset,
   restoreRoute, actionToast, syncSheets, uiInsets, prepareImport, refreshSavedCards, useSavedCard, setMarkerMode, recordPosition, addMarker, restoreMarkers, markerCopies, replayModel, advanceReplay, cardLight, cardCenter, spin, startNow, tap, seekEvent, orientationAt };
@@ -2409,7 +2480,7 @@ window.OCM.startup = (async () => {
 scheduleFrame();
 })();
 </script>
-<script src="batch-import.js?v=replay-speed-1" defer></script>
-<script src="companion-ui.js?v=replay-speed-1" defer></script>
+<script src="batch-import.js?v=local-progress-1" defer></script>
+<script src="companion-ui.js?v=local-progress-1" defer></script>
 </body>
 </html>

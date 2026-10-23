@@ -114,7 +114,7 @@
   $('btnSessionClose').addEventListener('click', () => $('btnMore').focus());
   $('btnReset').addEventListener('click', closeMenu);
   $('btnAboutFromTools').addEventListener('click', () => { closeMenu(); intro.showModal(); });
-  // Switching cards clears the route, so ask first (and only when there is one).
+  // Save the current card before switching; guard unsaved routes if storage fails.
   $('btnPractice').addEventListener('click', () => {
     closeMenu();
     app.guardRoute('Switch card', () => app.loadDemo(true));

@@ -333,3 +333,9 @@ button.wide{width:100%;margin-top:8px;min-height:48px}
   .batch-actions{display:flex;align-items:center;gap:var(--s3)}
   .batch-actions button.wide{flex:1;min-width:0;min-height:var(--tap);margin:0;white-space:normal}
 }
+
+/* Progress belongs to the card, leaving the walking dock unchanged. */
+.progress-note{margin:0 var(--s3) var(--s2);color:var(--muted);font-size:var(--t-xs);line-height:1.5}
+.saved-card-details{display:flex;flex-direction:column;align-items:flex-start;gap:var(--s2);padding:var(--s1) 0}
+.saved-card-status{font-size:var(--t-xs);font-weight:400;color:var(--muted);line-height:1.5}
+.saved-card-status.is-completed{color:var(--ink-2);background:var(--fill);border:1px solid var(--edge-soft);border-radius:var(--r-control);padding:0 var(--s2)}

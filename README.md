@@ -50,14 +50,14 @@ continue to work. In **Saved cards**, type any part of a name into **Search card
 to filter instantly (case-insensitive); clear the field to show all cards.
 On your next visit, **Saved cards** opens with names and thumbnails so you can
 choose which card to play. You can also open it from **Tools → Saved cards…**.
-Each card keeps its own markers. The previous single-card cache migrates
-automatically as **Saved card**. **Delete** removes one card and its saved markers
+Each card keeps its own route, markers and completion mark. The previous single-card cache migrates
+automatically as **Saved card**. **Delete** removes one card and its saved progress
 after confirmation; clearing site data removes the collection.
 
 A toast confirms saving; if browser storage is unavailable or full, you can
-still play and a message explains that the card could not be saved. Routes last
-for the current page session. Switching cards starts a fresh route and asks
-before discarding an existing walk. Practice cards and imported recordings do
+still play and a message explains that the card could not be saved. Routes on saved cards and the practice card persist across visits. Switching
+cards resumes the saved route and only asks before discarding work if it could
+not be saved. Practice cards and imported recordings do
 not overwrite the collection or its markers.
 
 ## Export, import and share a recording
@@ -287,3 +287,16 @@ the code license does not grant rights to them. The bundled Patrick Hand font
 (`assets/fonts/`) is by Patrick Wagesreiter under the SIL Open Font License 1.1. The practice demo uses original supplied artwork,
 not an official game maze. Get
 real mazes, demos and purchases from [the creators](https://www.onecardmaze.com/).
+
+### Local progress and completion
+
+Routes auto-save in this browser for each saved card and the practice card.
+Switch cards or reload, then select a card to resume its route, including recorded
+turns and its review position. Tools → **Mark as completed** adds a reversible
+completion mark. Saved cards shows **Completed**, **Continue route**, or **Not started**.
+Completion is your own annotation; replaying or clearing a route does not change it.
+
+Progress stays on this device and browser. Clearing site data removes it. Use
+**Save or load recording…** for a portable backup; imported recording files remain
+separate from saved cards. If browser storage is full or blocked, an error explains
+how to keep your route. Deleting a card also deletes its route and completion mark.

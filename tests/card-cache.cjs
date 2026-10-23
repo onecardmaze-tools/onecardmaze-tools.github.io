@@ -65,18 +65,14 @@ const server = http.createServer((req, res) => {
     assert.equal(await page.locator('#savedCards li').count(), 2);
     assert.equal(await page.locator('#help').evaluate(el => el.open), false);
     await choose('Card A');
-    // A real route is protected when selecting a different saved card.
-    await page.evaluate(() => { OCM.S.trail.push({ x: 20, y: 30, r: 0 }, { x: 25, y: 35, r: 0 }); OCM.syncTimeline(); });
-    await page.evaluate(() => MazeUI.openLibrary());
-    await page.getByRole('button', { name: 'Play Card B', exact: true }).click();
-    await page.waitForFunction(() => !document.getElementById('confirmCard').hidden);
-    assert.equal(await page.evaluate(() => OCM.S.savedCardId), a.id);
-    await page.locator('#btnConfirmNo').click();
-    assert.equal(await page.evaluate(() => OCM.S.savedCardId), a.id);
-    await page.evaluate(() => MazeUI.openLibrary());
-    await page.getByRole('button', { name: 'Play Card B', exact: true }).click();
-    await page.locator('#btnConfirmYes').click();
-    await page.waitForFunction(id => OCM.S.savedCardId !== id, a.id);
+    // Saved routes survive switching without a discard confirmation.
+    await page.evaluate(() => {
+      OCM.S.trail = [{x:20,y:30,r:0},{x:25,y:35,r:0}];
+      OCM.S.started = true; OCM.S.cursor = 1; OCM.syncTimeline();
+    });
+    await choose('Card B');
+    await choose('Card A');
+    assert.equal(await page.evaluate(() => OCM.S.trail.length), 2);
     // Failed new-card writes must roll back both card images and markers.
     await page.evaluate(() => {
       const put = IDBObjectStore.prototype.put;
