@@ -87,7 +87,7 @@ Press **Replay** (or Space) to review. The dock becomes a transport:
 | **Replay / Space** | Start reviewing from the beginning, in recording order |
 | **Play · Pause / Space** | Play forward; press again to pause |
 | **Reverse / Shift+Space** | Review from end to start; press again to pause |
-| **Speed** | Cycle 0.1×, 0.2×, 0.5×, 1×, 2×, 4× (default 0.2×) |
+| **Speed** | Cycle 0.25×, 0.5×, 1×, 2×, 4× (default 1×) |
 | **Timeline** | Preview any recorded position without changing the route. Amber shows progress; ticks mark spins and flips |
 | **Done / Esc** | Go back to walking at the end of the route, unchanged |
 | **Tools → Route events** | Jump to the previous/next flip or spin, or directly to a numbered event |

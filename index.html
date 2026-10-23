@@ -4,14 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>One Card Maze Helper · Unofficial</title>
-<meta name="app-version" content="2026-10-22-card-search" />
+<meta name="app-version" content="2026-10-22-replay-speed" />
 <meta name="description" content="Free, open-source One Card Maze helper. Upload both sides of your maze card, explore connected edges, track your path, and replay your walk in your browser." />
 <link rel="canonical" href="https://onecardmaze-tools.github.io/" />
 <meta property="og:title" content="One Card Maze Helper · Unofficial" />
 <meta property="og:description" content="Explore both sides of your One Card Maze card with path tracking, rotation, undo, and replay. Free and open source." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://onecardmaze-tools.github.io/" />
-<link rel="stylesheet" href="companion.css?v=card-search-1" />
+<link rel="stylesheet" href="companion.css?v=replay-speed-1" />
 </head>
 <body data-mode="walk" data-route="0">
 <!-- UI: see DESIGN-SYSTEM.md. One dock whose contents follow uiMode(); never stack bars. -->
@@ -64,7 +64,7 @@
       <div class="tl-label"><span id="pcount">0%</span><span id="tlEvent"></span></div>
       <div class="timeline-track"><span id="eventTicks" aria-hidden="true"></span><input id="scrub" type="range" min="0" max="100" step="0.01" value="0" aria-label="Recorded route position" /></div>
     </div>
-    <button id="btnSpeed" class="dbtn speed" aria-label="Change replay speed"><b id="speedValue">0.2×</b><span>Speed</span></button>
+    <button id="btnSpeed" class="dbtn speed" aria-label="Change replay speed"><b id="speedValue">1×</b><span>Speed</span></button>
   </div>
 
   <!-- mode: complete -->
@@ -215,11 +215,11 @@
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="card-library.js?v=card-search-1"></script>
-<script src="session-codec.js?v=card-search-1"></script>
-<script src="replay-core.js?v=card-search-1"></script>
-<script src="trace-renderer.js?v=card-search-1"></script>
-<script src="gpu-renderer.js?v=card-search-1"></script>
+<script src="card-library.js?v=replay-speed-1"></script>
+<script src="session-codec.js?v=replay-speed-1"></script>
+<script src="replay-core.js?v=replay-speed-1"></script>
+<script src="trace-renderer.js?v=replay-speed-1"></script>
+<script src="gpu-renderer.js?v=replay-speed-1"></script>
 <script>
 (function () {
 "use strict";
@@ -267,8 +267,8 @@ const CFG = {
   flipArrive:     0.26,
   flipDuration:   1.35,
   flipSettle:     0.35,
-  replayWalkFrac: 1.2,   // card heights/second at 1×; independent of sampling density
-  replaySpeeds:   [0.1, 0.2, 0.5, 1, 2, 4],  // the speeds the transport cycles through
+  replayWalkFrac: 1.2,   // base card heights/second; independent of sampling density
+  replaySpeeds:   [0.05, 0.1, 0.2, 0.4, 0.8],  // actual rates; displayed relative to the default
   replaySpeed:    0.2,    // ...and the one it starts on (slow enough to follow the route)
 };
 
@@ -1243,7 +1243,8 @@ function paintTimeline() {
   const pct = Math.round(fraction*100);
   countEl.textContent = pct + "%";
   scrubEl.setAttribute("aria-valuetext", pct + "% of recorded route");
-  const sv = $("speedValue"); if (sv.textContent !== S.replaySpeed + "×") sv.textContent = S.replaySpeed + "×";
+  const speedLabel = +(S.replaySpeed / CFG.replaySpeed).toFixed(2) + "×";
+  const sv = $("speedValue"); if (sv.textContent !== speedLabel) sv.textContent = speedLabel;
   backBtn.classList.toggle("on", S.play < 0);
   fwdBtn.classList.toggle("on", S.play > 0);
   syncReviewHUD();
@@ -1283,7 +1284,7 @@ function play(dir) {
   S.cam = camTarget();
   syncTimeline();
 }
-/* Cycle the playback speed: 0.1× / 0.2× / 0.5× / 1× / 2× / 4×. */
+/* Cycle the playback speed: 0.25× / 0.5× / 1× / 2× / 4×. */
 function cycleSpeed() {
   const list = CFG.replaySpeeds;
   const i = list.indexOf(S.replaySpeed);
@@ -2408,7 +2409,7 @@ window.OCM.startup = (async () => {
 scheduleFrame();
 })();
 </script>
-<script src="batch-import.js?v=card-search-1" defer></script>
-<script src="companion-ui.js?v=card-search-1" defer></script>
+<script src="batch-import.js?v=replay-speed-1" defer></script>
+<script src="companion-ui.js?v=replay-speed-1" defer></script>
 </body>
 </html>

@@ -20,7 +20,7 @@
     let last=-1;
     const spins=s.spins.map(p=>{if(!p||!Number.isInteger(p.i)||p.i<0||p.i>=trail.length||p.i<=last||!q(p.q))fail();last=p.i;return {i:p.i,q:p.q};});
     if(!finite(s.cursor,200000)||s.cursor<0||s.cursor>Math.max(0,trail.length-1)||!finite(s.rotation,1e8)||!finite(s.zoom,40)||s.zoom<.001||!s.cam||!finite(s.cam.x,1e8)||!finite(s.cam.y,1e8)||!s.walker||!finite(s.walker.x,1e8)||!finite(s.walker.y,1e8))fail();
-    if(typeof s.started!=='boolean'||(s.started&&!trail.length)||typeof s.review!=='boolean'||typeof s.follow!=='boolean'||typeof s.trailOn!=='boolean'||![.1,.2,.5,1,2,4].includes(s.replaySpeed))fail();
+    if(typeof s.started!=='boolean'||(s.started&&!trail.length)||typeof s.review!=='boolean'||typeof s.follow!=='boolean'||typeof s.trailOn!=='boolean'||![.05,.1,.2,.4,.8,.5,1,2,4].includes(s.replaySpeed))fail();
     if(!Array.isArray(s.markers)||s.markers.length>10000)fail();
     const markers=s.markers.map(m=>{
       if(!m||![0,1].includes(m.face)||!finite(m.u,1)||m.u<0||!finite(m.v,1)||m.v<0||!['circle','diamond','square','triangle','star'].includes(m.shape)||!/^#[0-9a-f]{6}$/i.test(m.color)||typeof m.label!=='string'||m.label.length>24)fail();
