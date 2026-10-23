@@ -42,16 +42,21 @@
     importFocus = document.activeElement;
     library.classList.add('hidden');
     app.prepareImport();
+    window.BatchImport.reset();
     loader.classList.remove('hidden');
     $('hud').inert = true; $('stage').inert = true;
     $('cardName').focus();
   }
   function closeImport() {
+    if (window.BatchImport.busy) return;
+    window.BatchImport.reset();
     loader.classList.add('hidden');
     $('hud').inert = false; $('stage').inert = false;
     (importFocus?.isConnected && importFocus.getClientRects().length ? importFocus : $('btnMore')).focus();
   }
   async function openLibrary() {
+    if (window.BatchImport.busy) return;
+    window.BatchImport.reset();
     if (intro.open) intro.close();
     closeAll(false);
     importFocus = document.activeElement;
@@ -69,12 +74,12 @@
     $('hud').inert = false; $('stage').inert = false;
     $('btnMore').focus();
   }
-  window.MazeUI = { openImport, closeAll, openLibrary, closeLibrary };
+  window.MazeUI = { openImport, closeImport, closeAll, openLibrary, closeLibrary };
   $('btnCards').addEventListener('click', openLibrary);
   $('btnLibraryClose').addEventListener('click', closeLibrary);
   $('btnSavedFromImport').addEventListener('click', openLibrary);
   $('btnLibraryImport').addEventListener('click', () => {
-    closeLibrary(); app.guardRoute('Import card', openImport);
+    openImport();
   });
   $('btnLibraryPractice').addEventListener('click', () => {
     closeLibrary(); app.guardRoute('Switch card', () => app.loadDemo(true));
@@ -115,7 +120,7 @@
   });
   $('btnUpload').addEventListener('click', () => {
     closeMenu();
-    app.guardRoute('Import card', openImport);
+    openImport();
   });
 
   // Upload/recording completion may close the existing loader from the engine.
@@ -147,7 +152,8 @@
     }
     const modal = !library.classList.contains('hidden') ? library : !loader.classList.contains('hidden') ? loader : null;
     if (e.key !== 'Tab' || !modal) return;
-    const focusable = Array.from(modal.querySelectorAll('button,input,a')).filter(el => !el.disabled && el.getClientRects().length);
+    if (window.BatchImport.busy) { e.preventDefault(); return; }
+    const focusable = Array.from(modal.querySelectorAll('button,input,a,[tabindex="0"]')).filter(el => !el.disabled && el.getClientRects().length);
     const first = focusable[0], last = focusable[focusable.length - 1];
     if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
     else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }

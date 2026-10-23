@@ -312,3 +312,24 @@ button.wide{width:100%;margin-top:8px;min-height:48px}
   *,*::before,*::after{transition-duration:1ms!important;animation-duration:1ms!important}
   .dbtn.rotate,.intro-actions .primary{transform:none!important}
 }
+
+/* Batch import reuses the modal, drop target and list rows. */
+.batch-drop{height:auto;min-height:calc(var(--tap) * 2);margin-block:var(--s3);border-color:var(--edge)}
+.batch-drop input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.batch-drop:focus-within{outline:2.5px solid var(--focus);outline-offset:2px}
+.batch-rows{list-style:none;padding:0;margin:var(--s3) 0;max-height:calc(var(--tap) * 4);overflow:auto;overscroll-behavior:contain}
+.batch-rows li{display:flex;align-items:center;gap:var(--s3);padding-block:var(--s2);border-bottom:1px solid var(--rule)}
+.batch-rows .batch-name{flex:1;min-width:0;overflow-wrap:anywhere}
+.batch-rows small{display:block;color:var(--muted);font-size:var(--t-xs)}
+.batch-rows img{width:var(--tap);height:calc(var(--tap) + var(--s4));object-fit:contain;background:var(--bg);border-radius:var(--r-control)}
+#libraryStatus{overflow-wrap:anywhere}
+#batchImport code{overflow-wrap:anywhere;font-size:var(--t-xs)}
+
+#loader[data-batch] .textlinks{display:none}
+.batch-actions{position:sticky;bottom:0;background:var(--paper);padding-top:var(--s2);border-top:1px solid var(--rule)}
+@media (max-height:500px) and (orientation:landscape){
+  #loader[data-batch] #importLead{display:none}
+  .batch-drop{min-height:var(--tap);flex-direction:row;margin-block:var(--s2);padding:var(--s2)}
+  .batch-actions{display:flex;align-items:center;gap:var(--s3)}
+  .batch-actions button.wide{flex:1;min-width:0;min-height:var(--tap);margin:0;white-space:normal}
+}

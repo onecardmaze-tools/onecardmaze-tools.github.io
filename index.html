@@ -4,14 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>One Card Maze Helper · Unofficial</title>
-<meta name="app-version" content="2026-10-22-player-start" />
+<meta name="app-version" content="2026-10-22-batch-import" />
 <meta name="description" content="Free, open-source One Card Maze helper. Upload both sides of your maze card, explore connected edges, track your path, and replay your walk in your browser." />
 <link rel="canonical" href="https://onecardmaze-tools.github.io/" />
 <meta property="og:title" content="One Card Maze Helper · Unofficial" />
 <meta property="og:description" content="Explore both sides of your One Card Maze card with path tracking, rotation, undo, and replay. Free and open source." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://onecardmaze-tools.github.io/" />
-<link rel="stylesheet" href="companion.css?v=player-start-1" />
+<link rel="stylesheet" href="companion.css?v=batch-import-1" />
 </head>
 <body data-mode="walk" data-route="0">
 <!-- UI: see DESIGN-SYSTEM.md. One dock whose contents follow uiMode(); never stack bars. -->
@@ -139,7 +139,8 @@
   <div class="panel sheet-like">
     <div class="sheet-grab" aria-hidden="true"></div>
     <button class="sheet-close" id="btnLoaderClose" aria-label="Close import">×</button><h2 class="sheet-title" id="importTitle">Bring your own card</h2>
-    <p class="sheet-lead">Choose both faces to add a card to your saved collection. Images stay in this browser.</p>
+    <p id="importLead" class="sheet-lead">Choose both faces to add a card to your saved collection. Images stay in this browser.</p>
+    <div id="singleImport">
     <label class="card-name" for="cardName">Card name<input id="cardName" type="text" maxlength="80" placeholder="My maze card" /></label>
     <div class="drops">
       <label class="drop" id="dropFront">
@@ -154,6 +155,22 @@
       </label>
     </div>
     <button id="btnStart" class="primary wide" disabled>Use this card</button>
+    <button id="btnBatchMode" class="linkish wide">Import multiple cards</button>
+    </div>
+    <div id="batchImport" hidden>
+      <p class="sheet-lead">Pair images by name: <code>Forest-01_front.png</code> and <code>Forest-01_back.png</code>. The shared name becomes the card name.</p>
+      <label class="drop batch-drop" id="dropBatch">
+        <input id="fileBatch" type="file" accept="image/*" multiple aria-label="Choose card images" />
+        <svg class="ic" aria-hidden="true"><use href="#i-upload"/></svg>
+        <span id="batchChoose">Choose or drop images</span>
+      </label>
+      <p id="batchStatus" class="sheet-lead" role="status" aria-live="polite"></p>
+      <ul id="batchRows" class="batch-rows" tabindex="0" aria-label="Cards to import"></ul>
+      <div class="batch-actions">
+      <button id="btnBatchSave" class="primary wide" disabled>Import cards</button>
+      <button id="btnSingleMode" class="linkish wide">Import one card instead</button>
+      </div>
+    </div>
     <div class="textlinks"><button class="linkish" id="btnImportWelcome">Import a recording instead</button><button class="linkish" id="btnDemo">Use practice card</button><button class="linkish" id="btnSavedFromImport">Saved cards</button></div>
   </div>
 </div>
@@ -196,11 +213,11 @@
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="card-library.js?v=player-start-1"></script>
-<script src="session-codec.js?v=player-start-1"></script>
-<script src="replay-core.js?v=player-start-1"></script>
-<script src="trace-renderer.js?v=player-start-1"></script>
-<script src="gpu-renderer.js?v=player-start-1"></script>
+<script src="card-library.js?v=batch-import-1"></script>
+<script src="session-codec.js?v=batch-import-1"></script>
+<script src="replay-core.js?v=batch-import-1"></script>
+<script src="trace-renderer.js?v=batch-import-1"></script>
+<script src="gpu-renderer.js?v=batch-import-1"></script>
 <script>
 (function () {
 "use strict";
@@ -2081,7 +2098,7 @@ async function loadDemo(autoStart) {
     toast('Could not load the practice demo. Please try again.');
   }
 }
-$("btnDemo").addEventListener("click", () => loadDemo(true));
+$("btnDemo").addEventListener("click", () => guardRoute("Switch card", () => loadDemo(true)));
 
 function startNow() {
   // Loading artwork cannot determine where the player's route begins.
@@ -2089,7 +2106,11 @@ function startNow() {
 }
 
 let cardImportBusy = false;
-$("btnStart").addEventListener("click", async () => {
+$("btnStart").addEventListener("click", () => {
+  window.MazeUI?.closeImport();
+  guardRoute("Import card", savePendingCard);
+});
+async function savePendingCard() {
   if (cardImportBusy || !pending.front || !pending.back || $("btnStart").disabled) return;
   cardImportBusy = true;
   $("btnStart").disabled = true;
@@ -2111,7 +2132,7 @@ $("btnStart").addEventListener("click", async () => {
   } catch { toast("Card ready, but could not save in this browser. Keep the images for next time.", 6500); }
   startNow();
   cardImportBusy = false;
-});
+}
 
 /* User-triggered portable recordings. Artwork is copied from the active atlas,
    including demo/imported maps, rather than racing pending IndexedDB writes. */
@@ -2371,6 +2392,7 @@ window.OCM.startup = (async () => {
 scheduleFrame();
 })();
 </script>
-<script src="companion-ui.js?v=player-start-1" defer></script>
+<script src="batch-import.js?v=batch-import-1" defer></script>
+<script src="companion-ui.js?v=batch-import-1" defer></script>
 </body>
 </html>

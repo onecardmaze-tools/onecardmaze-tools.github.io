@@ -66,7 +66,7 @@ const server = http.createServer((req, res) => {
     assert.equal(await page.locator('#help').evaluate(el => el.open), false);
     await choose('Card A');
     // A real route is protected when selecting a different saved card.
-    await page.evaluate(() => { OCM.S.trail.push({ x: 25, y: 35, r: 0 }); OCM.syncTimeline(); });
+    await page.evaluate(() => { OCM.S.trail.push({ x: 20, y: 30, r: 0 }, { x: 25, y: 35, r: 0 }); OCM.syncTimeline(); });
     await page.evaluate(() => MazeUI.openLibrary());
     await page.getByRole('button', { name: 'Play Card B', exact: true }).click();
     await page.waitForFunction(() => !document.getElementById('confirmCard').hidden);

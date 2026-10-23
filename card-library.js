@@ -51,7 +51,7 @@
       const rows = [], r = cards.openCursor();
       r.onsuccess = () => {
         const cursor = r.result;
-        if (!cursor) { done(rows.sort((a, b) => b.createdAt - a.createdAt)); return; }
+        if (!cursor) { done(rows.sort((a, b) => b.createdAt - a.createdAt || a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }))); return; }
         const { id, name, createdAt, thumbnail } = cursor.value;
         rows.push({ id, name, createdAt, thumbnail }); cursor.continue();
       };

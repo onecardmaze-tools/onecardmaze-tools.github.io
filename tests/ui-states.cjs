@@ -179,11 +179,11 @@ srv.listen(0, async () => {
     await shot('11-place');
     await audit(pg, vp, 'place', { mode: 'place', focus: true });
     await pg.click('#btnCancelMarker'); await settle(200);
-    // import (asks first because a route exists)
+    // Opening import preserves the route; only activating a card asks first.
     await pg.click('#btnMore'); await pg.click('#btnUpload'); await settle(300);
     const asked = await pg.evaluate(() => !document.getElementById('confirmCard').hidden);
-    if (!asked) fail(vp, 'import', 'switching card did not ask about the route');
-    await pg.click('#btnConfirmYes'); await settle(400);
+    if (asked) fail(vp, 'import', 'opening import should not ask to discard the route');
+    await settle(400);
     await shot('12-import');
     await audit(pg, vp, 'import', { sheet: true, focus: true });
     const startBtn = await pg.evaluate(() => { const b = document.getElementById('btnStart').getBoundingClientRect(); return b.bottom <= innerHeight; });
