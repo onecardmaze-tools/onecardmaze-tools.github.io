@@ -251,10 +251,10 @@ button.wide{width:100%;margin-top:8px;min-height:48px}
 .intro-actions .primary{transform:rotate(-.5deg)}
 .official-links{display:flex;flex-wrap:wrap;gap:0 16px;font-size:var(--t-sm)}
 .official-links a{min-height:36px;display:inline-flex;align-items:center}
-#introStory summary{cursor:pointer;min-height:var(--tap);display:flex;align-items:center;color:var(--link);font-size:var(--t-md)}
-#introStory summary::before{content:"▸";width:1em;color:var(--muted)}
-#introStory[open] summary::before{content:"▾"}
-#introStory summary::-webkit-details-marker{display:none}
+:is(#introStory, #analyticsPrivacy) summary{cursor:pointer;min-height:var(--tap);display:flex;align-items:center;color:var(--link);font-size:var(--t-md)}
+:is(#introStory, #analyticsPrivacy) summary::before{content:"▸";width:1em;color:var(--muted)}
+:is(#introStory, #analyticsPrivacy)[open] summary::before{content:"▾"}
+:is(#introStory, #analyticsPrivacy) summary::-webkit-details-marker{display:none}
 .source-link{display:inline-flex;align-items:center;gap:4px;min-height:24px}
 .github-icon{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}
 

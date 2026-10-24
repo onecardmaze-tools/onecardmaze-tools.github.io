@@ -139,6 +139,7 @@
           await CardLibrary.save({ id: crypto.randomUUID(), name: pair.name, front: pair.front, back: pair.back,
             markers: [], thumbnail: pair.frontThumb, fingerprint: key, createdAt });
           known.add(key); imported++;
+          root.MazeAnalytics?.event("card_imported");
         } catch { failed.push(pair.name); }
       }
     } catch { failed.push(...ready.map(pair => pair.name)); }

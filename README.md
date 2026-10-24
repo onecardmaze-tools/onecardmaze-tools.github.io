@@ -298,3 +298,11 @@ Progress stays on this device and browser. Clearing site data removes it. Use
 **Save or load recording…** for a portable backup; imported recording files remain
 separate from saved cards. If browser storage is full or blocked, an error explains
 how to keep your route. Deleting a card also deletes its route and completion mark.
+
+### Usage statistics
+
+Production uses limited, cookieless Umami usage statistics. Images, names, routes
+and recordings are not sent. Open **About → Privacy and usage statistics** to
+turn off collection and exclude your own browser. Development, previews, automated
+QA and browser privacy opt-outs are excluded. [Metric definitions, dashboard and
+export instructions](ANALYTICS.md) explain the six milestones and their limits.

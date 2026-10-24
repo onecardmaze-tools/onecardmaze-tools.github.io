@@ -4,14 +4,14 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
 <title>One Card Maze Helper · Unofficial</title>
-<meta name="app-version" content="2026-10-23-walk-camera" />
+<meta name="app-version" content="2026-10-23-analytics" />
 <meta name="description" content="Free, open-source One Card Maze helper. Upload both sides of your maze card, explore connected edges, track your path, and replay your walk in your browser." />
 <link rel="canonical" href="https://onecardmaze-tools.github.io/" />
 <meta property="og:title" content="One Card Maze Helper · Unofficial" />
 <meta property="og:description" content="Explore both sides of your One Card Maze card with path tracking, rotation, undo, and replay. Free and open source." />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://onecardmaze-tools.github.io/" />
-<link rel="stylesheet" href="companion.css?v=walk-camera-1" />
+<link rel="stylesheet" href="companion.css?v=analytics-1" />
 </head>
 <body data-mode="walk" data-route="0">
 <!-- UI: see DESIGN-SYSTEM.md. One dock whose contents follow uiMode(); never stack bars. -->
@@ -200,6 +200,13 @@
       <p>I've loved this game since its early days. But after making my own physical cards, I kept losing track of where I was and where I'd already been. So I made this little tool for myself, and for anyone else who has the same problem.</p>
       <p>I deliberately haven't included any of the game's mazes. Please get those from the creators. The demo here is just a simple practice card I made for trying out the tool.</p>
     </details>
+    <details id="analyticsPrivacy"><summary>Privacy and usage statistics</summary>
+      <p>Card images, names and routes stay in this browser unless you export and share a recording. We send limited usage statistics to Umami Cloud: visits, play milestones, successful imports, recording exports and completion marks, with event times and the app version.</p>
+      <p>Umami receives your IP address and browser information to estimate visitors and location. It does not store the raw IP in analytics records; operational and security logs may contain IP addresses. No analytics cookies, permanent player IDs, precise location, route coordinates or card contents are sent. These estimates cannot verify individual people.</p>
+      <p>Cloud statistics are retained for up to six months. Daily aggregate reports may be kept longer. <a class="source-link" href="https://umami.is/privacy" target="_blank" rel="noopener">Umami privacy policy</a></p>
+      <button id="btnAnalytics" class="li" role="switch" aria-checked="true" aria-label="Allow usage statistics in this browser">Allow usage statistics<span class="switch" aria-hidden="true"></span></button>
+      <p class="fine" id="analyticsStatus" role="status">Turn this off to exclude your own visits on this browser. Clearing site data resets this preference.</p>
+    </details>
     <p class="fine">Free &amp; open source · <a href="https://github.com/onecardmaze-tools/onecardmaze-tools.github.io" target="_blank" rel="noopener" class="source-link"><svg class="github-icon" aria-hidden="true"><use href="#i-gh"/></svg>Source code</a> · Game name and artwork belong to their owners.</p>
   </div>
 </dialog>
@@ -212,11 +219,12 @@
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-<script src="card-library.js?v=walk-camera-1"></script>
-<script src="session-codec.js?v=walk-camera-1"></script>
-<script src="replay-core.js?v=walk-camera-1"></script>
-<script src="trace-renderer.js?v=walk-camera-1"></script>
-<script src="gpu-renderer.js?v=walk-camera-1"></script>
+<script src="analytics.js?v=analytics-1"></script>
+<script src="card-library.js?v=analytics-1"></script>
+<script src="session-codec.js?v=analytics-1"></script>
+<script src="replay-core.js?v=analytics-1"></script>
+<script src="trace-renderer.js?v=analytics-1"></script>
+<script src="gpu-renderer.js?v=analytics-1"></script>
 <script>
 (function () {
 "use strict";
@@ -1517,6 +1525,7 @@ function update(dt) {
       walked = true;
     }
 
+    if (walked && moving) window.MazeAnalytics?.moved(dt, S.demo ? 'practice' : 'imported');
     if (walked) recordPosition(w.x, w.y);
     else if (!S.play && !S.undoHeld) S.recordBreak = true;
   }
@@ -1852,6 +1861,7 @@ function tap(wpt) {
     invalidateReplay();
     setHint("Click a spot to walk there.");
   } else {
+    if (Math.hypot(wpt.x - S.walker.x, wpt.y - S.walker.y) > 1e-7) window.MazeAnalytics?.walkInput();
     S.walker.tx = wpt.x; S.walker.ty = wpt.y;
     S.walkFollowPending=!S.follow;
   }
@@ -2161,6 +2171,7 @@ async function savePendingCard() {
   $("btnStart").disabled = true;
   try {
     await CardLibrary.save(card);
+    window.MazeAnalytics?.event("card_imported");
     S.savedCardId = card.id; S.persistMarkers = true;
     toast("Card saved in this browser · ready next time");
   } catch { toast("Card ready, but could not save in this browser. Keep the images for next time.", 6500); }
@@ -2216,7 +2227,10 @@ function resumeProgress(id) {
 $("btnComplete").addEventListener("click", () => {
   S.completed = !S.completed;
   if (!flushProgress()) S.completed = !S.completed;
-  else toast(S.completed ? "Card marked as completed" : "Completion mark removed");
+  else {
+    toast(S.completed ? "Card marked as completed" : "Completion mark removed");
+    if (S.completed) window.MazeAnalytics?.event("completion_marked");
+  }
   updateHUD();
 });
 window.addEventListener("pagehide", flushProgress);
@@ -2280,6 +2294,7 @@ async function importSessionFile(file){
   S.persistMarkers=false;lastMeasurement=null;
 
   setHint('Recording restored. Replay it, or continue walking from the playhead.');
+  window.MazeAnalytics?.event('recording_imported');
   return data;
 }
 function sessionButtons(busy){
@@ -2297,7 +2312,7 @@ $('btnExportSession').addEventListener('click',()=>{
     if(blob.size>96000000)throw new Error('Recording is too large (96 MB maximum)');
     const url=URL.createObjectURL(blob),link=document.createElement('a');
     link.href=url;link.download='onecardmaze-'+recording.createdAt.replace(/[:.]/g,'-')+'.ocm.json';
-    link.click();setTimeout(()=>URL.revokeObjectURL(url),60000);
+    link.click();window.MazeAnalytics?.event('recording_exported');setTimeout(()=>URL.revokeObjectURL(url),60000);
     toast('Recording exported — includes your card images');
   }catch(e){toast(e.message||'Could not export recording');}finally{sessionButtons(false);}
 });
@@ -2474,7 +2489,7 @@ window.OCM.startup = (async () => {
 scheduleFrame();
 })();
 </script>
-<script src="batch-import.js?v=walk-camera-1" defer></script>
-<script src="companion-ui.js?v=walk-camera-1" defer></script>
+<script src="batch-import.js?v=analytics-1" defer></script>
+<script src="companion-ui.js?v=analytics-1" defer></script>
 </body>
 </html>
