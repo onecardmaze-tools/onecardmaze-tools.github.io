@@ -140,3 +140,28 @@ Technical references:
 - https://docs.umami.is/docs/cloud/export-data
 - https://umami.is/pricing
 - https://umami.is/dpa
+
+## Production verification — 2026-10-23
+
+Released in commit `e20a2af` through the successful GitHub Pages deployment:
+https://github.com/onecardmaze-tools/onecardmaze-tools.github.io/actions/runs/40064891951.
+The live page reports app version `2026-10-23-analytics`.
+
+The owner's Chrome privacy preference disabled collection as intended; opening
+`?analytics=off` additionally persisted the browser exclusion. The preference was
+not overridden for testing. This Chrome reported WebGL unavailable, so production
+walking was not tested in that profile. Walking, replay, completion and recording
+telemetry passed the isolated browser integration test with intercepted requests;
+all unit tests, seven-viewport UI QA and 35 layout combinations also passed.
+
+A separate documented collection-API check with an explicit robot User-Agent was
+filtered (HTTP 200 with no session). One synthetic browser request then produced
+HTTP 200 with a session/visit and the named `deployment_check` event. Its presence
+and United States location were verified in Umami Realtime. This is release QA,
+not a real player; exclude that event from behavioral interpretation. It does not
+emit any of the six player milestones. No raw IP, response cache or account secret
+is included in this repository. Keep real-player metrics focused on
+`play_started` / `play_engaged`, rather than treating all received events as play.
+
+Private dashboard:
+https://cloud.umami.is/analytics/us/websites/fe70e40d-566a-430c-9041-034e890521da
